@@ -1,15 +1,15 @@
 import axios from "axios"
 import {Collection, Message, MessageReaction, TextChannel, User} from "discord.js"
-import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
+import {SlashCommand, SlashCommandOption} from "../../structures/SlashCommandOption"
 import fs from "fs"
-import jimp from "jimp"
+import {Jimp as jimp, JimpMime} from "jimp"
+import sharp from "sharp"
 import path from "path"
-import * as config from "../../config.json"
 import {Command} from "../../structures/Command"
 import {Embeds} from "../../structures/Embeds"
 import {Images} from "../../structures/Images"
+import {Functions} from "../../structures/Functions"
 import {Kisaragi} from "../../structures/Kisaragi"
-import animedetect from "animedetect"
 
 const procBlock = new Collection()
 
@@ -37,17 +37,18 @@ export default class Photoshop extends Command {
           aliases: ["ps", "edit", "editor", "adjust", "hsv", "hsb"],
           cooldown: 10,
           defer: true,
-          subcommandEnabled: true
+          slashEnabled: true
         })
         const urlOption = new SlashCommandOption()
             .setType("string")
             .setName("url")
             .setDescription("Url, or use the last posted image.")
 
-        this.subcommand = new SlashCommandSubcommand()
+        this.slash = new SlashCommand()
             .setName(this.constructor.name.toLowerCase())
             .setDescription(this.options.description)
             .addOption(urlOption)
+            .toJSON()
     }
 
     public getProcBlock = () => {
@@ -105,7 +106,6 @@ export default class Photoshop extends Command {
             }
         }
         description = this.getDesc()
-        // console.log(this.historyValues)
         const hsvEmbed = embeds.createEmbed()
         hsvEmbed
         .setAuthor({name: "photoshop", iconURL: "https://kisaragi.moe/assets/embed/photoshop.png"})
@@ -131,7 +131,7 @@ export default class Photoshop extends Command {
         obj.contrast = 0
         obj.hue = 0
         obj.saturation = 0
-        obj.value = 0
+        obj.lightness = 0
         obj.flip = "None"
         obj.tint = "None"
         obj.invert = "Off"
@@ -161,7 +161,7 @@ export default class Photoshop extends Command {
         `${this.discord.getEmoji("contrast")}_Contrast:_ **${this.getVal(obj.contrast)}**\n` +
         `${this.discord.getEmoji("hue")}_Hue:_ **${this.getVal(obj.hue)}°**  ` +
         `${this.discord.getEmoji("saturation")}_Saturation:_ **${this.getVal(obj.saturation)}**  ` +
-        `${this.discord.getEmoji("value")}_Lightness:_ **${this.getVal(obj.value)}**\n` +
+        `${this.discord.getEmoji("lightness")}_Lightness:_ **${this.getVal(obj.lightness)}**\n` +
         `${this.discord.getEmoji("flip")}_Flip:_ **${this.getVal(obj.flip)}**  ` +
         `${this.discord.getEmoji("tint")}_Tint:_ **${this.getVal(obj.tint)}**\n` +
         `${this.discord.getEmoji("invert")}_Invert:_ **${this.getVal(obj.invert)}**  ` +
@@ -173,6 +173,14 @@ export default class Photoshop extends Command {
         `${this.discord.getEmoji("sharpen")}_Sharpen:_ **${this.getVal(obj.sharpen)}**\n` +
         `_Use the arrows to switch between history states._`
         return desc
+    }
+
+    public fetchLink = async (link: string) => {
+        if (link.startsWith("http")) {
+            const arrayBuffer = await fetch(link).then((r) => r.arrayBuffer())
+            return Buffer.from(arrayBuffer)
+        }
+        return fs.readFileSync(link)
     }
 
     public run = async (args: string[]) => {
@@ -206,14 +214,14 @@ export default class Photoshop extends Command {
         .setURL(link)
         .setDescription(description)
         const msg = await this.reply(hsvEmbed)
-        const reactions = ["brightness", "contrast", "hue", "saturation", "value", "flip", "tint", "invert", "posterize", "crop", "scale", "rotate", "blur", "sharpen", "undo", "redo", "reset"]
+        const reactions = ["brightness", "contrast", "hue", "saturation", "lightness", "flip", "tint", "invert", "posterize", "crop", "scale", "rotate", "blur", "sharpen", "undo", "redo", "reset"]
         for (let i = 0; i < reactions.length; i++) await msg.react(discord.getEmoji(reactions[i]))
 
         const brightnessCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("brightness").id && user.bot === false
         const contrastCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("contrast").id && user.bot === false
         const hueCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("hue").id && user.bot === false
         const saturationCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("saturation").id && user.bot === false
-        const valueCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("value").id && user.bot === false
+        const lightnessCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("lightness").id && user.bot === false
         const flipCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("flip").id && user.bot === false
         const tintCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("tint").id && user.bot === false
         const invertCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("invert").id && user.bot === false
@@ -230,7 +238,7 @@ export default class Photoshop extends Command {
         const contrast = msg.createReactionCollector({filter: contrastCheck})
         const hue = msg.createReactionCollector({filter: hueCheck})
         const saturation = msg.createReactionCollector({filter: saturationCheck})
-        const value = msg.createReactionCollector({filter: valueCheck})
+        const lightness = msg.createReactionCollector({filter: lightnessCheck})
         const flip = msg.createReactionCollector({filter: flipCheck})
         const tint = msg.createReactionCollector({filter: tintCheck})
         const invert = msg.createReactionCollector({filter: invertCheck})
@@ -266,24 +274,28 @@ export default class Photoshop extends Command {
             if (factor > 100) factor = 100
             const newObj = this.getObj()
             newObj.brightness += factor
-            factor /= 100
+            let newFactor = Functions.transformRange(factor, -100, 100, 0, 2)
             let current: string
             if (this.historyIndex < 0) {
                 current = this.original
             } else {
                 current = this.historyStates[this.historyIndex]
             }
-            const image = await jimp.read(current)
-            image.brightness(factor)
-            let newDest = path.join(__dirname, `../../misc/images/dump/${seed}_brightness`)
+            console.log(current)
+            const currentBuffer = await this.fetchLink(current)
+            console.log(currentBuffer)
+            const buffer = await sharp(currentBuffer, {limitInputPixels: false})
+            .modulate({brightness: newFactor}).toBuffer()
+            let newDest = path.join(__dirname, `../../assets/misc/images/dump/${seed}_brightness`)
             let i = 0
             while (fs.existsSync(`${newDest}.jpg`)) {
                 newDest = `${newDest}${i}`
                 i++
             }
-            await image.writeAsync(`${newDest}.jpg`)
+            console.log(`${newDest}.jpg`)
+            fs.writeFileSync(`${newDest}.jpg`, buffer)
             const newEmbed = await this.hsvEmbed(`${newDest}.jpg`, newObj)
-            msg.edit({embeds: [newEmbed]})
+            discord.edit(msg, newEmbed)
             this.setProcBlock(true)
         })
 
@@ -304,24 +316,25 @@ export default class Photoshop extends Command {
             if (factor > 100) factor = 100
             const newObj = this.getObj()
             newObj.contrast += factor
-            factor /= 100
+            let newFactor = Functions.transformRange(factor, -100, 100, 0, 2)
             let current: string
             if (this.historyIndex < 0) {
                 current = this.original
             } else {
                 current = this.historyStates[this.historyIndex]
             }
-            const image = await jimp.read(current)
-            image.contrast(factor)
-            let newDest = path.join(__dirname, `../../misc/images/dump/${seed}_contrast`)
+            const currentBuffer = await this.fetchLink(current)
+            const buffer = await sharp(currentBuffer, {limitInputPixels: false})
+            .linear(newFactor, -(128 * newFactor) + 128).toBuffer()
+            let newDest = path.join(__dirname, `../../assets/misc/images/dump/${seed}_contrast`)
             let i = 0
             while (fs.existsSync(`${newDest}.jpg`)) {
                 newDest = `${newDest}${i}`
                 i++
             }
-            await image.writeAsync(`${newDest}.jpg`)
+            fs.writeFileSync(`${newDest}.jpg`, buffer)
             const newEmbed = await this.hsvEmbed(`${newDest}.jpg`, newObj)
-            msg.edit({embeds: [newEmbed]})
+            discord.edit(msg, newEmbed)
             this.setProcBlock(true)
         })
 
@@ -334,29 +347,30 @@ export default class Photoshop extends Command {
             }
             this.setProcBlock()
             await reaction.users.remove(user).catch(() => null)
-            const rep = await this.send(`<@${user.id}>, Enter the hue (-360-360).`)
+            const rep = await this.send(`<@${user.id}>, Enter the hue (-180-180).`)
             await embeds.createPrompt(getArgs)
             await rep.delete()
-            const factor = Number(argArray[0]) ? Number(argArray[0]) : 0
+            const shift = Number(argArray[0]) ? Number(argArray[0]) : 0
             const newObj = this.getObj()
-            newObj.hue += factor
+            newObj.hue += shift
             let current: string
             if (this.historyIndex < 0) {
                 current = this.original
             } else {
                 current = this.historyStates[this.historyIndex]
             }
-            const image = await jimp.read(current)
-            image.color([{apply: "hue" as any, params: [factor]}])
-            let newDest = path.join(__dirname, `../../misc/images/dump/${seed}_hue`)
+            const currentBuffer = await this.fetchLink(current)
+            const buffer = await sharp(currentBuffer, {limitInputPixels: false})
+            .modulate({hue: shift}).toBuffer()
+            let newDest = path.join(__dirname, `../../assets/misc/images/dump/${seed}_hue`)
             let i = 0
             while (fs.existsSync(`${newDest}.jpg`)) {
                 newDest = `${newDest}${i}`
                 i++
             }
-            await image.writeAsync(`${newDest}.jpg`)
+            fs.writeFileSync(`${newDest}.jpg`, buffer)
             const newEmbed = await this.hsvEmbed(`${newDest}.jpg`, newObj)
-            msg.edit({embeds: [newEmbed]})
+            discord.edit(msg, newEmbed)
             this.setProcBlock(true)
         })
 
@@ -372,41 +386,32 @@ export default class Photoshop extends Command {
             const rep = await this.send(`<@${user.id}>, Enter the saturation factor (-100-100).`)
             await embeds.createPrompt(getArgs)
             await rep.delete()
-            let factor = Number(argArray[0]) ? Number(argArray[0]) : 0
+            let value = Number(argArray[0]) ? Number(argArray[0]) : 0
             const newObj = this.getObj()
-            newObj.saturation += factor
-            let setDesaturate = false
-            if (factor < 0) {
-                setDesaturate = true
-                factor = Math.abs(factor)
-            }
+            newObj.saturation += value
+            let newValue = Functions.transformRange(value, -100, 100, 0, 2)
             let current: string
             if (this.historyIndex < 0) {
                 current = this.original
             } else {
                 current = this.historyStates[this.historyIndex]
             }
-            const image = await jimp.read(current)
-            if (setDesaturate) {
-                // @ts-ignore
-                image.color([{apply: "desaturate", params: [factor]}])
-            } else {
-                // @ts-ignore
-                image.color([{apply: "saturate", params: [factor]}])
-            }
-            let newDest = path.join(__dirname, `../../misc/images/dump/${seed}_saturation`)
+            const currentBuffer = await this.fetchLink(current)
+            const buffer = await sharp(currentBuffer, {limitInputPixels: false})
+            .modulate({saturation: newValue}).toBuffer()
+            let newDest = path.join(__dirname, `../../assets/misc/images/dump/${seed}_saturation`)
             let i = 0
             while (fs.existsSync(`${newDest}.jpg`)) {
                 newDest = `${newDest}${i}`
                 i++
             }
-            await image.writeAsync(`${newDest}.jpg`)
+            fs.writeFileSync(`${newDest}.jpg`, buffer)
             const newEmbed = await this.hsvEmbed(`${newDest}.jpg`, newObj)
-            msg.edit({embeds: [newEmbed]})
+            discord.edit(msg, newEmbed)
             this.setProcBlock(true)
         })
 
-        value.on("collect", async (reaction, user) => {
+        lightness.on("collect", async (reaction, user) => {
             if (this.getProcBlock()) {
                 await reaction.users.remove(user)
                 const proc = await this.send(`<@${user.id}>, Please wait until the current effect is done processing before adding another.`)
@@ -420,35 +425,25 @@ export default class Photoshop extends Command {
             await rep.delete()
             let factor = Number(argArray[0]) ? Number(argArray[0]) : 0
             const newObj = this.getObj()
-            newObj.value += factor
-            let setDarken = false
-            if (factor < 0) {
-                setDarken = true
-                factor = Math.abs(factor)
-            }
+            newObj.lightness += factor
             let current: string
             if (this.historyIndex < 0) {
                 current = this.original
             } else {
                 current = this.historyStates[this.historyIndex]
             }
-            const image = await jimp.read(current)
-            if (setDarken) {
-                // @ts-ignore
-                image.color([{apply: "darken", params: [factor]}])
-            } else {
-                // @ts-ignore
-                image.color([{apply: "lighten", params: [factor]}])
-            }
-            let newDest = path.join(__dirname, `../../misc/images/dump/${seed}_lightness`)
+            const currentBuffer = await this.fetchLink(current)
+            const buffer = await sharp(currentBuffer, {limitInputPixels: false})
+            .modulate({lightness: factor}).toBuffer()
+            let newDest = path.join(__dirname, `../../assets/misc/images/dump/${seed}_lightness`)
             let i = 0
             while (fs.existsSync(`${newDest}.jpg`)) {
                 newDest = `${newDest}${i}`
                 i++
             }
-            await image.writeAsync(`${newDest}.jpg`)
+            fs.writeFileSync(`${newDest}.jpg`, buffer)
             const newEmbed = await this.hsvEmbed(`${newDest}.jpg`, newObj)
-            msg.edit({embeds: [newEmbed]})
+            discord.edit(msg, newEmbed)
             this.setProcBlock(true)
         })
 
@@ -478,23 +473,25 @@ export default class Photoshop extends Command {
             } else {
                 current = this.historyStates[this.historyIndex]
             }
-            const image = await jimp.read(current)
+            const currentBuffer = await this.fetchLink(current)
+            let img = sharp(currentBuffer, {limitInputPixels: false})
             const newObj = this.getObj()
             if (setHorizontal) {
-                image.flip(true, false)
+                img = img.flop()
                 if (newObj.flip === "Horizontal") {
                     newObj.flip = "None"
                 } else {
                     newObj.flip = "Horizontal"
                 }
             } else if (setVertical) {
-                image.flip(false, true)
+                img = img.flip()
                 if (newObj.flip === "Vertical") {
                     newObj.flip = "None"
                 } else {
                     newObj.flip = "Vertical"
                 }
             } else if (setHorizontal && setVertical) {
+                img = img.flip().flop()
                 if (newObj.flip === "Horizontal and Vertical") {
                     newObj.flip = "None"
                 } else if (newObj.flip === "Horizontal") {
@@ -505,15 +502,16 @@ export default class Photoshop extends Command {
                     newObj.flip = "Horizontal and Vertical"
                 }
             }
-            let newDest = path.join(__dirname, `../../misc/images/dump/${seed}_flip`)
+            let buffer = await img.toBuffer()
+            let newDest = path.join(__dirname, `../../assets/misc/images/dump/${seed}_flip`)
             let i = 0
             while (fs.existsSync(`${newDest}.jpg`)) {
                 newDest = `${newDest}${i}`
                 i++
             }
-            await image.writeAsync(`${newDest}.jpg`)
+            fs.writeFileSync(`${newDest}.jpg`, buffer)
             const newEmbed = await this.hsvEmbed(`${newDest}.jpg`, newObj)
-            msg.edit({embeds: [newEmbed]})
+            discord.edit(msg, newEmbed)
             this.setProcBlock(true)
         })
 
@@ -526,30 +524,30 @@ export default class Photoshop extends Command {
             }
             this.setProcBlock()
             await reaction.users.remove(user).catch(() => null)
-            const rep = await this.send(`<@${user.id}>, Enter the color and opacity.`)
+            const rep = await this.send(`<@${user.id}>, Enter the hex color.`)
             await embeds.createPrompt(getArgs)
             await rep.delete()
             const color = argArray[0] ? argArray[0] : "#ff0fd3"
-            const opacity = Number(argArray[1]) ? Number(argArray[1]) : 20
             const newObj = this.getObj()
-            newObj.tint = `${color} ${opacity}%`
+            newObj.tint = `${color}`
             let current: string
             if (this.historyIndex < 0) {
                 current = this.original
             } else {
                 current = this.historyStates[this.historyIndex]
             }
-            const image = await jimp.read(current)
-            image.color([{apply: "mix" as any, params: [color, opacity]}])
-            let newDest = path.join(__dirname, `../../misc/images/dump/${seed}_tint`)
+            const currentBuffer = await this.fetchLink(current)
+            const buffer = await sharp(currentBuffer, {limitInputPixels: false})
+            .tint(Functions.decodeHexColor(color)).toBuffer()
+            let newDest = path.join(__dirname, `../../assets/misc/images/dump/${seed}_tint`)
             let i = 0
             while (fs.existsSync(`${newDest}.jpg`)) {
                 newDest = `${newDest}${i}`
                 i++
             }
-            await image.writeAsync(`${newDest}.jpg`)
+            fs.writeFileSync(`${newDest}.jpg`, buffer)
             const newEmbed = await this.hsvEmbed(`${newDest}.jpg`, newObj)
-            msg.edit({embeds: [newEmbed]})
+            discord.edit(msg, newEmbed)
             this.setProcBlock(true)
         })
 
@@ -574,17 +572,18 @@ export default class Photoshop extends Command {
             } else {
                 newObj.invert = "On"
             }
-            const image = await jimp.read(current)
-            image.invert()
-            let newDest = path.join(__dirname, `../../misc/images/dump/${seed}_invert`)
+            const currentBuffer = await this.fetchLink(current)
+            const buffer = await sharp(currentBuffer, {limitInputPixels: false})
+            .negate({alpha: false}).toBuffer()
+            let newDest = path.join(__dirname, `../../assets/misc/images/dump/${seed}_invert`)
             let i = 0
             while (fs.existsSync(`${newDest}.jpg`)) {
                 newDest = `${newDest}${i}`
                 i++
             }
-            await image.writeAsync(`${newDest}.jpg`)
+            fs.writeFileSync(`${newDest}.jpg`, buffer)
             const newEmbed = await this.hsvEmbed(`${newDest}.jpg`, newObj)
-            msg.edit({embeds: [newEmbed]})
+            discord.edit(msg, newEmbed)
             this.setProcBlock(true)
         })
 
@@ -612,18 +611,20 @@ export default class Photoshop extends Command {
             } else {
                 newObj.posterize = "On"
             }
-            const image = await jimp.read(current)
+            const currentBuffer = await this.fetchLink(current)
+            const buffer = await sharp(currentBuffer, {limitInputPixels: false}).png().toBuffer()
+            const image = await jimp.read(buffer)
             const levels = Number(argArray[0]) ? Number(argArray[0]) : 2
             image.posterize(levels)
-            let newDest = path.join(__dirname, `../../misc/images/dump/${seed}_posterize`)
+            let newDest = path.join(__dirname, `../../assets/misc/images/dump/${seed}_posterize`)
             let i = 0
             while (fs.existsSync(`${newDest}.jpg`)) {
                 newDest = `${newDest}${i}`
                 i++
             }
-            await image.writeAsync(`${newDest}.jpg`)
+            await image.write(`${newDest}.jpg`)
             const newEmbed = await this.hsvEmbed(`${newDest}.jpg`, newObj)
-            msg.edit({embeds: [newEmbed]})
+            discord.edit(msg, newEmbed)
             this.setProcBlock(true)
         })
 
@@ -645,24 +646,28 @@ export default class Photoshop extends Command {
             } else {
                 current = this.historyStates[this.historyIndex]
             }
-            const image = await jimp.read(current)
-            const x = Number(argArray[0]) ? Number(argArray[0]) : 0
-            const y = Number(argArray[1]) ? Number(argArray[1]) : 0
-            const width = Number(argArray[2]) ? Number(argArray[2]) : image.bitmap.width
-            const height = Number(argArray[3]) ? Number(argArray[3]) : Math.floor(image.bitmap.height / (image.bitmap.width / width * 1.0))
+            const currentBuffer = await this.fetchLink(current)
+            const metadata = await sharp(currentBuffer, {limitInputPixels: false}).metadata()
+            const x = argArray[0] ? Number(argArray[0]) : 0
+            const y = argArray[1] ? Number(argArray[1]) : 0
+            let width = argArray[2] ? Number(argArray[2]) : metadata.width!
+            let height = argArray[3] ? Number(argArray[3]) : Math.floor(metadata.height! / (metadata.width! / width * 1.0))
+            if (width > metadata.width!) width = metadata.width!
+            if (height > metadata.height!) height = metadata.height!
             const newObj = this.getObj()
             newObj.crop = `${x}x ${y}y ${width}w ${height}h`
-            image.crop(x, y, width, height)
-            let newDest = path.join(__dirname, `../../misc/images/dump/${seed}_crop`)
+            const buffer = await sharp(currentBuffer, {limitInputPixels: false})
+            .extract({left: x, top: y, width, height}).toBuffer()
+            let newDest = path.join(__dirname, `../../assets/misc/images/dump/${seed}_crop`)
             let i = 0
             while (fs.existsSync(`${newDest}.jpg`)) {
                 newDest = `${newDest}${i}`
                 i++
             }
-            await image.writeAsync(`${newDest}.jpg`)
+            fs.writeFileSync(`${newDest}.jpg`, buffer)
             const newEmbed = await this.hsvEmbed(`${newDest}.jpg`, newObj)
-            msg.edit({embeds: [newEmbed]})
-            this.setProcBlock()
+            discord.edit(msg, newEmbed)
+            this.setProcBlock(true)
         })
 
         scale.on("collect", async (reaction, user) => {
@@ -683,28 +688,33 @@ export default class Photoshop extends Command {
             } else {
                 current = this.historyStates[this.historyIndex]
             }
-            const image = await jimp.read(current)
+            const currentBuffer = await this.fetchLink(current)
+            const metadata = await sharp(currentBuffer, {limitInputPixels: false}).metadata()
             const newObj = this.getObj()
+            let width = undefined as any
+            let height = undefined as any
             if (/scale/.test(argArray.join(" "))) {
                 const input = argArray.join(" ").replace("scale", "").trim().split("")
                 const factor = Number(input[0]) ? Number(input[0]) : 1
-                image.scale(factor)
+                width = Math.floor(metadata.width! * factor)
+                height = Math.floor(metadata.height! * factor)
                 newObj.scale = `${Number(String(newObj.scale).replace("x", "")) * factor}x`
             } else {
-                const width = Number(argArray[0]) ? Number(argArray[0]) : jimp.AUTO
-                const height = Number(argArray[1]) ? Number(argArray[1]) : jimp.AUTO
-                image.resize(width, height)
+                width = argArray[0] ? Number(argArray[0]) : undefined as any
+                height = argArray[1] ? Number(argArray[1]) : undefined as any
                 newObj.scale = `${width}w ${height}h`
             }
-            let newDest = path.join(__dirname, `../../misc/images/dump/${seed}_scale`)
+            let buffer = await sharp(currentBuffer, {limitInputPixels: false})
+            .resize({width, height, fit: "fill"}).toBuffer()
+            let newDest = path.join(__dirname, `../../assets/misc/images/dump/${seed}_scale`)
             let i = 0
             while (fs.existsSync(`${newDest}.jpg`)) {
                 newDest = `${newDest}${i}`
                 i++
             }
-            await image.writeAsync(`${newDest}.jpg`)
+            fs.writeFileSync(`${newDest}.jpg`, buffer)
             const newEmbed = await this.hsvEmbed(`${newDest}.jpg`, newObj)
-            msg.edit({embeds: [newEmbed]})
+            discord.edit(msg, newEmbed)
             this.setProcBlock(true)
         })
 
@@ -726,26 +736,21 @@ export default class Photoshop extends Command {
             } else {
                 current = this.historyStates[this.historyIndex]
             }
-            const image = await jimp.read(current)
             let degrees = Number(argArray[0]) ? Number(argArray[0]) : 0
             const newObj = this.getObj()
             newObj.rotate += degrees
-            if (degrees < 0) {
-                degrees = Math.abs(degrees)
-            } else {
-                degrees = -degrees
-            }
-            image.rotate(degrees)
-            image.autocrop()
-            let newDest = path.join(__dirname, `../../misc/images/dump/${seed}_rotate`)
+            const currentBuffer = await this.fetchLink(current)
+            const buffer = await sharp(currentBuffer, {limitInputPixels: false})
+            .png().ensureAlpha().rotate(degrees, {background: {r: 0, b: 0, g: 0, alpha: 0}}).toBuffer()
+            let newDest = path.join(__dirname, `../../assets/misc/images/dump/${seed}_rotate`)
             let i = 0
-            while (fs.existsSync(`${newDest}.jpg`)) {
+            while (fs.existsSync(`${newDest}.png`)) {
                 newDest = `${newDest}${i}`
                 i++
             }
-            await image.writeAsync(`${newDest}.jpg`)
-            const newEmbed = await this.hsvEmbed(`${newDest}.jpg`, newObj)
-            msg.edit({embeds: [newEmbed]})
+            fs.writeFileSync(`${newDest}.png`, buffer)
+            const newEmbed = await this.hsvEmbed(`${newDest}.png`, newObj)
+            discord.edit(msg, newEmbed)
             this.setProcBlock(true)
         })
 
@@ -758,7 +763,7 @@ export default class Photoshop extends Command {
             }
             this.setProcBlock()
             await reaction.users.remove(user).catch(() => null)
-            const rep = await this.send(`<@${user.id}>, Enter the blur radius in pixels. Add \`gaussian\` to use a gaussian blur instead of a fast blur.`)
+            const rep = await this.send(`<@${user.id}>, Enter the blur radius in pixels.`)
             await embeds.createPrompt(getArgs)
             await rep.delete()
             let current: string
@@ -767,29 +772,21 @@ export default class Photoshop extends Command {
             } else {
                 current = this.historyStates[this.historyIndex]
             }
-            const image = await jimp.read(current)
-            let setGaussian = false
-            if (/gaussian/.test(argArray.join(""))) {
-                setGaussian = true
-                argArray = argArray.join(" ").replace("gaussian", "").trim().split(" ")
-            }
-            const radius = Number(argArray[0]) ? Number(argArray[0]) :5
-            if (setGaussian) {
-                image.gaussian(radius)
-            } else {
-                image.blur(radius)
-            }
+            const radius = Number(argArray[0]) ? Number(argArray[0]) : 5
+            const currentBuffer = await this.fetchLink(current)
+            const buffer = await sharp(currentBuffer, {limitInputPixels: false})
+            .blur({sigma: radius}).toBuffer()
             const newObj = this.getObj()
             newObj.blur += radius
-            let newDest = path.join(__dirname, `../../misc/images/dump/${seed}_blur`)
+            let newDest = path.join(__dirname, `../../assets/misc/images/dump/${seed}_blur`)
             let i = 0
             while (fs.existsSync(`${newDest}.jpg`)) {
                 newDest = `${newDest}${i}`
                 i++
             }
-            await image.writeAsync(`${newDest}.jpg`)
+            fs.writeFileSync(`${newDest}.jpg`, buffer)
             const newEmbed = await this.hsvEmbed(`${newDest}.jpg`, newObj)
-            msg.edit({embeds: [newEmbed]})
+            discord.edit(msg, newEmbed)
             this.setProcBlock(true)
         })
 
@@ -802,7 +799,7 @@ export default class Photoshop extends Command {
             }
             this.setProcBlock()
             await reaction.users.remove(user).catch(() => null)
-            const rep = await this.send(`<@${user.id}>, Enter the the sharpen amount and sigma.`)
+            const rep = await this.send(`<@${user.id}>, Enter the the sharpen amount.`)
             await embeds.createPrompt(getArgs)
             await rep.delete()
             let current: string
@@ -812,21 +809,20 @@ export default class Photoshop extends Command {
                 current = this.historyStates[this.historyIndex]
             }
             const amount = Number(argArray[0]) ? Number(argArray[0]) : 1
-            const sigma = Number(argArray[1]) ? Number(argArray[1]) : 1
             const newObj = this.getObj()
             newObj.sharpen += amount
-
-
-            let newDest = path.join(__dirname, `../../misc/images/dump/${seed}_sharp`)
+            const currentBuffer = await this.fetchLink(current)
+            const buffer = await sharp(currentBuffer, {limitInputPixels: false})
+            .sharpen({sigma: amount}).toBuffer()
+            let newDest = path.join(__dirname, `../../assets/misc/images/dump/${seed}_sharp`)
             let i = 0
             while (fs.existsSync(`${newDest}.jpg`)) {
                 newDest = `${newDest}${i}`
                 i++
             }
-            const sharp = await animedetect.sharpen(url!, {sigma, amount})
-            await sharp.writeAsync(`${newDest}.jpg`)
+            fs.writeFileSync(`${newDest}.jpg`, buffer)
             const newEmbed = await this.hsvEmbed(`${newDest}.jpg`, newObj)
-            msg.edit({embeds: [newEmbed]})
+            discord.edit(msg, newEmbed)
             this.setProcBlock(true)
         })
 
@@ -839,7 +835,7 @@ export default class Photoshop extends Command {
                 this.historyIndex = -1
             }
             const newEmbed = await this.hsvEmbed(current)
-            msg.edit({embeds: [newEmbed]})
+            discord.edit(msg, newEmbed)
         })
 
         redo.on("collect", async (reaction, user) => {
@@ -855,14 +851,14 @@ export default class Photoshop extends Command {
                 }
             }
             const newEmbed = await this.hsvEmbed(current)
-            msg.edit({embeds: [newEmbed]})
+            discord.edit(msg, newEmbed)
         })
 
         reset.on("collect", async (reaction, user) => {
             await reaction.users.remove(user).catch(() => null)
             this.historyIndex = -1
             const newEmbed = await this.hsvEmbed(this.original)
-            msg.edit({embeds: [newEmbed]})
+            discord.edit(msg, newEmbed)
         })
     }
 }

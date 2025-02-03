@@ -29,7 +29,7 @@ export default class GuildMemberUpdate {
                 logEmbed
                 .setAuthor({name: "nickname", iconURL: "https://cdn.discordapp.com/emojis/589154620845195275.png"})
                 .setTitle(`**Nickname Change** ${discord.getEmoji("chinoSmug")}`)
-                .setThumbnail(newMember.user.displayAvatarURL({extension: "png"}) ?? "")
+                .setThumbnail(newMember.displayAvatarURL({extension: "png"}) ?? "")
                 .setDescription(
                     `${discord.getEmoji("star")}_User:_ **<@!${newMember.id}> (${newMember.user.tag})**\n` +
                     `${discord.getEmoji("star")}_User ID:_ \`${newMember.id}\`\n` +
@@ -57,7 +57,7 @@ export default class GuildMemberUpdate {
                 logEmbed
                 .setAuthor({name: "new role", iconURL: "https://cdn.discordapp.com/emojis/682967153200070690.png"})
                 .setTitle(`**Role Addition** ${discord.getEmoji("tohruThink")}`)
-                .setThumbnail(newMember.user.displayAvatarURL({extension: "png"}))
+                .setThumbnail(newMember.displayAvatarURL({extension: "png"}))
                 .setDescription(
                     `${discord.getEmoji("star")}_User:_ **<@!${newMember.id}> (${newMember.user.tag})**\n` +
                     `${discord.getEmoji("star")}_User ID:_ \`${newMember.id}\`\n` +
@@ -85,7 +85,7 @@ export default class GuildMemberUpdate {
                 logEmbed
                 .setAuthor({name: "remove role", iconURL: "https://cdn.discordapp.com/emojis/589239465348694017.png"})
                 .setTitle(`**Role Removal** ${discord.getEmoji("raphi")}`)
-                .setThumbnail(newMember.user.displayAvatarURL({extension: "png"}))
+                .setThumbnail(newMember.displayAvatarURL({extension: "png"}))
                 .setDescription(
                     `${discord.getEmoji("star")}_User:_ **<@!${newMember.id}> (${newMember.user.tag})**\n` +
                     `${discord.getEmoji("star")}_User ID:_ \`${newMember.id}\`\n` +

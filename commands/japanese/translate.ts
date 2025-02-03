@@ -57,7 +57,6 @@ export default class Translate extends Command {
         }
 
         const result = await translate(translateText, {to: code})
-        await this.reply(`**Translated to ${langs[code]}** ${discord.getEmoji("kannaCurious")}`)
-        this.send(result.text)
+        await this.reply(`**Translated to ${langs[code]}** ${discord.getEmoji("kannaCurious")}\n${result.text}`)
     }
 }

@@ -47,7 +47,7 @@ export default class Anime extends Command {
         let query = Functions.combineArgs(args, 1)
         const animeEmbed = embeds.createEmbed()
         .setAuthor({name: "kitsu", iconURL: "https://kisaragi.moe/assets/embed/anime.png"})
-        .setTitle(`**Anime**`)
+        .setTitle(`**Anime** ${discord.getEmoji("gabYes")}`)
 
         if (!query) {
             return this.noQuery(animeEmbed,

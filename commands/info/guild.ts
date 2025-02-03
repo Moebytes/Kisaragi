@@ -1,4 +1,4 @@
-import {Message, TextChannel} from "discord.js"
+import {Message, TextChannel, REST} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
 import {Command} from "../../structures/Command"
 import {Embeds} from "../../structures/Embeds"
@@ -40,10 +40,11 @@ export default class Guild extends Command {
 
         const guildEmbed = embeds.createEmbed()
         guildEmbed
-        .setAuthor({name: "discord.js", iconURL: "https://kisaragi.moe/assets/embed/guild.png"})
+
+        .setAuthor({name: "guild", iconURL: "https://kisaragi.moe/assets/embed/info.png"})
         .setTitle(`**Guild Info** ${discord.getEmoji("aquaWut")}`)
-        .setThumbnail(message.guild?.iconURL({extension: "png"}) ?? "")
-        .setImage(guildImg ?? "")
+        .setThumbnail(message.guild?.iconURL({extension: "png"}) || null)
+        .setImage(guildImg || null)
         .setDescription(
             `${discord.getEmoji("star")}_Guild:_ **${message.guild?.name}**\n` +
             `${discord.getEmoji("star")}_Guild ID:_ \`${message.guild?.id}\`\n` +

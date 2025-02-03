@@ -90,7 +90,7 @@ export default class MessageCreate {
           detect.detectAnime()
           detect.swapRoles()
           detect.source()
-          const haikuEmbed = haiku.haiku()
+          const haikuEmbed = await haiku.haiku()
           if (haikuEmbed) {
             if (haikuCool.has(message.author.id) || haikuCool.has(message.guild?.id)) {
               const reply = await this.discord.send(message, `<@${message.author.id}>, You hit the rate limit for **haiku**! Please wait 3 seconds before trying again. ${this.discord.getEmoji("kannaHungry")}`)

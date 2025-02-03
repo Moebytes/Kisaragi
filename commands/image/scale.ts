@@ -1,6 +1,6 @@
 import {Message, AttachmentBuilder} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
-import jimp from "jimp"
+import sharp from "sharp"
 import {Command} from "../../structures/Command"
 import {Embeds} from "../../structures/Embeds"
 import {Kisaragi} from "../../structures/Kisaragi"
@@ -47,17 +47,19 @@ export default class Scale extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         let url: string | undefined
-        let image: any
         if (args[2]) {
             url = args[2]
         } else {
             url = await discord.fetchLastAttachment(message)
         }
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
-        image = await jimp.read(url)
-        const factor = Number(args[1]) ? Number(args[1]) : 1
-        image.scale(factor)
-        const buffer = await image.getBufferAsync(jimp.MIME_PNG)
+        const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())
+        const metadata = await sharp(arrayBuffer, {limitInputPixels: false}).png().metadata()
+        const factor = args[1] ? Number(args[1]) : 1
+        const width = Math.floor(metadata.width! * factor)
+        const height = Math.floor(metadata.height! * factor)
+        const buffer = await sharp(arrayBuffer, {limitInputPixels: false})
+        .resize({width, height, fit: "fill"}).toBuffer()
         const attachment = new AttachmentBuilder(buffer)
         return this.reply(`Scaled the image by a factor of **${factor}x**!`, attachment)
     }

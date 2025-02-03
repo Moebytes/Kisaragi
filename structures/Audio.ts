@@ -1456,7 +1456,7 @@ export class Audio {
             .setTitle(`**Youtube Search** ${discord.getEmoji("vigneXD")}`)
             .setThumbnail(images[i])
             .setDescription(description)
-            .setFooter({text: `Page ${Math.floor(i/3) + 1}/${Math.ceil(links.length / 3)}`, iconURL: message.author.displayAvatarURL({extension: "png"})})
+            .setFooter({text: `Page ${Math.floor(i/3) + 1}/${Math.ceil(links.length / 3)}`, iconURL: this.discord.displayAvatar(message)})
             songArray.push(songEmbed)
         }
         return this.playReactionEmbed(songArray, links, "youtube", query)
@@ -1484,7 +1484,7 @@ export class Audio {
             .setTitle(`**Soundcloud Search** ${discord.getEmoji("vigneXD")}`)
             .setThumbnail(images[i])
             .setDescription(description)
-            .setFooter({text: `Page ${Math.floor(i/3) + 1}/${Math.ceil(links.length / 3)}`, iconURL: message.author.displayAvatarURL({extension: "png"})})
+            .setFooter({text: `Page ${Math.floor(i/3) + 1}/${Math.ceil(links.length / 3)}`, iconURL: this.discord.displayAvatar(message)})
             songArray.push(songEmbed)
         }
         return this.playReactionEmbed(songArray, links, "soundcloud", query)

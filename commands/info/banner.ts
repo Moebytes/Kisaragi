@@ -31,8 +31,21 @@ export default class Banner extends Command {
         const discord = this.discord
         const message = this.message
         const embeds = new Embeds(discord, message)
-
         const bannerEmbed = embeds.createEmbed()
+
+        if (!message.guild) {
+            try {
+                const preview = await discord.fetchGuildPreview(message.guildId!)
+                let banner = preview.splashURL({extension: "png", size: 512})
+                return this.reply(bannerEmbed
+                    .setDescription(`**${preview.name}'s Banner**`)
+                    .setURL(banner)
+                    .setImage(banner))
+            } catch {
+                return this.reply(`I have to be added to this guild or it must be discoverable.`)
+            }
+        }
+
         const banner = message.guild?.bannerURL({extension: "png", size: 1024})
         if (!banner) return message.reply(`This guild has no banner ${discord.getEmoji("kannaFacepalm")}`)
 

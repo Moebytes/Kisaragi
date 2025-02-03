@@ -52,8 +52,8 @@ export class PixivApi {
             .setThumbnail(`attachment://author.png`)
             .setImage(`attachment://image.png`)
         } else {
-            const illustImage = await this.images.upload(url) as string
-            const authorImage = await this.images.upload(authorUrl)
+            const illustImage = await this.images.upload(url, true) as string
+            const authorImage = await this.images.upload(authorUrl, true)
             pixivEmbed
             .setImage(encodeURI(illustImage))
             .setThumbnail(encodeURI(authorImage))
@@ -359,7 +359,7 @@ export class PixivApi {
                 const pixivEmbed = new EmbedBuilder(JSON.parse(embed))
                 pixivEmbed
                 .setTitle(`**${Functions.toProperCase(endpoint)}** ${this.discord.getEmoji(emoji)}`)
-                .setFooter({text: `Responded in ${func.responseTime()}`, iconURL: this.message.author!.displayAvatarURL({extension: "png"})})
+                .setFooter({text: `Responded in ${func.responseTime()}`, iconURL: this.discord.displayAvatar(this.message)})
                 pixivArray.push(pixivEmbed)
             } else {
                 if (Number(id)) {

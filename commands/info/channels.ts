@@ -50,7 +50,7 @@ export default class Channels extends Command {
                 `${discord.getEmoji("star")}_Creation Date:_ ${Functions.formatDate(createdArray[value]!)}\n`
             }
             userEmbed
-            .setAuthor({name: "discord.js", iconURL: "https://kisaragi.moe/assets/embed/channels.png"})
+            .setAuthor({name: "channels", iconURL: "https://kisaragi.moe/assets/embed/info.png"})
             .setTitle(`**${message.guild!.name}'s Channels** ${discord.getEmoji("vigneDead")}`)
             .setThumbnail(message.guild!.iconURL({extension: "png"}) as string)
             .setDescription(`${discord.getEmoji("star")}_Channel Count:_ **${channelArray.length}**\n` + description)

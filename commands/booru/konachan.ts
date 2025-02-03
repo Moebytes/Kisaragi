@@ -52,7 +52,7 @@ export default class Konachan extends Command {
         const headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"}
         const konachan = Booru("konachan.com", process.env.KONACHAN_API_KEY as any)
         const konachanEmbed = embeds.createEmbed()
-        .setTitle(`**Konachan Image**`)
+        .setTitle(`**Konachan Search** ${discord.getEmoji("gabUghh")}`)
         .setAuthor({name: "konachan", iconURL: "https://kisaragi.moe/assets/embed/konachan.png"})
 
         let tags: string[] = []
@@ -98,7 +98,7 @@ export default class Konachan extends Command {
                 if (!perms.checkNSFW(true)) continue
             }
             const konachanEmbed = embeds.createEmbed()
-            .setTitle(`**Konachan Image**`)
+            .setTitle(`**Konachan Search** ${discord.getEmoji("gabUghh")}`)
             .setAuthor({name: "konachan", iconURL: "https://kisaragi.moe/assets/embed/konachan.png"})
             .setURL(`https://konachan.com/post/show/${img.id}`)
             .setDescription(

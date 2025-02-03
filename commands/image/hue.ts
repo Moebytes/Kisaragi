@@ -1,6 +1,6 @@
 import {Message, AttachmentBuilder} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
-import jimp from "jimp"
+import sharp from "sharp"
 import {Command} from "../../structures/Command"
 import {Embeds} from "./../../structures/Embeds"
 import {Kisaragi} from "./../../structures/Kisaragi"
@@ -54,9 +54,9 @@ export default class Hue extends Command {
             url = await discord.fetchLastAttachment(message)
         }
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
-        const image = await jimp.read(url)
-        image.color([{apply: "hue" as any, params: [shift]}])
-        const buffer = await image.getBufferAsync(jimp.MIME_PNG)
+        const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())
+        let buffer = await sharp(arrayBuffer, {limitInputPixels: false})
+        .modulate({hue: shift}).toBuffer()
         const attachment = new AttachmentBuilder(buffer)
         return this.reply(`Shifted the hue **${shift}** degrees!`, attachment)
     }

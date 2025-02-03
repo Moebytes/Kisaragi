@@ -45,12 +45,12 @@ export class Detector {
         const pfp = await sql.fetchColumn("guilds", "pfp") as unknown as string
         if (!pfp || pfp === "off") return
         if (!member) member = this.message.member!
-        if (!member || member.user.bot || !member.user.displayAvatarURL()) return
+        if (!member || member.user.bot || !member.displayAvatarURL()) return
         const weeb = await sql.fetchColumn("guilds", "weeb") as unknown as string
         const normie = await sql.fetchColumn("guilds", "normie") as unknown as string
         const weebRole = this.message.guild!.roles.cache.find((r: Role) => r.id === weeb)
         const normieRole = this.message.guild!.roles.cache.find((r: Role) => r.id === normie)
-        const result = await animedetect(member.user.displayAvatarURL({extension: "png"}))
+        const result = await animedetect(member.displayAvatarURL({extension: "png"}))
         if (!result) {
             const found = member!.roles.cache.find((r: Role) => r === normieRole)
             if (found) {

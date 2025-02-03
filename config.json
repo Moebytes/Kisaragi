@@ -6,7 +6,7 @@
         "0xFF3EFE", 
         "0xEC69FF"  
     ],
-    "website": "https://kisaragi.moe/",
+    "website": "https://kisaragi.moe",
     "support": "",
     "invite": "https://discord.com/oauth2/authorize?client_id=CLIENTID&scope=bot&permissions=543279148279",
     "oauth2": "https://kisaragi-discord-bot.herokuapp.com/discord",

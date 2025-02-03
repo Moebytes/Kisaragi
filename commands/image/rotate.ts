@@ -1,6 +1,6 @@
 import {Message, AttachmentBuilder} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
-import jimp from "jimp"
+import sharp from "sharp"
 import {Command} from "../../structures/Command"
 import {Embeds} from "./../../structures/Embeds"
 import {Kisaragi} from "./../../structures/Kisaragi"
@@ -47,21 +47,15 @@ export default class Rotate extends Command {
         const embeds = new Embeds(discord, message)
         let url: string | undefined
         let degrees = Number(args[1])
-        if (degrees < 0) {
-            degrees = Math.abs(degrees)
-        } else {
-            degrees = -degrees
-        }
         if (args[2]) {
             url = args[2]
         } else {
             url = await discord.fetchLastAttachment(message)
         }
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
-        const image = await jimp.read(url)
-        image.rotate(degrees)
-        image.autocrop()
-        const buffer = await image.getBufferAsync(jimp.MIME_PNG)
+        const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())
+        const buffer = await sharp(arrayBuffer, {limitInputPixels: false})
+        .png().ensureAlpha().rotate(degrees, {background: {r: 0, b: 0, g: 0, alpha: 0}}).toBuffer()
         const attachment = new AttachmentBuilder(buffer)
         return this.reply(`Rotated the image **${Number(args[1])}** degrees!`, attachment)
     }

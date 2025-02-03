@@ -67,7 +67,7 @@ export default class AnimeQuote extends Command {
 
         const animeQuoteEmbed = embeds.createEmbed()
         .setAuthor({name: "animequotes", iconURL: "https://kisaragi.moe/assets/embed/animequote.png"})
-        .setTitle(`**Anime Quote**`)
+        .setTitle(`**Anime Quote** ${discord.getEmoji("kannaCurious")}`)
 
         if (!args[1]) {
             const quote = animeQuotes.randomQuote()

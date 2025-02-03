@@ -27,7 +27,7 @@ export default class MessageUpdate {
                 const image = newMsg.attachments?.first()?.url ? newMsg.attachments.first()!.proxyURL : ""
                 const attachments = newMsg.attachments.size > 1 ? "\n" + newMsg.attachments.map((a) => `[**Link**](${a.proxyURL})`).join("\n") : ""
                 logEmbed
-                .setAuthor({name: `${newMsg.author.tag} (${newMsg.author.id})`, iconURL: newMsg.author.displayAvatarURL({extension: "png"})})
+                .setAuthor({name: `${newMsg.author.tag} (${newMsg.author.id})`, iconURL: this.discord.displayAvatar(newMsg)})
                 .setTitle(`**Message Edited** ${discord.getEmoji("mexShrug")}`)
                 .setImage(image)
                 .setDescription(oldContent + newContent + attachments)

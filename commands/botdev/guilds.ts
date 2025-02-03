@@ -53,7 +53,7 @@ export default class Guilds extends Command {
                 `${discord.getEmoji("star")}_Creation Date:_ ${Functions.formatDate(createdArray[value])}\n`
             }
             userEmbed
-            .setAuthor({name: "discord.js", iconURL: "https://kisaragi.moe/assets/embed/guilds.png"})
+            .setAuthor({name: "guilds", iconURL: "https://kisaragi.moe/assets/embed/info.png"})
             .setTitle(`**${discord.user!.username}'s Guilds** ${discord.getEmoji("vigneDead")}`)
             .setThumbnail(message.guild!.iconURL({extension: "png"}) as string)
             .setDescription(`${discord.getEmoji("star")}_Guild Count:_ **${guildArray.length}**\n` + description)

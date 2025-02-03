@@ -1,14 +1,12 @@
 import {createCanvas} from "@napi-rs/canvas"
 import {Message, AttachmentBuilder} from "discord.js"
 import {SlashCommandSubcommand} from "../../structures/SlashCommandOption"
-import fs from "fs"
-import path from "path"
 import {Command} from "../../structures/Command"
 import {Embeds} from "./../../structures/Embeds"
 import {Kisaragi} from "./../../structures/Kisaragi"
+import {Functions} from "../../structures/Functions"
 import {Points} from "./../../structures/Points"
 import {SQLQuery} from "./../../structures/SQLQuery"
-import imageDataURI from "image-data-uri"
 
 export default class Rank extends Command {
     constructor(discord: Kisaragi, message: Message) {
@@ -53,14 +51,8 @@ export default class Rank extends Command {
         ctx.fillStyle = "#ff3d9b"
         ctx.fillRect(0, 0, width, 5)
         const dataUrl = canvas.toDataURL()
-        let image = path.join(__dirname, `../../assets/misc/images/dump/rankBar.jpg`)
-        let i = 1
-        while (fs.existsSync(image)) {
-            image = path.join(__dirname, `../../assets/misc/images/dump/rankBar${i}.jpg`)
-            i++
-        }
-        await imageDataURI.outputFile(dataUrl, image)
-        const attachment = new AttachmentBuilder(image)
+
+        const attachment = new AttachmentBuilder(Functions.dataUrlBuffer(dataUrl), {name: "rankBar.png"})
         rankEmbed
         .setTitle(`**${message.author!.username}'s Rank ${discord.getEmoji("cute")}**`)
         .setDescription(
@@ -68,9 +60,8 @@ export default class Rank extends Command {
         `${discord.getEmoji("star")}_Points_: **${score}**\n` +
         `${discord.getEmoji("star")}_Progress_: ${score}/${(pointThreshold * level!) + pointThreshold}\n` +
         `${discord.getEmoji("star")}**${percent.toFixed(1)}%** of the way there!`)
-        .setImage(`attachment://rankBar.jpg`)
+        .setImage(`attachment://rankBar.png`)
         .setThumbnail(message.author.displayAvatarURL({extension: "png"}))
         await this.reply(rankEmbed, attachment)
-        fs.unlink(image, () => null)
     }
 }

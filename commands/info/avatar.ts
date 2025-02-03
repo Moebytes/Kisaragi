@@ -1,8 +1,9 @@
-import {Message} from "discord.js"
+import {ChatInputCommandInteraction, Message, GuildMember} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
 import {Command} from "../../structures/Command"
-import {Embeds} from "./../../structures/Embeds"
-import {Kisaragi} from "./../../structures/Kisaragi"
+import {Embeds} from "../../structures/Embeds"
+import {Functions} from "../../structures/Functions"
+import {Kisaragi} from "../../structures/Kisaragi"
 
 export default class Avatar extends Command {
     constructor(discord: Kisaragi, message: Message) {
@@ -36,22 +37,37 @@ export default class Avatar extends Command {
     public run = async (args: string[]) => {
         const discord = this.discord
         const message = this.message
-
         const embeds = new Embeds(discord, message)
         const avatarEmbed = embeds.createEmbed()
 
-        if (!message.mentions.users.size) {
-          await this.reply(avatarEmbed
+        if (!args[1]) {
+          return this.reply(avatarEmbed
             .setDescription(`**${message.author!.username}'s Profile Picture**`)
-            .setImage(message.author.displayAvatarURL({extension: "png", size: 512})))
+            .setImage(await discord.displayAvatar(message)))
         }
 
-        for (const [key, user] of message.mentions.users) {
-          const avatar = user.displayAvatarURL({extension: "png", size: 512})
-          await this.reply(avatarEmbed
+        if (!message.guild) {
+          let interaction = message as unknown as ChatInputCommandInteraction
+          const member = interaction.options.getMentionable("user") as GuildMember
+          const user = await this.discord.users.fetch(args[1])
+          let avatar = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=512`
+          if (member.avatar) avatar = `https://cdn.discordapp.com/guilds/${message.guildId}/users/${user.id}/avatars/${member.avatar}.webp?size=512`
+          return this.reply(avatarEmbed
             .setDescription(`**${user.username}'s Profile Picture**`)
             .setURL(avatar)
             .setImage(avatar))
-    }
+        }
+
+        let ids = args.slice(1).map((a) => a.match(/\d+/)?.[0] || "")
+        let members = await Promise.all(ids.map((id) => message.guild?.members.fetch(id)))
+
+        for (const member of members) {
+          if (!member) continue
+          const avatar = member.displayAvatarURL({extension: "png", size: 512})
+          await this.reply(avatarEmbed
+            .setDescription(`**${member.user.username}'s Profile Picture**`)
+            .setURL(avatar)
+            .setImage(avatar))
+        }
   }
 }

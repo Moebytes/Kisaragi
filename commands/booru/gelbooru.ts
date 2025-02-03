@@ -52,19 +52,20 @@ export default class Gelbooru extends Command {
         const headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"}
         const gelbooruEmbed = embeds.createEmbed()
         .setAuthor({name: "gelbooru", iconURL: "https://kisaragi.moe/assets/embed/gelbooru.png"})
-        .setTitle(`**Gelbooru Search**`)
+        .setTitle(`**Gelbooru Search** ${discord.getEmoji("gabUghh")}`)
 
         let tags: string[] = []
         if (!args[1]) {
-            tags = ["pantyhose", "rating:safe"]
+            tags = ["pantyhose", "rating:general", "rating:sensitive"]
         } else if (args[1].toLowerCase() === "r18") {
             if (!perms.checkNSFW()) return
             tags = Functions.combineArgs(args, 2).split(",")
             if (!tags.join("")) tags = ["pantyhose"]
-            tags.push("-rating:safe")
+            tags.push("-rating:general")
         } else {
             tags = Functions.combineArgs(args, 1).split(",")
-            tags.push("rating:safe")
+            tags.push("-rating:questionable")
+            tags.push("-rating:explicit")
         }
 
         const tagArray: string[] = []
@@ -92,12 +93,12 @@ export default class Gelbooru extends Command {
         const gelbooruArray: EmbedBuilder[] = []
         for (let i = 0; i < images.length; i++) {
             const img = images[i]
-            if (img.rating !== "s") {
+            if (img.rating !== "general" && img.rating !== "sensitive") {
                 if (!perms.checkNSFW(true)) continue
             }
             const gelbooruEmbed = embeds.createEmbed()
             .setAuthor({name: "gelbooru", iconURL: "https://kisaragi.moe/assets/embed/gelbooru.png"})
-            .setTitle(`**Gelbooru Search**`)
+            .setTitle(`**Gelbooru Search** ${discord.getEmoji("gabUghh")}`)
             .setURL(`https://gelbooru.com/index.php?page=post&s=view&id=${img.id}`)
             .setDescription(
                 `${discord.getEmoji("star")}_Source:_ ${img.source}\n` +

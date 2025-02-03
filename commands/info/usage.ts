@@ -33,6 +33,7 @@ export default class Usage extends Command {
             aliases: ["activity"],
             random: "none",
             cooldown: 5,
+            defer: true,
             subcommandEnabled: true
         })
         const command2Option = new SlashCommandOption()
@@ -78,7 +79,7 @@ export default class Usage extends Command {
                 const usageEmbed = embeds.createEmbed()
                 .setAuthor({name: "usage", iconURL: "https://kisaragi.moe/assets/embed/usage.png"})
                 .setTitle(`**Command Usage Statistics** ${discord.getEmoji("raphi")}`)
-                .setThumbnail(message.author.displayAvatarURL({extension: "png"}))
+                .setThumbnail(discord.displayAvatar(message))
                 .setDescription(splits[i])
                 usageArray.push(usageEmbed)
             }
@@ -133,7 +134,7 @@ export default class Usage extends Command {
                 const usageEmbed = embeds.createEmbed()
                 .setAuthor({name: "usage", iconURL: "https://kisaragi.moe/assets/embed/usage.png"})
                 .setTitle(titleText)
-                .setThumbnail(message.author.displayAvatarURL({extension: "png"}))
+                .setThumbnail(discord.displayAvatar(message))
                 .setDescription(splits[i])
                 usageArray.push(usageEmbed)
             }
@@ -176,7 +177,7 @@ export default class Usage extends Command {
                 const usageEmbed = embeds.createEmbed()
                 .setAuthor({name: "usage", iconURL: "https://kisaragi.moe/assets/embed/usage.png"})
                 .setTitle(titleText)
-                .setThumbnail(message.author.displayAvatarURL({extension: "png"}))
+                .setThumbnail(discord.displayAvatar(message))
                 .setDescription(
                     `${discord.getEmoji("star")}The command **${args[2]}** has been used **${usage[args[2]]}** times!\n`
                 )
@@ -193,7 +194,7 @@ export default class Usage extends Command {
                 const usageEmbed = embeds.createEmbed()
                 .setAuthor({name: "usage", iconURL: "https://kisaragi.moe/assets/embed/usage.png"})
                 .setTitle(titleText)
-                .setThumbnail(message.author.displayAvatarURL({extension: "png"}))
+                .setThumbnail(discord.displayAvatar(message))
                 .setDescription(splits[i])
                 usageArray.push(usageEmbed)
             }
@@ -213,7 +214,7 @@ export default class Usage extends Command {
         const usageEmbed = embeds.createEmbed()
         .setAuthor({name: "usage", iconURL: "https://kisaragi.moe/assets/embed/usage.png"})
         .setTitle(`**Command Usage Statistics** ${discord.getEmoji("raphi")}`)
-        .setThumbnail(message.author.displayAvatarURL({extension: "png"}))
+        .setThumbnail(discord.displayAvatar(message))
         .setDescription(
             `${discord.getEmoji("star")}The command **${command.name}** has been used **${usage}** times!\n`
         )

@@ -59,41 +59,41 @@ export default class Role extends Command {
 
         const roleEmbed = embeds.createEmbed()
         .setTitle(`**Role** ${discord.getEmoji("akariLurk")}`)
-        if ((!args[3]) || (message.mentions.members!.size === 0)) {
-        return message.reply({embeds: [roleEmbed.setDescription("You must type =>role <add or del> (user) (role)")]})
+        if (!args[3] || !/\d+/.test(args[2])) {
+          return message.reply({embeds: [roleEmbed.setDescription("You must type =>role <add or del> (user) (role)")]})
+        } else {
+            let userID = args[2].match(/\d+/)?.[0] || ""
+            let member = await message.guild?.members.fetch(userID)!
+            const roleName: string = args[3]
+            const snowflake: RegExp = /\d+/
+            let roleID: string = roleName.substring(roleName.search(snowflake))
+            if (roleID.includes(">")) roleID = roleID.slice(0, -1)
+            const role = message.guild!.roles.cache.get(roleID)
+            if (!role) return this.reply(roleEmbed.setDescription(`The role **${roleName}** could not be found.`))
 
-      } else {
-          const member: GuildMember = message.mentions.members!.first()!
-          const roleName: string = args[3]
-          const snowflake: RegExp = /\d+/
-          let roleID: string = roleName.substring(roleName.search(snowflake))
-          if (roleID.includes(">")) roleID = roleID.slice(0, -1)
-          const role = message.guild!.roles.cache.get(roleID)
-          if (!role) return this.reply(roleEmbed.setDescription(`The role **${roleName}** could not be found.`))
-
-          switch (args[1]) {
-            case "add": {
+            switch (args[1]) {
+              case "add": {
+                  try {
+                    await member.roles.add(role)
+                    await this.reply(roleEmbed.setDescription(`${member.displayName} now has the ${role} role!`))
+                  } catch {
+                    return this.reply(`I need the **Manage Roles** permission ${discord.getEmoji("kannaFacepalm")}`)
+                  }
+                  break
+              }
+              case "del": {
                 try {
-                  await member.roles.add(role)
-                  await this.reply(roleEmbed.setDescription(`${member.displayName} now has the ${role} role!`))
+                  await member.roles.remove(role)
+                  await this.reply(roleEmbed.setDescription(`${member.displayName} no longer has the ${role} role!`))
                 } catch {
                   return this.reply(`I need the **Manage Roles** permission ${discord.getEmoji("kannaFacepalm")}`)
                 }
                 break
-            }
-            case "del": {
-              try {
-                await member.roles.remove(role)
-                await this.reply(roleEmbed.setDescription(`${member.displayName} no longer has the ${role} role!`))
-              } catch {
-                return this.reply(`I need the **Manage Roles** permission ${discord.getEmoji("kannaFacepalm")}`)
               }
-              break
+              default:
+                return this.reply(`You must specify whether you want to **add** or **del** a role ${discord.getEmoji("kannaFacepalm")}`)
             }
-            default:
-              return this.reply(`You must specify whether you want to **add** or **del** a role ${discord.getEmoji("kannaFacepalm")}`)
-          }
-      }
+        }
 
   }
 }

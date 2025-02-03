@@ -49,8 +49,8 @@ describe("image", async function() {
         if (!discord.assertReplyStatus()) throw(new Error("failed reply status"))
     })
 
-    it("grayscale", async () => {
-        let name = "grayscale"
+    it("greyscale", async () => {
+        let name = "greyscale"
         discord.resetReplyStatus()
         const command = discord.commands.get(name)!
         if (command.options.defer) command.deferReply()
@@ -166,8 +166,8 @@ describe("image", async function() {
         if (!discord.assertReplyStatus()) throw(new Error("failed reply status"))
     })
 
-    it("value", async () => {
-        let name = "value"
+    it("lightness", async () => {
+        let name = "lightness"
         discord.resetReplyStatus()
         const command = discord.commands.get(name)!
         if (command.options.defer) command.deferReply()

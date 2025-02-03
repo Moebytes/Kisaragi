@@ -31,8 +31,21 @@ export default class Splash extends Command {
         const discord = this.discord
         const message = this.message
         const embeds = new Embeds(discord, message)
-
         const splashEmbed = embeds.createEmbed()
+
+        if (!message.guild) {
+            try {
+                const preview = await discord.fetchGuildPreview(message.guildId!)
+                let splash = preview.discoverySplashURL({extension: "png", size: 512})
+                return this.reply(splashEmbed
+                    .setDescription(`**${preview.name}'s Splash Screen**`)
+                    .setURL(splash)
+                    .setImage(splash))
+            } catch {
+                return this.reply(`I have to be added to this guild or it must be discoverable.`)
+            }
+        }
+
         const splash = message.guild?.splashURL({extension: "png", size: 1024})
         if (!splash) return this.reply(`This guild doesn't have a splash screen ${discord.getEmoji("kannaFacepalm")}`)
 

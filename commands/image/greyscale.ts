@@ -1,23 +1,23 @@
 import {Message, AttachmentBuilder} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
-import jimp from "jimp"
+import sharp from "sharp"
 import {Command} from "../../structures/Command"
 import {Embeds} from "../../structures/Embeds"
 import {Kisaragi} from "../../structures/Kisaragi"
 
-export default class Grayscale extends Command {
+export default class Greyscale extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-          description: "Makes an image grayscale.",
+          description: "Makes an image greyscale.",
           help:
           `
-          \`grayscale url?\` - Makes the image grayscale
+          \`greyscale url?\` - Makes the image greyscale
           `,
           examples:
           `
-          \`=>grayscale\`
+          \`=>greyscale\`
           `,
-          aliases: ["greyscale"],
+          aliases: ["grayscale"],
           cooldown: 10,
           defer: true,
           subcommandEnabled: true
@@ -44,10 +44,10 @@ export default class Grayscale extends Command {
             url = await discord.fetchLastAttachment(message)
         }
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
-        const image = await jimp.read(url)
-        image.grayscale()
-        const buffer = await image.getBufferAsync(jimp.MIME_PNG)
+        const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())
+        let buffer = await sharp(arrayBuffer, {limitInputPixels: false})
+        .greyscale().toBuffer()
         const attachment = new AttachmentBuilder(buffer)
-        return this.reply(`Made the image grayscale!`, attachment)
+        return this.reply(`Made the image greyscale!`, attachment)
     }
 }

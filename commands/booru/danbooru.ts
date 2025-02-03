@@ -53,11 +53,11 @@ export default class Danbooru extends Command {
         const danbooru = Booru("danbooru", process.env.DANBOORU_API_KEY as any)
         const danbooruEmbed = embeds.createEmbed()
         .setAuthor({name: "danbooru", iconURL: "https://kisaragi.moe/assets/embed/danbooru.png"})
-        .setTitle(`**Danbooru Search**`)
+        .setTitle(`**Danbooru Search** ${discord.getEmoji("gabUghh")}`)
 
         let tags: string[] = []
         if (!args[1]) {
-            tags = ["pantyhose", "rating:general"]
+            tags = ["pantyhose", "rating:general or rating:sensitive"]
         } else if (args[1].toLowerCase() === "r18") {
             if (!perms.checkNSFW()) return
             tags = Functions.combineArgs(args, 2).split(",")
@@ -65,7 +65,7 @@ export default class Danbooru extends Command {
             tags.push("-rating:general")
         } else {
             tags = Functions.combineArgs(args, 1).split(",")
-            tags.push("rating:general")
+            tags.push("rating:general or rating:sensitive")
         }
 
         const tagArray: string[] = []
@@ -93,13 +93,13 @@ export default class Danbooru extends Command {
         const danbooruArray: EmbedBuilder[] = []
         for (let i = 0; i < images.length; i++) {
             const img = images[i]
-            if (img.rating !== "s") {
+            if (img.rating !== "g" && img.rating !== "s") {
                 if (!perms.checkNSFW(true)) continue
                 if (discord.checkMuted(message)) continue
             }
             const danbooruEmbed = embeds.createEmbed()
             .setAuthor({name: "danbooru", iconURL: "https://kisaragi.moe/assets/embed/danbooru.png"})
-            .setTitle(`**Danbooru Search**`)
+            .setTitle(`**Danbooru Search** ${discord.getEmoji("gabUghh")}`)
             .setURL(`https://danbooru.donmai.us/posts/${img.id}`)
             .setDescription(
                 `${discord.getEmoji("star")}_Character:_ **${img.tag_string_character ? Functions.toProperCase(img.tag_string_character.replace(/ /g, "\n").replace(/_/g, " ")) : "Original"}**\n` +

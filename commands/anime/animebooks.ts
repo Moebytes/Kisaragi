@@ -69,7 +69,7 @@ export default class AnimeBooks extends Command {
             const bookEmbed = embeds.createEmbed()
             bookEmbed
             .setURL("https://anime-girls-holding-programming-books-app.pages.dev/")
-            .setTitle(`**Anime Girls Holding Programming Books**`)
+            .setTitle(`**Anime Girls Holding Programming Books** ${discord.getEmoji("raphi")}`)
             .setImage(pictures[i])
             bookArray.push(bookEmbed)
         }

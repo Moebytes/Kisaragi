@@ -51,7 +51,6 @@ export default class Katakana extends Command {
         const result = await kuroshiro.convert(input, {mode: "spaced", to: "katakana"})
         const cleanResult = result.replace(/<\/?[^>]+(>|$)/g, "")
 
-        await this.reply(`**Katakana Conversion** ${discord.getEmoji("kannaCurious")}`)
-        this.send(cleanResult)
+        await this.reply(`**Katakana Conversion** ${discord.getEmoji("kannaCurious")}\n${cleanResult}`)
     }
 }

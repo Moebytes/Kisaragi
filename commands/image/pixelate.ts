@@ -1,6 +1,7 @@
 import {Message, AttachmentBuilder} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
-import jimp from "jimp"
+import {Jimp as jimp, JimpMime} from "jimp"
+import sharp from "sharp"
 import {Command} from "../../structures/Command"
 import {Embeds} from "./../../structures/Embeds"
 import {Kisaragi} from "./../../structures/Kisaragi"
@@ -54,9 +55,11 @@ export default class Pixelate extends Command {
         }
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
         if (!factor) factor = 0
-        const image = await jimp.read(url)
+        const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())
+        const inputBuffer = await sharp(arrayBuffer, {limitInputPixels: false}).png().toBuffer()
+        const image = await jimp.read(inputBuffer)
         image.pixelate(factor)
-        const buffer = await image.getBufferAsync(jimp.MIME_PNG)
+        const buffer = await image.getBuffer(JimpMime.png)
         const attachment = new AttachmentBuilder(buffer)
         return this.reply(`Pixelated the image by a factor of **${factor}**!`, attachment)
     }

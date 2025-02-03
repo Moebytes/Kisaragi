@@ -47,7 +47,7 @@ export class Kisaragi extends Client {
         }
         if (files) options.files = Array.isArray(files) ? files : [files]
         if (this.deferState.has(input.id)) {
-          return (input as ChatInputCommandInteraction).followUp(options)
+          return (input as ChatInputCommandInteraction).followUp({...options, ephemeral: !input.guild})
         }
         if (!this.deferState.has(input.id)) this.deferState.add(input.id)
         return input.reply(options)
@@ -115,6 +115,19 @@ export class Kisaragi extends Client {
         }
         if (files) options.files = Array.isArray(files) ? files : [files]
         return msg.edit(options)
+    }
+
+    /** Display avatar */ 
+    public displayAvatar = (message: Message | ChatInputCommandInteraction) => {
+        // @ts-ignore
+        let member = message.member ? message.member : message.author
+        if (!member.hasOwnProperty("displayAvatarURL")) {
+            // @ts-ignore
+            let avatar = `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.webp?size=512`
+            if (message.member?.avatar) avatar = `https://cdn.discordapp.com/guilds/${message.guildId}/users/${message.member.user.id}/avatars/${message.member.avatar}.webp?size=512`
+            return avatar
+        }
+        return member.displayAvatarURL({size: 512})
     }
 
     /** Get emojis (application emojis) */
@@ -201,7 +214,7 @@ export class Kisaragi extends Client {
     public fetchLastAttachment = async <T extends boolean = false, A extends boolean = false>(message: Message, author?: T, fileExt?: RegExp | false, limit?: number, all?: A):
     Promise<A extends true ? string[] | undefined : (T extends true ? {image: string | undefined, author: User | undefined} : string | undefined)> => {
         if (!limit) limit = 100
-        if (!fileExt) fileExt = new RegExp(/.(png|jpg|gif)/)
+        if (!fileExt) fileExt = new RegExp(/.(png|jpe?g|gif|webp)/i)
         const msg = await message.channel.messages.fetch({limit}).then((i) => i.find((m) => m.attachments.size > 0 && m.attachments.first()?.url.match(fileExt as RegExp) !== null))
         if (all) return msg?.attachments.map((a) => a.url) as any
         const image = msg?.attachments.first()?.url

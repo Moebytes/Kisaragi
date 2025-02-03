@@ -72,11 +72,13 @@ export default class Delete extends Command {
             for (let i = 0; i < messages.length; i++) {
                 if (!message.attachments.size) msgArray.push(messages[i].id)
             }
+            await (message.channel as TextChannel).bulkDelete(msgArray, true)
         } else if (image) {
             const messages = await message.channel.messages.fetch({limit: num}).then((c) => c.map((m: Message) => m))
             for (let i = 0; i < messages.length; i++) {
                 if (message.attachments.size) msgArray.push(messages[i].id)
             }
+            await (message.channel as TextChannel).bulkDelete(msgArray, true)
         } else {
             await (message.channel as TextChannel).bulkDelete(num, true)
         }
@@ -88,8 +90,9 @@ export default class Delete extends Command {
         const embeds = new Embeds(discord, message)
         const perms = new Permission(discord, message)
         if (!await perms.checkMod()) return
+        if (!message.channel.isSendable()) return
         const delEmbed = embeds.createEmbed()
-        const num: number = Number(args[1]) + 2
+        let num: number = Number(args[1])
         let userID = false
         let search = false
         let text = false
@@ -113,9 +116,18 @@ export default class Delete extends Command {
             return this.reply(delEmbed)
         }
 
-        if (num < 2 || num > 1002) {
+        if (num < 0 || num > 1000) {
             delEmbed.setDescription("You must type a number between 0 and 1000!")
             return this.reply(delEmbed)
+        }
+
+        if (message instanceof Message) {
+            const loading = message.channel.lastMessage
+            await loading?.delete().catch(() => null)
+            await message.delete().catch(() => null)
+        } else {
+            await this.reply("Deleting...")
+            num += 1
         }
 
         if (num <= 100) {
@@ -129,11 +141,6 @@ export default class Delete extends Command {
         }
 
         if (userID) {
-            try {
-                await message.delete()
-            } catch (err) {
-                console.log(err)
-            }
             delEmbed
             .setDescription(`Deleted the last **${args[1]}** messages by <@${args[2].match(/\d+/g)!.join("")}>!`)
         } else if (search) {
@@ -149,7 +156,7 @@ export default class Delete extends Command {
             delEmbed
             .setDescription(`Deleted **${args[1]}** messages in this channel!`)
         }
-        const msg = await this.reply(delEmbed) as Message
+        const msg = await this.send(delEmbed) as Message
         Functions.deferDelete(msg, 5000)
     }
 }

@@ -50,7 +50,6 @@ export default class Romaji extends Command {
         const result = await kuroshiro.convert(input, {mode: "spaced", to: "romaji"})
         const cleanResult = result.replace(/<\/?[^>]+(>|$)/g, "")
 
-        await this.reply(`**Romaji Conversion** ${discord.getEmoji("kannaSip")}`)
-        this.send(cleanResult)
+        await this.reply(`**Romaji Conversion** ${discord.getEmoji("kannaSip")}\n${cleanResult}`)
     }
 }

@@ -1,9 +1,9 @@
 import {Message, AttachmentBuilder, ChatInputCommandInteraction} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
-import jimp from "jimp"
 import {Command} from "../../structures/Command"
 import {Embeds} from "./../../structures/Embeds"
 import {Kisaragi} from "./../../structures/Kisaragi"
+import sharp from "sharp"
 
 export default class Blur extends Command {
     constructor(discord: Kisaragi, message: Message) {
@@ -56,13 +56,9 @@ export default class Blur extends Command {
         }
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
         if (!factor) factor = 5
-        const image = await jimp.read(url)
-        if (args[0] === "gaussian") {
-            image.gaussian(factor)
-        } else {
-            image.blur(factor)
-        }
-        const buffer = await image.getBufferAsync(jimp.MIME_PNG)
+        const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())
+        const buffer = await sharp(arrayBuffer, {limitInputPixels: false})
+        .blur({sigma: factor}).toBuffer()
         const attachment = new AttachmentBuilder(buffer!)
         return this.reply(`Blurred the image by a factor of **${factor}**!`, attachment)
     }

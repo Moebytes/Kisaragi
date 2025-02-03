@@ -1,7 +1,8 @@
 import {MessageType, Message, TextChannel, TextBasedChannel, Webhook} from "discord.js"
-import {Embeds} from "./../structures/Embeds"
-import {Kisaragi} from "./../structures/Kisaragi"
-import {SQLQuery} from "./../structures/SQLQuery"
+import {Embeds} from "../structures/Embeds"
+import {Kisaragi} from "../structures/Kisaragi"
+import {Functions} from "../structures/Functions"
+import {SQLQuery} from "../structures/SQLQuery"
 
 export default class ChannelPinsUpdate {
     constructor(private readonly discord: Kisaragi) {}
@@ -34,8 +35,8 @@ export default class ChannelPinsUpdate {
         .setURL(pin.url)
         .setDescription(`[**Message Link**](${pin.url})\n` + pin.content)
         .setImage(pin.attachments.first() ? pin.attachments.first()!.url : "")
-        .setFooter({text: `${pin.author.tag} • #${(message.channel as TextChannel).name}`, iconURL: pin.author.displayAvatarURL({extension: "png"})})
-        await webhook.send({embeds: [pinEmbed], avatarURL: pin.author.displayAvatarURL({extension: "png"}), username: pin.member?.displayName})
+        .setFooter({text: `${pin.author.tag} • #${(message.channel as TextChannel).name}`, iconURL: this.discord.displayAvatar(pin)})
+        await webhook.send({embeds: [pinEmbed], avatarURL: this.discord.displayAvatar(pin), username: pin.member?.displayName})
         await pin.unpin()
         const pinMsg = await channel.messages.fetch({limit: 10}).then((m) => m.find((m) => m.type === MessageType.ChannelPinnedMessage))
         if (pinMsg) await pinMsg.delete()

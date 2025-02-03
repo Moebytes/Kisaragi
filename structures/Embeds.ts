@@ -42,7 +42,7 @@ export class Embeds {
         embed
         .setColor(color)
         .setTimestamp(Date.now())
-        .setFooter({text: `Responded in ${this.functions.responseTime()}`, iconURL: this.message?.author?.displayAvatarURL({extension: "png"})})
+        .setFooter({text: `Responded in ${this.functions.responseTime()}`, iconURL: this.discord.displayAvatar(this.message)})
         return embed
     }
 
@@ -53,10 +53,10 @@ export class Embeds {
         if (help) {
             if (!helpIndex) helpIndex = 0
             const name = embeds[page].data.title!.replace(/(<)(.*?)(>)/g, "").replace(/\*/g, "")
-            embeds[page].setFooter({text: `${name} (${cmdCount?.[page]}) • Page ${helpIndex + 1}/${embeds.length}`, iconURL: user.displayAvatarURL({extension: "png"})})
+            embeds[page].setFooter({text: `${name} (${cmdCount?.[page]}) • Page ${helpIndex + 1}/${embeds.length}`, iconURL: this.discord.displayAvatar(this.message)})
             return embeds[page]
         } else {
-            embeds[page].setFooter({text: `Page ${page + 1}/${embeds.length}`, iconURL: user.displayAvatarURL({extension: "png"})})
+            embeds[page].setFooter({text: `Page ${page + 1}/${embeds.length}`, iconURL: this.discord.displayAvatar(this.message)})
             return embeds[page]
         }
     }
@@ -570,13 +570,13 @@ export class Embeds {
             let text = longDescription[i].replace(top!, "").trim()
             const second = text.match(/(^)(.*?)(>)/g)?.[0]
             text = text.replace(second!, "").trim()
-            const commands = text.match(/(`)(.*?)(`)/gm)
+            const commands = text.match(/(`)(.*?)(`)/gm)?.slice(1)
             commandCount.push(commands?.map((c)=>c)?.length ?? 0)
-            const desc = `${top}\n${second}\n_Click on a reaction twice to toggle compact mode._\n${commands?.map((c) => c).join(", ")}`
+            const desc = `${top} ${second}\n_Click on a reaction twice to toggle compact mode._\n${commands?.map((c) => c).join(", ")}`
             shortDescription.push(desc)
         }
         for (let i = 0; i < embeds.length; i++) {
-            embeds[i].setFooter({text: `${titles[i]} Commands (${commandCount[i]}) • Page ${i + 1}/${embeds.length}`, iconURL: this.message.author.displayAvatarURL({extension: "png"})})
+            embeds[i].setFooter({text: `${titles[i]} Commands (${commandCount[i]}) • Page ${i + 1}/${embeds.length}`, iconURL: this.discord.displayAvatar(this.message)})
         }
         const page1 = [
             this.discord.getEmoji("arrowRight"),
@@ -775,9 +775,9 @@ export class Embeds {
             let text = longDescription[i].replace(top!, "").trim()
             const second = text.match(/(^)(.*?)(>)/g)?.[0]
             text = text.replace(second!, "").trim()
-            const commands = text.match(/(`)(.*?)(`)/gm)
+            const commands = text.match(/(`)(.*?)(`)/gm)?.slice(1)
             commandCount.push(commands?.map((c)=>c)?.length ?? 0)
-            const desc = `${top}\n${second}\n_Click on a reaction twice to toggle compact mode._\n${commands?.map((c) => c).join(", ")}`
+            const desc = `${top} ${second}\n_Click on a reaction twice to toggle compact mode._\n${commands?.map((c) => c).join(", ")}`
             shortDescription.push(desc)
         }
         let page = emojiMap.indexOf(emoji) || 0

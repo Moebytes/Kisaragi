@@ -37,7 +37,7 @@ export default class MessageDelete {
                 const attachments = message.attachments.size > 1 ? "\n" + message.attachments.map((a) => `[**Link**](${a.proxyURL})`).join("\n") : ""
                 const imageText = image ? `\n_Image might be already deleted. Link_ [**here**](${image})` : ""
                 logEmbed
-                .setAuthor({name: `${message.author?.tag} (${message.author?.id})`, iconURL: message.author?.displayAvatarURL({extension: "png"})})
+                .setAuthor({name: `${message.author?.tag} (${message.author?.id})`, iconURL: this.discord.displayAvatar(message as any)})
                 .setTitle(`**Message Deleted** ${discord.getEmoji("chinoSmug")}`)
                 .setImage(image)
                 .setDescription(executor + content + imageText + attachments)

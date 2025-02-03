@@ -1,6 +1,7 @@
 import {Message, AttachmentBuilder} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
-import jimp from "jimp"
+import {Jimp, Jimp as jimp, JimpMime} from "jimp"
+import sharp from "sharp"
 import {Command} from "../../structures/Command"
 import {Embeds} from "./../../structures/Embeds"
 import {Kisaragi} from "./../../structures/Kisaragi"
@@ -58,9 +59,11 @@ export default class Opacity extends Command {
         factor /= 100
         if (factor < 0) factor = 0
         if (factor > 1) factor = 1
-        const image = await jimp.read(url)
+        const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())
+        const inputBuffer = await sharp(arrayBuffer, {limitInputPixels: false}).png().toBuffer()
+        const image = await jimp.read(inputBuffer)
         image.opacity(factor)
-        const buffer = await image.getBufferAsync(jimp.MIME_PNG)
+        const buffer = await image.getBuffer(JimpMime.png)
         const attachment = new AttachmentBuilder(buffer)
         return this.reply(`Changed the opacity to **${factor}**!`, attachment)
     }

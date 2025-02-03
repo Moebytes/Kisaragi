@@ -1,7 +1,8 @@
 import {EmbedBuilder, Message, MessageReaction, PartialMessageReaction, TextChannel, User, PartialUser} from "discord.js"
-import {Embeds} from "./../structures/Embeds"
-import {Kisaragi} from "./../structures/Kisaragi"
-import {SQLQuery} from "./../structures/SQLQuery"
+import {Embeds} from "../structures/Embeds"
+import {Kisaragi} from "../structures/Kisaragi"
+import {Functions} from "../structures/Functions"
+import {SQLQuery} from "../structures/SQLQuery"
 const active = new Set()
 
 export default class MessageReactionAdd {
@@ -112,11 +113,11 @@ export default class MessageReactionAdd {
                 starEmbed
                 .setAuthor({name: "star", iconURL: "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/microsoft/74/white-medium-star_2b50.png"})
                 .setTitle(`**New Starboard Message!** ${discord.getEmoji("raphiSmile")}`)
-                .setThumbnail(reaction.message.author.displayAvatarURL({extension: "png"}))
+                .setThumbnail(this.discord.displayAvatar(reaction.message))
                 .setURL(reaction.message.url)
                 .setDescription(`[**Message Link**](${reaction.message.url})\n` + content)
                 .setImage(reaction.message.attachments.first() ? reaction.message.attachments.first()!.url : "")
-                .setFooter({text: `${reaction.message.author.tag} • #${(reaction.message.channel as TextChannel).name}`, iconURL: reaction.message.author.displayAvatarURL({extension: "png"})})
+                .setFooter({text: `${reaction.message.author.tag} • #${(reaction.message.channel as TextChannel).name}`, iconURL: this.discord.displayAvatar(reaction.message)})
                 await this.discord.channelSend(starChannel, starEmbed)
                 active.push(reaction.message.id)
                 await SQLQuery.redisSet("starboard", JSON.stringify(active))

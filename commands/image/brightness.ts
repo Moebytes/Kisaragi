@@ -1,7 +1,8 @@
 import {Message, AttachmentBuilder} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
-import jimp from "jimp"
+import sharp from "sharp"
 import {Command} from "../../structures/Command"
+import {Functions} from "./../../structures/Functions"
 import {Embeds} from "./../../structures/Embeds"
 import {Kisaragi} from "./../../structures/Kisaragi"
 
@@ -55,13 +56,11 @@ export default class Brightness extends Command {
         }
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
         if (!factor) factor = 0
-        factor /= 100
-        if (factor < -1) factor = -1
-        if (factor > 1) factor = 1
-        const image = await jimp.read(url)
-        image.brightness(factor)
-        const buffer = await image.getBufferAsync(jimp.MIME_PNG)
+        let newFactor = Functions.transformRange(factor, -100, 100, 0, 2)
+        const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())
+        const buffer = await sharp(arrayBuffer, {limitInputPixels: false})
+        .modulate({brightness: newFactor}).toBuffer()
         const attachment = new AttachmentBuilder(buffer)
-        return this.reply(`Shifted the brightness by a factor of **${factor*100}**!`, attachment)
+        return this.reply(`Shifted the brightness by a factor of **${factor}**!`, attachment)
     }
 }

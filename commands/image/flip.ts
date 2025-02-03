@@ -1,6 +1,6 @@
 import {Message, AttachmentBuilder} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
-import jimp from "jimp"
+import sharp from "sharp"
 import {Command} from "../../structures/Command"
 import {Embeds} from "./../../structures/Embeds"
 import {Functions} from "./../../structures/Functions"
@@ -61,7 +61,6 @@ export default class Flip extends Command {
             url = await discord.fetchLastAttachment(message)
         }
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
-        const image = await jimp.read(url)
         const input = Functions.combineArgs(args, 1).replace(url, "").trim()
         let setHorizontal = true
         let setVertical = false
@@ -80,9 +79,11 @@ export default class Flip extends Command {
             setHorizontal = true
             setVertical = true
         }
-        if (setHorizontal) image.flip(true, false)
-        if (setVertical) image.flip(false, true)
-        const buffer = await image.getBufferAsync(jimp.MIME_PNG)
+        const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())
+        let img = sharp(arrayBuffer, {limitInputPixels: false}) as any
+        if (setHorizontal) img = img.flop()
+        if (setVertical) img = img.flip()
+        let buffer = await img.toBuffer()
         const attachment = new AttachmentBuilder(buffer!)
         let text = "Flipped the image!"
         if (setHorizontal && setVertical) {

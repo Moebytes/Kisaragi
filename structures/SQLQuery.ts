@@ -38,7 +38,7 @@ export class SQLQuery {
       let redisResult = null
       if (!newData) {
         try {
-          redisResult = await redis.get(JSON.stringify(query)) as any
+          redisResult = await redis.get(JSON.stringify(query)).catch(() => null) as any
           // SQLQuery.logQuery(Object.values(query)[0], start, true)
           if (redisResult) return (JSON.parse(redisResult))?.[0]
         } catch {
@@ -49,7 +49,7 @@ export class SQLQuery {
       try {
           const result: QueryResult<string[]> = await pgClient.query(query)
           // SQLQuery.logQuery(Object.values(query)[0], start)
-          await redis.set(JSON.stringify(query), JSON.stringify(result.rows))
+          await redis.set(JSON.stringify(query), JSON.stringify(result.rows)).catch(() => null)
           return result.rows
         } catch (error) {
           // console.log(error.stack)
@@ -84,15 +84,15 @@ export class SQLQuery {
   public static redisSet = async (key: string, value: string | null, expiration?: number) => {
     if (value === null) value = "null"
     if (expiration) {
-      await redis.setEx(key, expiration, value)
+      await redis.setEx(key, expiration, value).catch(() => null)
     } else {
-      await redis.set(key, value)
+      await redis.set(key, value).catch(() => null)
     }
   }
 
   /** Redis get */
   public static redisGet = async (key: string) => {
-    const result = await redis.get(key) as any
+    const result = await redis.get(key).catch(() => null) as any
     return result
   }
 

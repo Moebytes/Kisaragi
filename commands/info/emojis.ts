@@ -62,7 +62,7 @@ export default class Emojis extends Command {
                     `${discord.getEmoji("star")}_Creation Date:_ ${Functions.formatDate(createdArray[value])}\n`
                 }
                 userEmbed
-                .setAuthor({name: "discord.js", iconURL: "https://kisaragi.moe/assets/embed/emojis.png"})
+                .setAuthor({name: "emojis", iconURL: "https://kisaragi.moe/assets/embed/info.png"})
                 .setTitle(`**${message.guild?.name}'s Emojis** ${discord.getEmoji("vigneDead")}`)
                 .setThumbnail(message.guild?.iconURL({extension: "png"}) as string)
                 .setDescription(`${discord.getEmoji("star")}_Emoji Count:_ **${emojiArray.length}**\n` + description)

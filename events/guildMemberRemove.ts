@@ -100,7 +100,7 @@ export default class GuildMemberRemove {
                 leaveEmbed
                 .setAuthor({name: "leave", iconURL: "https://cdn.discordapp.com/emojis/593279118393475073.gif"})
                 .setTitle(`**Member Left** ${discord.getEmoji("sagiriBleh")}`)
-                .setThumbnail(member.user.displayAvatarURL({extension: "png"}))
+                .setThumbnail(member.displayAvatarURL({extension: "png"}))
                 .setDescription(
                     `${discord.getEmoji("star")}_Member:_ **<@!${member.id}> (${member.user.tag})**\n` +
                     `${discord.getEmoji("star")}_Member ID:_ \`${member.id}\`\n` +

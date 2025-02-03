@@ -1,6 +1,6 @@
 import {Message, AttachmentBuilder} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
-import jimp from "jimp"
+import sharp from "sharp"
 import {Command} from "../../structures/Command"
 import {Embeds} from "../../structures/Embeds"
 import {Kisaragi} from "../../structures/Kisaragi"
@@ -54,9 +54,8 @@ export default class Resize extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         let url: string | undefined
-        let image: any
-        let height = 0
-        let width = 0
+        let height = 0 as any
+        let width = 0 as any
         if (Number(args[1]) && Number(args[2]) && args[3]) {
             width = Number(args[1])
             height = Number(args[2])
@@ -74,11 +73,11 @@ export default class Resize extends Command {
         }
         if (!url) url = await discord.fetchLastAttachment(message)
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
-        image = await jimp.read(url)
-        if (!width) width = jimp.AUTO
-        if (!height) height = jimp.AUTO
-        image.resize(width, height)
-        const buffer = await image.getBufferAsync(jimp.MIME_PNG)
+        if (!width) width = undefined
+        if (!height) height = undefined
+        const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())
+        const buffer = await sharp(arrayBuffer, {limitInputPixels: false})
+        .resize({width, height, fit: "fill"}).toBuffer()
         const attachment = new AttachmentBuilder(buffer)
         return this.reply(`Resized the image to **${width}x${height}**!`, attachment)
     }

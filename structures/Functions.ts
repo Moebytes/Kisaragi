@@ -1,7 +1,7 @@
 import archiver from "archiver"
 import axios from "axios"
 import crypto from "crypto"
-import {Message} from "discord.js"
+import {Message, ChatInputCommandInteraction, GuildMember} from "discord.js"
 import emojiRegex from "emoji-regex"
 import fs from "fs"
 import path from "path"
@@ -559,7 +559,24 @@ export class Functions {
         return (a * b) / Functions.gcd(a, b)
     }
 
-    public static getMBBytes(MB: number) {
+    public static getMBBytes = (MB: number) => {
         return MB * 1024 * 1024
+    }
+
+    public static dataUrlBuffer = (dataUrl: string) => {
+        const base64Data = dataUrl.split(",")[1]
+        return Buffer.from(base64Data, "base64")
+    }
+
+    public static decodeHexColor = (hex: string) => {
+        hex = hex.replace("#", "")
+        const r = parseInt(hex.substring(0, 2), 16)
+        const g = parseInt(hex.substring(2, 4), 16)
+        const b = parseInt(hex.substring(4, 6), 16)
+        return {r, g, b}
+    }
+
+    public static transformRange = (value: number, oldMin: number, oldMax: number, newMin: number, newMax: number) => {
+        return ((value - oldMin) / (oldMax - oldMin)) * (newMax - newMin) + newMin
     }
 }

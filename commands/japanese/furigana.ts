@@ -50,7 +50,6 @@ export default class Furigana extends Command {
         const result = await kuroshiro.convert(input, {mode: "furigana", to: "hiragana"})
         const cleanResult = result.replace(/<\/?[^>]+(>|$)/g, "")
 
-        await this.reply(`**Furigana Conversion** ${discord.getEmoji("kannaXD")}`)
-        this.send(cleanResult)
+        await this.reply(`**Furigana Conversion** ${discord.getEmoji("kannaXD")}\n${cleanResult}`)
     }
 }

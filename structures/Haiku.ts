@@ -1,13 +1,14 @@
 import {Message} from "discord.js"
 import {Embeds} from "./Embeds"
 import {Kisaragi} from "./Kisaragi"
+import {Functions} from "./Functions"
 import syllable from "syllable"
 
 export class Haiku {
     constructor(private readonly discord: Kisaragi, private readonly message: Message) {}
 
     // Haiku
-    public haiku = () => {
+    public haiku = async () => {
         const embeds = new Embeds(this.discord, this.message)
         const wordArray = this.message.content.replace(/\s+/g, " ").split(" ")
         let lineCount1 = 0
@@ -37,7 +38,7 @@ export class Haiku {
             const haikuEmbed = embeds.createEmbed()
             haikuEmbed
             .setTitle(`**Haiku** ${this.discord.getEmoji("vigneXD")}`)
-            .setThumbnail(this.message.author!.displayAvatarURL())
+            .setThumbnail(this.discord.displayAvatar(this.message))
             .setDescription(
                 `${line1.join(" ")}\n` +
                 `${line2.join(" ")}\n` +

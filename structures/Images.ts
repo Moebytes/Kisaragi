@@ -295,7 +295,7 @@ export class Images {
             ctx.closePath()
             ctx.clip()
 
-            const avatar = await Canvas.loadImage(member.user.displayAvatarURL({extension: "png"}))
+            const avatar = await Canvas.loadImage(member.displayAvatarURL({extension: "png"}))
             ctx.drawImage(avatar, 25, 25, 200, 200)
 
             if (uri) {

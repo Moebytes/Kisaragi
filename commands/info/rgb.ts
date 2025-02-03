@@ -28,6 +28,7 @@ export default class RGB extends Command {
             .setType("string")
             .setName("color")
             .setDescription("The color to post.")
+            .setRequired(true)
             
         this.subcommand = new SlashCommandSubcommand()
             .setName(this.constructor.name.toLowerCase())

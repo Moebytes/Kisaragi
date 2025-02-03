@@ -32,7 +32,7 @@ export default class InteractionCreate {
             interaction.reply = ((originalReply) => {
                 return function (options: InteractionReplyOptions) {
                     if (typeof options === "string") options = {content: options}
-                    return originalReply.call(this, {fetchReply: true, ...options})
+                    return originalReply.call(this, {fetchReply: true, ephemeral: !interaction.guild, ...options})
                 }
             })(interaction.reply)
 

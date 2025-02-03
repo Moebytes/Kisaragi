@@ -100,6 +100,7 @@ export default class $nHentai extends Command {
         const message = this.message
         const perms = new Permission(discord, message)
         if (!perms.checkNSFW()) return
+        if (!perms.checkBotDev()) return
 
         if (!args[1]) {
             const doujin = await this.nhentaiRandom(true)

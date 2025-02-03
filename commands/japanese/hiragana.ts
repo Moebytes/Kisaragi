@@ -50,7 +50,6 @@ export default class Hiragana extends Command {
         const result = await kuroshiro.convert(input, {mode: "spaced", to: "hiragana"})
         const cleanResult = result.replace(/<\/?[^>]+(>|$)/g, "")
 
-        await this.reply(`**Hiragana Conversion** ${discord.getEmoji("aquaUp")}`)
-        this.send(cleanResult)
+        await this.reply(`**Hiragana Conversion** ${discord.getEmoji("aquaUp")}\n${cleanResult}`)
     }
 }

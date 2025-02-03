@@ -1,6 +1,6 @@
 import {Message, AttachmentBuilder} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
-import jimp from "jimp"
+import sharp from "sharp"
 import {Command} from "../../structures/Command"
 import {Embeds} from "./../../structures/Embeds"
 import {Kisaragi} from "./../../structures/Kisaragi"
@@ -78,13 +78,15 @@ export default class Crop extends Command {
             url = await discord.fetchLastAttachment(message)
         }
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
-        const image = await jimp.read(url)
-        let width = Number(args[3]) ? Number(args[3]) : image.bitmap.width
-        let height = Number(args[4]) ? Number(args[4]) : Math.floor(image.bitmap.height / (image.bitmap.width / width * 1.0))
-        if (width > image.bitmap.width) width = image.bitmap.width
-        if (height > image.bitmap.height) height = image.bitmap.height
-        image.crop(x, y, width, height)
-        const buffer = await image.getBufferAsync(jimp.MIME_PNG)
+        const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())
+        const metadata = await sharp(arrayBuffer, {limitInputPixels: false}).metadata()
+        let width = args[3] ? Number(args[3]) : metadata.width!
+        let height = args[4] ? Number(args[4]) : Math.floor(metadata.height! / (metadata.width! / width * 1.0))
+        if (width > metadata.width!) width = metadata.width!
+        if (height > metadata.height!) height = metadata.height!
+        const buffer = await sharp(arrayBuffer, {limitInputPixels: false})
+        .extract({left: x, top: y, width, height})
+        .toBuffer()
         const attachment = new AttachmentBuilder(buffer)
         return this.reply(`Cropped the image to an offset of **${x}, ${y}** pixels, to a width of **${width}** pixels, and to a height of **${height}** pixels!`, attachment)
     }
