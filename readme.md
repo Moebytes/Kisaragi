@@ -36,8 +36,8 @@ public reply = (input: Message | ChatInputCommandInteraction, embeds: EmbedBuild
         }
         if (files) options.files = Array.isArray(files) ? files : [files]
         if (this.deferState.has(input.id)) {
-            let flags = !!input.guild ? MessageFlags.Ephemeral : undefined
-          return (input as ChatInputCommandInteraction).followUp({...options, flags})
+            let flags = !input.guild ? MessageFlags.Ephemeral : undefined
+            return (input as ChatInputCommandInteraction).followUp({...options, flags})
         }
         if (!this.deferState.has(input.id)) this.deferState.add(input.id)
         return input.reply(options) as Promise<Message<true>>
