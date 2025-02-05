@@ -30,7 +30,6 @@ export default class DeleteQueue extends Command {
             .setType("string")
             .setName("range")
             .setDescription("Range to remove")
-            .setRequired(true)
 
         this.subcommand = new SlashCommandSubcommand()
             .setName(this.constructor.name.toLowerCase())

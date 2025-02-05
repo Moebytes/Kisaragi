@@ -84,7 +84,7 @@ export class Audio {
 
     public checkEffectPermissions = async (user: User) => {
         const queue = this.getQueue()
-        const requesterID = queue[0].requesterID
+        const requesterID = queue[0]?.requesterID
         const hasPermission = await this.perms.checkAudioPermission(user, requesterID)
         if (!hasPermission) {
             this.discord.reply(this.message, `Only the requester and moderators can edit effects. Wait until it's your turn! ${this.discord.getEmoji("kannaSad")}`)
@@ -835,7 +835,7 @@ export class Audio {
     }
 
     public volume = async (num: number) => {
-        if (num < 0 || num > 2) return this.discord.reply(this.message, "The volume must be between 0 and 2.")
+        if (num < 0 || num > 2) return this.discord.send(this.message, "The volume must be between 0 and 2.")
         /*const connection = getVoiceConnection(this.message.guild!.id)
         if (connection?.state.status !== VoiceConnectionStatus.Ready) return
         const player = connection.state.subscription?.player
@@ -1197,14 +1197,14 @@ export class Audio {
         if (settings.filters[0]) {
             for (let i = 0; i < settings.filters.length; i++) {
                 const params = Functions.removeDuplicates(settings.filterParams[settings.filters[i]])
-                await this[settings.filters[i]](newFile, ...params)
+                await this[settings.filters[i]]?.(newFile, ...params)
             }
         }
         newFile = this.getQueue()[0].file
         if (settings.effects[0]) {
             for (let i = 0; i < settings.effects.length; i++) {
                 const params = Functions.removeDuplicates(settings.effectParams[settings.effects[i]])
-                await this[settings.effects[i]](newFile, ...params)
+                await this[settings.effects[i]]?.(newFile, ...params)
             }
         }
         newFile = this.getQueue()[0].file

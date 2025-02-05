@@ -1,5 +1,5 @@
 import axios from "axios"
-import {MessagePayload, ChannelType, Client, ClientOptions, Guild, Collection, GuildBasedChannel, 
+import {MessagePayload, ChannelType, Client, ClientOptions, Guild, Collection, GuildBasedChannel, MessageFlags,
 ApplicationEmoji, GuildEmoji, Message, MessageTarget, Role, TextChannel, User, PartialMessage, AttachmentBuilder,
 EmbedBuilder, GuildMember, ChatInputCommandInteraction, MessageReplyOptions, SendableChannels} from "discord.js"
 import querystring from "querystring"
@@ -47,10 +47,11 @@ export class Kisaragi extends Client {
         }
         if (files) options.files = Array.isArray(files) ? files : [files]
         if (this.deferState.has(input.id)) {
-          return (input as ChatInputCommandInteraction).followUp({...options, ephemeral: !input.guild})
+            let flags = !input.guild ? MessageFlags.Ephemeral : undefined
+          return (input as ChatInputCommandInteraction).followUp({...options, flags})
         }
         if (!this.deferState.has(input.id)) this.deferState.add(input.id)
-        return input.reply(options)
+        return input.reply(options) as Promise<Message<true>>
     }
 
     /** Clear defer state */

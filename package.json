@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@discordjs/opus": "^0.9.0",
-    "@discordjs/voice": "^0.17.0",
+    "@discordjs/voice": "^0.18.0",
     "@jimp/wasm-avif": "^1.6.0",
     "@jimp/wasm-jpeg": "^1.6.0",
     "@jimp/wasm-png": "^1.6.0",
@@ -59,7 +59,7 @@
     "concat-stream": "^2.0.0",
     "dblapi.js": "^2.4.1",
     "deviantart.ts": "^0.2.9",
-    "discord.js": "^14.16.2",
+    "discord.js": "^14.17.3",
     "discord.js-minesweeper": "^1.1.0",
     "dotenv": "^16.4.5",
     "emoji-regex": "^10.3.0",

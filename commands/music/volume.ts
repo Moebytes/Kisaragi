@@ -25,9 +25,9 @@ export default class Volume extends Command {
             subcommandEnabled: true
         })
         const volumeOption = new SlashCommandOption()
-            .setType("integer")
+            .setType("number")
             .setName("volume")
-            .setDescription("The new volume (0-200)")
+            .setDescription("The new volume (0-2)")
             .setRequired(true)
 
         this.subcommand = new SlashCommandSubcommand()

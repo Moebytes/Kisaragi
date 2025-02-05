@@ -62,8 +62,8 @@ export default class AllPass extends Command {
             setDownload = true
             args.shift()
         }
-        const freq = Number(args[1])
-        const width = Number(args[2])
+        const freq = Number(args[1] || 600)
+        const width = Number(args[2] || 100)
         if (Number.isNaN(freq) || Number.isNaN(width)) return this.reply(`The parameters must be numbers ${discord.getEmoji("kannaCurious")}`)
         const rep = await this.reply("_Applying an allpass filter, please wait..._")
         let file = ""

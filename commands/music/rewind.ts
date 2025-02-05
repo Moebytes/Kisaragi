@@ -22,13 +22,13 @@ export default class Rewind extends Command {
             aliases: ["seek"],
             guildOnly: true,
             cooldown: 5,
+            defer: true,
             subcommandEnabled: true
         })
         const timeOption = new SlashCommandOption()
             .setType("string")
             .setName("time")
             .setDescription("Time to rewind.")
-            .setRequired(true)
 
         this.subcommand = new SlashCommandSubcommand()
             .setName(this.constructor.name.toLowerCase())
@@ -45,7 +45,7 @@ export default class Rewind extends Command {
         if (!audio.checkMusicPermissions()) return
         if (!audio.checkMusicPlaying()) return
 
-        let rewind = args[1] ? args[1] : "0"
+        let rewind = args[1] ? args[1] : "5"
         rewind = rewind.replace(/h|m/gi, ":").replace(/s/gi, "").replace(/ +/g, "")
         await audio.rewind(rewind)
         const queue = audio.getQueue()

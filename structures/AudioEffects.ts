@@ -287,7 +287,7 @@ export class AudioEffects {
     public duration = async (filepath: string) => {
         return new Promise<number>((resolve, reject) => {
             ffmpeg.ffprobe(filepath, (err, data) => {
-                const duration = data.format.duration || 0
+                const duration = data?.format?.duration || 0
                 resolve(duration)
             })
         })

@@ -1,4 +1,4 @@
-import {BaseInteraction, InteractionReplyOptions, ChatInputCommandInteraction} from "discord.js"
+import {BaseInteraction, InteractionReplyOptions, MessageFlags} from "discord.js"
 import {Kisaragi} from "../structures/Kisaragi"
 import {CommandFunctions} from "../structures/CommandFunctions"
 import {Cooldown} from "../structures/Cooldown"
@@ -30,9 +30,11 @@ export default class InteractionCreate {
 
             // @ts-expect-error
             interaction.reply = ((originalReply) => {
-                return function (options: InteractionReplyOptions) {
+                return async function (options: InteractionReplyOptions) {
                     if (typeof options === "string") options = {content: options}
-                    return originalReply.call(this, {fetchReply: true, ephemeral: !interaction.guild, ...options})
+                    let flags = !interaction.guild ? MessageFlags.Ephemeral : undefined
+                    await originalReply.call(this, {withResponse: true, flags, ...options})
+                    return interaction.fetchReply()
                 }
             })(interaction.reply)
 

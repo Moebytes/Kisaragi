@@ -22,13 +22,13 @@ export default class Fastforward extends Command {
             aliases: ["seek"],
             guildOnly: true,
             cooldown: 5,
+            defer: true,
             subcommandEnabled: true
         })
         const timeOption = new SlashCommandOption()
             .setType("string")
             .setName("time")
             .setDescription("Time to fastforward.")
-            .setRequired(true)
 
         this.subcommand = new SlashCommandSubcommand()
             .setName(this.constructor.name.toLowerCase())
@@ -45,7 +45,7 @@ export default class Fastforward extends Command {
         if (!audio.checkMusicPermissions()) return
         if (!audio.checkMusicPlaying()) return
 
-        let fastforward = args[1] ? args[1] : "0"
+        let fastforward = args[1] ? args[1] : "5"
         fastforward = fastforward.replace(/h|m/gi, ":").replace(/s/gi, "").replace(/ +/g, "")
         await audio.fastforward(fastforward)
         const queue = audio.getQueue()
