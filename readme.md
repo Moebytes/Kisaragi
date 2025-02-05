@@ -1,9 +1,6 @@
 # Kisaragi Discord Bot
 ![Best Girl](https://vignette.wikia.nocookie.net/mudae/images/7/73/Kisaragi_%28AL%294.png/revision/latest?cb=20191205095054)
 
-**Update - 12/1/2022**
-Because of the discontinuation of the free heroku hosting plans, this bot is discontinued and will be offline indefinitely. If you know of another way to host a backend app for free, then feel free to open an issue about it. 
-
 This is my first programming project, a discord bot mainly to search anime pictures and websites, play music, and provide some server utilities. Invite the bot [**here**](https://discordapp.com/oauth2/authorize?client_id=593838271650332672&permissions=2113793271&scope=bot)!
 
 ## Help
@@ -20,6 +17,32 @@ _Double click on the same reaction to toggle a compact form of the help menu._
 ## Bugs/Feature Requests
 
 Please let me know by submitting an issue or using the `feedback` command on the bot. I appreciate all ideas.
+
+## Tips
+
+Because discord.js makes breaking changes to the send/reply methods very frequently, for the least pain when developing (avoiding having to change hundreds 
+of files) make sure that you centralize your bots reply method... Something like:
+
+```ts
+public reply = (input: Message | ChatInputCommandInteraction, embeds: EmbedBuilder | EmbedBuilder[] | string, 
+    files?: AttachmentBuilder | AttachmentBuilder[], opts?: MessageReplyOptions) => {
+        let options = {...opts} as any
+        if (Array.isArray(embeds)) {
+            options.embeds = embeds
+        } else if (embeds instanceof EmbedBuilder) {
+          options.embeds = [embeds]
+        } else if (typeof embeds === "string") {
+          options.content = embeds
+        }
+        if (files) options.files = Array.isArray(files) ? files : [files]
+        if (this.deferState.has(input.id)) {
+            let flags = !!input.guild ? MessageFlags.Ephemeral : undefined
+          return (input as ChatInputCommandInteraction).followUp({...options, flags})
+        }
+        if (!this.deferState.has(input.id)) this.deferState.add(input.id)
+        return input.reply(options) as Promise<Message<true>>
+    }
+```
 
 ## Self Hosting
 
