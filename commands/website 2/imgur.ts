@@ -23,7 +23,7 @@ export default class Imgur extends Command {
             cooldown: 5,
             defer: true,
             unlist: true,
-            subcommandEnabled: true
+            subcommandEnabled: false
         })
         const queryOption = new SlashCommandOption()
             .setType("string")

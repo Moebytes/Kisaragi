@@ -22,6 +22,7 @@ export default class Reboot extends Command {
           aliases: ["restart"],
           cooldown: 100,
           botdev: true,
+          defer: true,
           subcommandEnabled: true
         })
         this.subcommand = new SlashCommandSubcommand()
@@ -39,9 +40,14 @@ export default class Reboot extends Command {
 
         const subDir = fs.readdirSync("commands")
         for (let i = 0; i < subDir.length; i++) {
+          if (subDir[i] === ".DS_Store") continue
           const commands = fs.readdirSync(`commands/${subDir[i]}`)
           for (let j = 0; j < commands.length; j++) {
-            delete require.cache[require.resolve(`../${subDir[i]}/${commands[j]}`)]
+            try {
+              delete require.cache[require.resolve(`../${subDir[i]}/${commands[j]}`)]
+            } catch {
+              continue
+            }
           }
         }
 
@@ -53,7 +59,7 @@ export default class Reboot extends Command {
         .setDescription("Rebooting bot!")
 
         await this.reply(rebootEmbed)
-        child_process.execSync("cd ../ && npm run build")
+        child_process.execSync("npm run build")
         process.exit(0)
       }
     }

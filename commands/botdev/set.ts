@@ -45,8 +45,8 @@ export default class Set extends Command {
         type activityTypes = string | "watching" | "playing" | "streaming" | "listening" | "competing"
         type status = "online" | "dnd" | "idle" | "invisible"
         const activityType = (args[1].toLowerCase() || "playing") as activityTypes
-        const name = Functions.combineArgs(args, 2).split(",")[0] || "=>help"
-        const status = (Functions.combineArgs(args, 2).split(",")[1] || "dnd") as status
+        const name = (Functions.combineArgs(args, 0).split(",")[0] || "=>help")
+        const status = (Functions.combineArgs(args, 0).split(",")[1] || "dnd") as status
 
         const activityMap = {
             "playing": ActivityType.Playing,
@@ -62,6 +62,6 @@ export default class Set extends Command {
 
         discord.user!.setPresence({activities: [{name, type: activity, state: status}]})
         this.reply(setEmbed
-        .setDescription(`I am now **${status}** and **${args[1]} ${name}**!`))
+        .setDescription(`I am now **${status}** and **${name}**!`))
     }
 }

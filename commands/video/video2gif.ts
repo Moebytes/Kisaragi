@@ -31,7 +31,8 @@ export default class Video2GIF extends Command {
             aliases: ["vgif", "vid2gif"],
             cooldown: 20,
             defer: true,
-            subcommandEnabled: true
+            unlist: true,
+            subcommandEnabled: false
         })
         const urlOption = new SlashCommandOption()
             .setType("string")

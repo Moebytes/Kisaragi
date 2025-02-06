@@ -41,7 +41,7 @@ export default class Swap extends Command {
         const pfp = await sql.fetchColumn("guilds", "pfp")
         const weeb = await sql.fetchColumn("guilds", "weeb")
         const normie = await sql.fetchColumn("guilds", "normie")
-        if (!pfp || pfp === "off") return this.reply("Cannot use this command, have not set the weeb and normie roles!")
+        if (!pfp || pfp === "off") return this.reply("Cannot use this command, have not set the weeb and normie roles or turned on pfp detection!")
         let weebCounter = 0
         let normieCounter = 0
 

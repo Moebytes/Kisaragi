@@ -13,7 +13,7 @@ export default class CaseUpdate {
         const modLogID =  await sql.fetchColumn("guilds", "mod log")
         const modLog = discord.channels.cache.get(modLogID ?? "") as TextChannel
         const caseNumber = cases.length + 1
-        let channelName = ""
+        let channelName = null as unknown as string
         let context = ""
         if (instance.context) {
             const {channelID} = discord.parseMessageURL(instance.context)
@@ -33,7 +33,7 @@ export default class CaseUpdate {
         const msg = await this.discord.channelSend(modLog, embed).then((m) => m.id).catch(() => null)
         const data = {...instance, case: caseNumber, message: msg}
         cases.push(data)
-        await sql.updateColumn("warns", "cases", cases)
+        await sql.updateColumn("guilds", "cases", cases)
         return
     }
 
@@ -45,7 +45,7 @@ export default class CaseUpdate {
         if (!message) return
         const sql = new SQLQuery(message)
         const embeds = new Embeds(discord, message)
-        let cases = await sql.fetchColumn("warns", "cases")
+        let cases = await sql.fetchColumn("guilds", "cases")
         if (!cases) cases = []
         cases = cases.map((c: any) => JSON.parse(c))
         const caseNumber = cases.length + 1

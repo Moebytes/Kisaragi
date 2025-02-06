@@ -23,7 +23,8 @@ export default class Tweet extends Command {
             `,
             aliases: [],
             cooldown: 5,
-            subcommandEnabled: true
+            unlist: true,
+            subcommandEnabled: false
         })
         const contentOption = new SlashCommandOption()
             .setType("string")

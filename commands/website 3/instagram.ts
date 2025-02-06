@@ -26,7 +26,7 @@ export default class Instagram extends Command {
             cooldown: 10,
             defer: true,
             unlist: true,
-            subcommandEnabled: true
+            subcommandEnabled: false
         })
         const query2Option = new SlashCommandOption()
             .setType("string")

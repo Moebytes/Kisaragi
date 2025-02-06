@@ -24,7 +24,7 @@ export default class AppStore extends Command {
             cooldown: 15,
             defer: true,
             unlist: true,
-            subcommandEnabled: true
+            subcommandEnabled: false
         })
         const queryOption = new SlashCommandOption()
             .setType("string")

@@ -63,6 +63,6 @@ export default class Mention extends Command {
             return this.reply("Could not mention this role, I need the **Manage Roles** permission.")
         }
 
-        if (message.content.startsWith(prefix[0])) await message.delete()
+        if (message.content?.startsWith(prefix[0])) await message?.delete()
     }
 }

@@ -34,7 +34,8 @@ export default class YTNotify extends Command {
             guildOnly: true,
             cooldown: 15,
             defer: true,
-            subcommandEnabled: true
+            unlist: true,
+            subcommandEnabled: false
         })
         const editOption = new SlashCommandOption()
             .setType("string")

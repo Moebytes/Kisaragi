@@ -20,6 +20,8 @@ export class Oauth2 {
 
     /** Add Reddit options to a reddit embed */
     public redditOptions = async (msg: Message) => {
+        // disabled for now
+        return
         const reactions = ["upvote", "downvote", "comment", "redditsave", "subscribe"]
         for (let i = 0; i < reactions.length; i++) await msg.react(this.discord.getEmoji(reactions[i]))
 

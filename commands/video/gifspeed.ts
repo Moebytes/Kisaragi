@@ -56,8 +56,8 @@ export default class GifSpeed extends Command {
         const perms = new Permission(discord, message)
         if (discord.checkMuted(message)) if (!perms.checkNSFW()) return
         const regex = new RegExp(/.gif/)
-        args[1] = args[1].replace(/x/g, "")
-        let constrain = Number(args[1]) ?? 20
+        args[1] = String(args[1]).replace(/x/g, "")
+        let constrain = !Number.isNaN(Number(args[1])) ? Number(args[1]) : 20
         let url: string | undefined
         if (args[2]) {
             url = args[2]
@@ -66,7 +66,7 @@ export default class GifSpeed extends Command {
         }
         if (!url) return message.reply(`Could not find a gif ${discord.getEmoji("kannaCurious")}`)
         const frames = await gifFrames({url, frames: "all", cumulative: true})
-        if (String(constrain).includes(".")) {
+        if (String(args[1]).includes(".")) {
             constrain = Math.round(frames.length / constrain)
         }
         if (constrain >= frames.length) return this.reply(`Adding frames to or slowing down a gif is not supported. ${discord.getEmoji("kannaFacepalm")}`)

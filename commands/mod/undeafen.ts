@@ -73,7 +73,6 @@ export default class Undeafen extends Command {
             .setAuthor({name: "undeafen", iconURL: "https://kisaragi.moe/assets/embed/undeafen.png"})
             .setTitle(`**You Were Undeafened** ${discord.getEmoji("mexShrug")}`)
             .setDescription(`${discord.getEmoji("star")}_You were undeafened from ${message.guild!.name} for reason:_ **${reason}**`)
-            const dm = await member.createDM()
             try {
                 await member.voice.setDeaf(false, reason)
                 const data = {type: "undeafen", user: member.id, executor: message.author.id, date: Date.now(), guild: message.guild?.id, reason, context: message.url}
@@ -81,7 +80,8 @@ export default class Undeafen extends Command {
             } catch {
                 return this.reply(`I need the **undeafen Members** permission, or this user is not in a voice channel ${discord.getEmoji("kannaFacepalm")}`)
             }
-            await discord.channelSend(dm, undeafenEmbed).catch(() => null)
+            const dm = await member.createDM().catch(() => null)
+            if (dm) await discord.channelSend(dm, undeafenEmbed).catch(() => null)
         }
         if (!members[0]) return this.reply(`Invalid users ${discord.getEmoji("kannaFacepalm")}`)
         undeafenEmbed

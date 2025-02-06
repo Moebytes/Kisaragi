@@ -41,31 +41,19 @@ export default class NoImg extends Command {
         if (!perms.checkBotDev()) return
         let unlist = false
         if (args[0] === "unlist" || args[0] === "hidden") unlist = true
-        const names: string[] = []
-        const subDir = fs.readdirSync(path.join(__dirname, "../../commands"))
-        for (let k = 0; k < subDir.length; k++) {
-            const commands = fs.readdirSync(path.join(__dirname, `../../commands/${subDir[k]}`))
-            for (let m = 0; m < commands.length; m++) {
-                commands[m] = commands[m].slice(0, -3)
-                if (commands[m] === "empty" || commands[m] === "tempCodeRunnerFile") continue
-                const cmdClass = new (require(`../${subDir[k]}/${commands[m]}`).default)(this.discord, this.message)
-                if (cmdClass.options.unlist === true) {
-                    if (unlist) names.push(commands[m])
-                    continue
-                } else {
-                    if (unlist) continue
-                }
-                const rawPath = path.join(__dirname, `../../../assets/help/${subDir[k]}/${commands[m]}`)
-                if (fs.existsSync(`${rawPath}.png`)) {
-                    continue
-                } else if (fs.existsSync(`${rawPath}.gif`)) {
-                    continue
-                } else if (fs.existsSync(`${rawPath}.jpg`)) {
-                    continue
-                }
-                names.push(commands[m])
+        const commands = [...discord.commands.values()].filter((command) => {
+            if (command.name === "helpInfo") return false
+            if (command.name.endsWith("slash")) return false
+            if (unlist) {
+                if (command.options.unlist) return true
+            } else {
+                const rawPath = path.join(__dirname, `../../../assets/help/${command.category}/${command.name}`)
+                if (!fs.existsSync(`${rawPath}.png`) && !fs.existsSync(`${rawPath}.jpg`) && !fs.existsSync(`${rawPath}.gif`)) return true
             }
-        }
+            return false
+        })
+
+        const names = commands.map((c) => c.name)
 
         let desc = ""
         for (let i = 0; i < names.length; i++) {
@@ -78,7 +66,7 @@ export default class NoImg extends Command {
             const embed = embeds.createEmbed()
             embed
             .setTitle(`**${unlist ? "Unlisted" : "No Image"}** ${discord.getEmoji("sagiriBleh")}`)
-            .setDescription(splits[i])
+            .setDescription(splits[i] || null)
             embedArray.push(embed)
         }
 

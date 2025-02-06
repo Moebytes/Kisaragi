@@ -1,4 +1,4 @@
-import {Message, EmbedBuilder, Role} from "discord.js"
+import {Message, EmbedBuilder, Role, AttachmentBuilder} from "discord.js"
 import {SlashCommand} from "../../structures/SlashCommandOption"
 import {Command} from "../../structures/Command"
 import {Captcha} from "./../../structures/Captcha"
@@ -52,7 +52,7 @@ export default class Verify extends Command {
         }
         const type = cType
 
-        const {captcha, text} = await captchaClass.createCaptcha(String(type), String(color), String(difficulty))
+        const {captcha, text, files} = await captchaClass.createCaptcha(String(type), String(color), String(difficulty))
 
         const filter = (response: Message) => {
             return (response.author === message.author)
@@ -60,8 +60,8 @@ export default class Verify extends Command {
 
         let fail = false
 
-        const sendCaptcha = (cap: EmbedBuilder, txt: string) => {
-            this.reply(cap).then(() => {
+        const sendCaptcha = (cap: EmbedBuilder, txt: string, files: AttachmentBuilder[]) => {
+            this.reply(cap, files).then(() => {
                 if (!message.channel.isSendable()) return
                 message.channel.awaitMessages({filter, max: 1, time: 30000, errors: ["time"]})
                     .then(async (collected) => {
@@ -76,7 +76,7 @@ export default class Verify extends Command {
                         } else if (msg.content.trim() === "skip") {
                             this.reply("Skipped this captcha!")
                             const result = await captchaClass.createCaptcha(String(type), String(color), String(difficulty))
-                            return sendCaptcha(result.captcha, result.text)
+                            return sendCaptcha(result.captcha, result.text, result.files)
                         } else if (msg.content.trim() === txt) {
                             if (msg.member!.roles.cache.has(role!.id)) {
                                 try {
@@ -100,7 +100,7 @@ export default class Verify extends Command {
                         } else {
                             msg.reply("Wrong answer! Please try again.")
                             const result = await captchaClass.createCaptcha(String(type), String(color), String(difficulty))
-                            return sendCaptcha(result.captcha, result.text)
+                            return sendCaptcha(result.captcha, result.text, result.files)
                         }
                     })
                     .catch(() => {
@@ -110,6 +110,6 @@ export default class Verify extends Command {
             })
 
         }
-        sendCaptcha(captcha, text)
+        sendCaptcha(captcha, text, files)
     }
 }

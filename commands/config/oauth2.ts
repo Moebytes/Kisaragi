@@ -26,7 +26,8 @@ export default class Oauth2 extends Command {
             guildOnly: true,
             aliases: ["authorize", "discordoauth"],
             cooldown: 10,
-            subcommandEnabled: true
+            unlist: true,
+            subcommandEnabled: false
         })
         const revokeOption = new SlashCommandOption()
             .setType("string")

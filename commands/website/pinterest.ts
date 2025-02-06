@@ -33,7 +33,7 @@ export default class Pinterest extends Command {
             cooldown: 15,
             defer: true,
             unlist: true,
-            subcommandEnabled: true
+            subcommandEnabled: false
         })
         const boardOption = new SlashCommandOption()
             .setType("string")

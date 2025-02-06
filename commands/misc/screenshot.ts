@@ -27,7 +27,7 @@ export default class Screenshot extends Command {
           cooldown: 15,
           defer: true,
           unlist: true,
-          subcommandEnabled: true
+          subcommandEnabled: false
         })
         const url2Option = new SlashCommandOption()
             .setType("string")

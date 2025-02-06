@@ -50,7 +50,7 @@ export default class Unmute extends Command {
         const sql = new SQLQuery(message)
         if (!await perms.checkMod()) return
         const muteEmbed = embeds.createEmbed()
-        const mute = await sql.fetchColumn("special roles", "mute role")
+        const mute = await sql.fetchColumn("guilds", "mute role")
         if (!mute) return this.reply("You need to set a mute role first!")
         const reasonArray: string[] = []
         const userArray: string[] = []
@@ -73,12 +73,12 @@ export default class Unmute extends Command {
             const data = {type: "unmute", user: member.id, executor: message.author.id, date: Date.now(), guild: message.guild?.id, reason, context: message.url}
             discord.emit("caseUpdate", data)
             members.push(`<@${member.id}>`)
-            const dm = await member.createDM()
             muteEmbed
             .setAuthor({name: "unmute", iconURL: "https://kisaragi.moe/assets/embed/unmute.png"})
             .setTitle(`**You Were Unmuted** ${discord.getEmoji("mexShrug")}`)
             .setDescription(`${discord.getEmoji("star")}_You were unmuted in ${message.guild!.name} for reason:_ **${reason}**`)
-            await dm.send({embeds: [muteEmbed]}).catch(() => null)
+            const dm = await member.createDM().catch(() => null)
+            if (dm) await discord.channelSend(dm, muteEmbed).catch(() => null)
         }
         if (!members[0]) return this.reply(`Invalid users ${discord.getEmoji("kannaFacepalm")}`)
         muteEmbed

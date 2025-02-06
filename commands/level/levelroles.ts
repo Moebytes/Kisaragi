@@ -98,7 +98,7 @@ export default class LevelRoles extends Command {
             }
             const levelEmbed = embeds.createEmbed()
             levelEmbed
-            .setTitle(`**Level Up Roles** ${discord.getEmoji("meguDance")}`)
+            .setTitle(`**Level Up Roles** ${discord.getEmoji("meguminPadoru")}`)
             .setThumbnail(message.guild!.iconURL() as string)
             .setDescription(Functions.multiTrim(`
                 Configure settings for level up roles.
@@ -135,7 +135,7 @@ export default class LevelRoles extends Command {
             const responseEmbed = embeds.createEmbed()
             let roles = await sql.fetchColumn("guilds", "level roles")
             if (!roles) roles = []
-            responseEmbed.setTitle(`**Level Up Roles** ${discord.getEmoji("meguDance")}`)
+            responseEmbed.setTitle(`**Level Up Roles** ${discord.getEmoji("meguminPadoru")}`)
             let [setRole, setLevel, setMsg] = [false, false, false]
             if (msg.content.toLowerCase() === "cancel") {
                 responseEmbed

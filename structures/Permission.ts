@@ -63,7 +63,7 @@ export class Permission {
         if (this.message.author.id === process.env.OWNER_ID) {
             return true
         } else {
-            this.discord.reply(this.message, `Sorry, only the bot developer can use bot developer commands. ${this.discord.getEmoji("sagiriBleh")}`)
+            this.discord.reply(this.message, `Sorry, only the bot developer can use this command. ${this.discord.getEmoji("sagiriBleh")}`)
             return false
         }
     }

@@ -31,7 +31,8 @@ export default class Auto extends Command {
             aliases: [],
             cooldown: 10,
             defer: true,
-            subcommandEnabled: true
+            unlist: true,
+            subcommandEnabled: false
         })
         const editOption = new SlashCommandOption()
             .setType("string")

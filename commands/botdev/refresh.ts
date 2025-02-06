@@ -22,6 +22,7 @@ export default class Refresh extends Command {
           aliases: ["reload"],
           cooldown: 50,
           botdev: true,
+          defer: true,
           subcommandEnabled: true
         })
         this.subcommand = new SlashCommandSubcommand()

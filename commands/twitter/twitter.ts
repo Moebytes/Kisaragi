@@ -29,7 +29,8 @@ export default class TwitterCommand extends Command {
             random: "string",
             cooldown: 10,
             defer: true,
-            subcommandEnabled: true
+            unlist: true,
+            subcommandEnabled: false
         })
         const query2Option = new SlashCommandOption()
             .setType("string")
@@ -43,7 +44,7 @@ export default class TwitterCommand extends Command {
             .setRequired(true)
 
         this.subcommand = new SlashCommandSubcommand()
-            .setName(this.constructor.name.toLowerCase())
+            .setName("twitter")
             .setDescription(this.options.description)
             .addOption(queryOption)
             .addOption(query2Option)

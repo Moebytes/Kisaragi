@@ -24,7 +24,7 @@ export default class JSONCommand extends Command {
             cooldown: 3,
             defer: true,
             unlist: true,
-            subcommandEnabled: true
+            subcommandEnabled: false
         })
         const embedOption = new SlashCommandOption()
             .setType("string")

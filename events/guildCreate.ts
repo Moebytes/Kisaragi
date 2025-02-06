@@ -12,10 +12,10 @@ export default class GuildCreate {
     public run = async (guild: Guild) => {
         const discord = this.discord
         const message = await this.discord.fetchFirstMessage(guild) as Message
-        if (!message && guild.id !== "264445053596991498") {
+        if (!message) {
             const chan = guild.channels.cache.find(((c) => c.permissionsFor(guild.members.me!)?.has("SendMessages") ?? false))
-            if (chan) await this.discord.channelSend(chan as TextChannel, `The permissions **View Channel** and **Read Message History** are required. Reinvite the bot with sufficient permissions ${discord.getEmoji("kannaFacepalm")}`)
-            return guild.leave()
+            if (chan) await this.discord.channelSend(chan as TextChannel, `The permissions **View Channel** and **Read Message History** are missing. Various features will not work properly. ${discord.getEmoji("kannaFacepalm")}`)
+            return
         }
         const embeds = new Embeds(discord, message)
         const cmd = new CommandFunctions(discord, message)
@@ -31,6 +31,7 @@ export default class GuildCreate {
                 return false
             }
         }).map((c) => c) as TextChannel[]
+
         let index = 0
         let highest = mainChannels[0]?.rawPosition
         for (let i = 0; i < mainChannels.length; i++) {
@@ -67,7 +68,7 @@ export default class GuildCreate {
             .setAuthor({name: "guild join", iconURL: "https://discordemoji.com/assets/emoji/8994_TohruThumbsUp.gif"})
             .setTitle(`**Joined a new guild!** ${discord.getEmoji("MeimeiYay")}`)
             .setThumbnail(guild.iconURL() ? guild.iconURL({extension: "png"})! : "")
-            .setImage(guild.bannerURL() ? guild.bannerURL({extension: "png"})! : (guild.splashURL() ? guild.splashURL({extension: "png"})! : ""))
+            .setImage(guild.bannerURL() ? guild.bannerURL({extension: "png"})! : (guild.splashURL() ? guild.splashURL({extension: "png"})! : null))
             .setDescription(
                 `${discord.getEmoji("star")}_Guild Name:_ **${guild.name}**\n` +
                 `${discord.getEmoji("star")}_Guild Owner:_ **${guildOwner.user.username}**\n` +

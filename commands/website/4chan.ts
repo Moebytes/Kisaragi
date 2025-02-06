@@ -33,7 +33,7 @@ export default class $4chan extends Command {
             cooldown: 15,
             defer: true,
             unlist: true,
-            subcommandEnabled: true
+            subcommandEnabled: false
         })
         const query2Option = new SlashCommandOption()
             .setType("string")

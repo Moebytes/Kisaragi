@@ -59,7 +59,7 @@ export default class TempMute extends Command {
         const sql = new SQLQuery(message)
         if (!await perms.checkMod()) return
         const tempMuteEmbed = embeds.createEmbed()
-        const mute = await sql.fetchColumn("special roles", "mute role")
+        const mute = await sql.fetchColumn("guilds", "mute role")
         if (!mute) return this.reply("You need to set a mute role first!")
         const reasonArray: string[] = []
         const timeArray: string[] = []
@@ -94,7 +94,6 @@ export default class TempMute extends Command {
             .setAuthor({name: "tempmute", iconURL: "https://kisaragi.moe/assets/embed/tempmute.png"})
             .setTitle(`**You Were Temp Muted** ${discord.getEmoji("sagiriBleh")}`)
             .setDescription(`${discord.getEmoji("star")}_You were temp muted from **${message.guild!.name}** for **${rawTime}**, reason:_ **${reason}**`)
-            const dm = await member.createDM()
             const id = member.id
             try {
                 await member.roles.add(mute).catch(() => null)
@@ -137,7 +136,8 @@ export default class TempMute extends Command {
                 console.log(e)
                 return this.reply(`I need the **Manage Roles** permission ${discord.getEmoji("kannaFacepalm")}`)
             }
-            await discord.channelSend(dm, tempMuteEmbed).catch(() => null)
+            const dm = await member.createDM().catch(() => null)
+            if (dm) await discord.channelSend(dm, tempMuteEmbed).catch(() => null)
         }
         if (!members[0]) return this.reply(`Invalid users ${discord.getEmoji("kannaFacepalm")}`)
         tempMuteEmbed

@@ -73,7 +73,6 @@ export default class VCKick extends Command {
             .setAuthor({name: "voice kick", iconURL: "https://kisaragi.moe/assets/embed/vckick.png"})
             .setTitle(`**You Were Voice Kicked** ${discord.getEmoji("tohruSmug")}`)
             .setDescription(`${discord.getEmoji("star")}_You were voice kicked from ${message.guild!.name} for reason:_ **${reason}**`)
-            const dm = await member.createDM()
             try {
                 await member.voice.disconnect(reason)
                 const data = {type: "vckick", user: member.id, executor: message.author.id, date: Date.now(), guild: message.guild?.id, reason, context: message.url}
@@ -81,7 +80,8 @@ export default class VCKick extends Command {
             } catch {
                 return this.reply(`I need the **Move Members** permission, or this user is not in a voice channel ${discord.getEmoji("kannaFacepalm")}`)
             }
-            await discord.channelSend(dm, vckickEmbed).catch(() => null)
+            const dm = await member.createDM().catch(() => null)
+            if (dm) await discord.channelSend(dm, vckickEmbed).catch(() => null)
         }
         if (!members[0]) return this.reply(`Invalid users ${discord.getEmoji("kannaFacepalm")}`)
         vckickEmbed

@@ -73,7 +73,6 @@ export default class Deafen extends Command {
             .setAuthor({name: "deafen", iconURL: "https://kisaragi.moe/assets/embed/deafen.png"})
             .setTitle(`**You Were Deafened** ${discord.getEmoji("sataniaDead")}`)
             .setDescription(`${discord.getEmoji("star")}_You were deafened from ${message.guild!.name} for reason:_ **${reason}**`)
-            const dm = await member.createDM()
             try {
                 await member.voice.setDeaf(true, reason)
                 const data = {type: "deafen", user: member.id, executor: message.author.id, date: Date.now(), guild: message.guild?.id, reason, context: message.url}
@@ -81,7 +80,8 @@ export default class Deafen extends Command {
             } catch {
                 return this.reply(`I need the **Deafen Members** permission, or this user is not in a voice channel ${discord.getEmoji("kannaFacepalm")}`)
             }
-            await discord.channelSend(dm, deafenEmbed).catch(() => null)
+            const dm = await member.createDM().catch(() => null)
+            if (dm) await discord.channelSend(dm, deafenEmbed).catch(() => null)
         }
         if (!members[0]) return this.reply(`Invalid users ${discord.getEmoji("kannaFacepalm")}`)
         deafenEmbed

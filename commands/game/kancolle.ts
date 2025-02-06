@@ -30,7 +30,8 @@ export default class Kancolle extends Command {
             aliases: ["kc", "kantai", "kantaicollection"],
             random: "none",
             cooldown: 10,
-            subcommandEnabled: true
+            unlist: true,
+            subcommandEnabled: false
         })
         const girlOption = new SlashCommandOption()
             .setType("string")

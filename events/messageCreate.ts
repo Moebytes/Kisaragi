@@ -189,6 +189,7 @@ export default class MessageCreate {
       const command = cmdFunctions.findCommand(cmd)
       if (!command) return cmdFunctions.noCommand(cmd)
       if (command.options.nsfw && this.discord.checkMuted(message)) return
+      if (command.options.unlist && !perms.checkBotDev()) return
       command.message = message
 
       if (command.options.guildOnly) {

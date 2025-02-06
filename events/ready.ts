@@ -9,7 +9,7 @@ export default class Ready {
 
     public run = async () => {
       await this.discord.application?.emojis.fetch()
-      this.discord.user!.setPresence({activities: [{type: ActivityType.Playing, name: `=>help | ${this.discord.guilds.cache.size} guilds`, state: "dnd"}]})
+      this.discord.user?.setPresence({activities: [{type: ActivityType.Playing, name: `=>help | ${this.discord.guilds.cache.size} guilds`, state: "dnd"}]})
       const timestamp = `${moment().format("MM DD YYYY hh:mm:ss")} ->`
       const logString = `${timestamp} Logged in as ${this.discord.user!.tag}!`
       const readyString = `${timestamp} Ready in ${this.discord.guilds.cache.size} guilds on ${this.discord.channels.cache.size} channels, for a total of ${this.discord.users.cache.size} users.`

@@ -30,7 +30,8 @@ export default class VideoSpeed extends Command {
             aliases: ["vspeed"],
             cooldown: 20,
             defer: true,
-            subcommandEnabled: true
+            unlist: true,
+            subcommandEnabled: false
         })
         const urlOption = new SlashCommandOption()
             .setType("string")

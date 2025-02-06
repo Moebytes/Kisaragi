@@ -25,7 +25,8 @@ export default class TwitterOauth extends Command {
             guildOnly: true,
             aliases: ["toauth"],
             cooldown: 10,
-            subcommandEnabled: true
+            unlist: true,
+            subcommandEnabled: false
         })
         const revokeOption = new SlashCommandOption()
             .setType("string")

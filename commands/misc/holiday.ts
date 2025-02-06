@@ -25,7 +25,7 @@ export default class Holiday extends Command {
             random: "none",
             cooldown: 10,
             unlist: true,
-            subcommandEnabled: true
+            subcommandEnabled: false
         })
         const dateOption = new SlashCommandOption()
             .setType("string")

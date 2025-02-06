@@ -71,9 +71,8 @@ export default class Kick extends Command {
             }
             kickEmbed
             .setAuthor({name: "kick", iconURL: "https://kisaragi.moe/assets/embed/kick.png"})
-            .setTitle(`**You Were Kicked** ${discord.getEmoji("kannaFU")}`)
+            .setTitle(`**You Were Kicked** ${discord.getEmoji("kannaLeave")}`)
             .setDescription(`${discord.getEmoji("star")}_You were kicked from ${message.guild!.name} for reason:_ **${reason}**`)
-            const dm = await member.createDM()
             try {
                 await member.kick(reason)
                 const data = {type: "kick", user: member.id, executor: message.author.id, date: Date.now(), guild: message.guild?.id, reason, context: message.url}
@@ -81,12 +80,13 @@ export default class Kick extends Command {
             } catch {
                 return this.reply(`I need the **Kick Members** permission ${discord.getEmoji("kannaFacepalm")}`)
             }
-            await discord.channelSend(dm, kickEmbed).catch(() => null)
+            const dm = await member.createDM().catch(() => null)
+            if (dm) await discord.channelSend(dm, kickEmbed).catch(() => null)
         }
         if (!members[0]) return this.reply(`Invalid users ${discord.getEmoji("kannaFacepalm")}`)
         kickEmbed
         .setAuthor({name: "kick", iconURL: "https://kisaragi.moe/assets/embed/kick.png"})
-        .setTitle(`**Member Kicked** ${discord.getEmoji("kannaFU")}`)
+        .setTitle(`**Member Kicked** ${discord.getEmoji("kannaLeave")}`)
         .setDescription(`${discord.getEmoji("star")}_Successfully kicked ${members.join(", ")} for reason:_ **${reason}**`)
         return this.reply(kickEmbed)
     }

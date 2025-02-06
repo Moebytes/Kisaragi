@@ -25,7 +25,8 @@ export default class RedditOauth extends Command {
             guildOnly: true,
             aliases: ["roauth"],
             cooldown: 10,
-            subcommandEnabled: true
+            unlist: true,
+            subcommandEnabled: false
         })
         const revokeOption = new SlashCommandOption()
             .setType("string")

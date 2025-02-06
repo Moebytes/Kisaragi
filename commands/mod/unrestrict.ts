@@ -50,7 +50,7 @@ export default class Unrestrict extends Command {
         const perms = new Permission(discord, message)
         if (!await perms.checkMod()) return
         const restrictEmbed = embeds.createEmbed()
-        const restrict = await sql.fetchColumn("special roles", "restricted role")
+        const restrict = await sql.fetchColumn("guilds", "restricted role")
         if (!restrict) return this.reply("You need to set a restricted role first!")
         const reasonArray: string[] = []
         const userArray: string[] = []
@@ -73,12 +73,12 @@ export default class Unrestrict extends Command {
             const data = {type: "unrestrict", user: member.id, executor: message.author.id, date: Date.now(), guild: message.guild?.id, reason, context: message.url}
             discord.emit("caseUpdate", data)
             members.push(`<@${member.id}>`)
-            const dm = await member.createDM()
             restrictEmbed
             .setAuthor({name: "unrestrict", iconURL: "https://kisaragi.moe/assets/embed/unrestrict.png"})
             .setTitle(`**You Were Unrestricted** ${discord.getEmoji("yes")}`)
             .setDescription(`${discord.getEmoji("star")}_You were unrestricted in ${message.guild!.name} for reason:_ **${reason}**`)
-            await discord.channelSend(dm, restrictEmbed).catch(() => null)
+            const dm = await member.createDM().catch(() => null)
+            if (dm) await discord.channelSend(dm, restrictEmbed).catch(() => null)
         }
         if (!members[0]) return this.reply(`Invalid users ${discord.getEmoji("kannaFacepalm")}`)
         restrictEmbed

@@ -42,6 +42,7 @@ const register = async () => {
 
     try {
         await rest.put(Routes.applicationCommands(process.env.CLIENT_ID!), {body: slashCommands})
+        await rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID!, process.env.OWNER_SERVER!), {body: devCommands})
         Logger.log(`Refreshed ${slashCommands.length} application (/) commands.`)
     } catch (error) {
         console.error(error)

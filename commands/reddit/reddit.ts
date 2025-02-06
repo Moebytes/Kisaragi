@@ -34,7 +34,8 @@ export default class Reddit extends Command {
             random: "none",
             cooldown: 10,
             defer: true,
-            subcommandEnabled: true
+            unlist: true,
+            subcommandEnabled: false
         })
         const queryOption = new SlashCommandOption()
             .setType("string")

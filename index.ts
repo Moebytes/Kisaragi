@@ -24,13 +24,11 @@ const discord = new Kisaragi({
         GatewayIntentBits.MessageContent
     ],
     partials: [Partials.Message, Partials.Channel, Partials.Reaction],
-    rest: {
-        offset: 0
-    }
+    rest: {offset: 0}
 })
 
 // @ts-ignore
-DefaultWebSocketManagerOptions.identifyProperties.browser = "Discord iOS"
+//DefaultWebSocketManagerOptions.identifyProperties.browser = "Discord iOS"
 
 const dumps = [
     `./assets/misc/images/dump`,

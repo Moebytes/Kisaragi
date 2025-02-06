@@ -73,7 +73,6 @@ export default class VCMute extends Command {
             .setAuthor({name: "voice mute", iconURL: "https://kisaragi.moe/assets/embed/vcmute.png"})
             .setTitle(`**You Were Voice Muted** ${discord.getEmoji("vigneDead")}`)
             .setDescription(`${discord.getEmoji("star")}_You were voice muted from ${message.guild!.name} for reason:_ **${reason}**`)
-            const dm = await member.createDM()
             try {
                 await member.voice.setMute(true, reason)
                 const data = {type: "vcmute", user: member.id, executor: message.author.id, date: Date.now(), guild: message.guild?.id, reason, context: message.url}
@@ -81,7 +80,8 @@ export default class VCMute extends Command {
             } catch {
                 return this.reply(`I need the **Mute Members** permission, or this user is not in a voice channel ${discord.getEmoji("kannaFacepalm")}`)
             }
-            await discord.channelSend(dm, vcmuteEmbed).catch(() => null)
+            const dm = await member.createDM().catch(() => null)
+            if (dm) await discord.channelSend(dm, vcmuteEmbed).catch(() => null)
         }
         if (!members[0]) return this.reply(`Invalid users ${discord.getEmoji("kannaFacepalm")}`)
         vcmuteEmbed

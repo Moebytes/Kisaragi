@@ -52,7 +52,7 @@ export default class Warn extends Command {
         const warnReason = `Exceeded the threshold of ${warnThreshold} warns.`
         const dmEmbed = embeds.createEmbed()
         const guildEmbed = embeds.createEmbed()
-        const dm = await member.createDM()
+        const dm = await member.createDM().catch(() => null)
         for (let i = 0; i < warnLog.length; i++) {
             if (warnLog[i].user === userID) {
                 if (warnLog[i].warns.length >= 1) {
@@ -78,7 +78,7 @@ export default class Warn extends Command {
                             .setAuthor({name: "ban", iconURL: "https://kisaragi.moe/assets/embed/ban.png"})
                             .setTitle(`**You Were Banned** ${discord.getEmoji("kannaFU")}`)
                             .setDescription(`${discord.getEmoji("star")}_You were banned from ${message.guild!.name} for reason:_ **${warnReason}**`)
-                            await discord.channelSend(dm, dmEmbed).catch(() => null)
+                            if (dm) await discord.channelSend(dm, dmEmbed).catch(() => null)
                             guildEmbed
                             .setAuthor({name: "ban", iconURL: "https://kisaragi.moe/assets/embed/ban.png"})
                             .setTitle(`**Member Banned** ${discord.getEmoji("kannaFU")}`)
@@ -91,7 +91,7 @@ export default class Warn extends Command {
                             .setAuthor({name: "kick", iconURL: "https://kisaragi.moe/assets/embed/kick.png"})
                             .setTitle(`**You Were Kicked** ${discord.getEmoji("kannaFU")}`)
                             .setDescription(`${discord.getEmoji("star")}_You were kicked from ${message.guild!.name} for reason:_ **${warnReason}**`)
-                            await discord.channelSend(dm, dmEmbed).catch(() => null)
+                            if (dm) await discord.channelSend(dm, dmEmbed).catch(() => null)
                             guildEmbed
                             .setAuthor({name: "kick", iconURL: "https://kisaragi.moe/assets/embed/kick.png"})
                             .setTitle(`**Member Kicked** ${discord.getEmoji("kannaFU")}`)
@@ -110,7 +110,7 @@ export default class Warn extends Command {
                             .setAuthor({name: "mute", iconURL: "https://kisaragi.moe/assets/embed/mute.png"})
                             .setTitle(`**You Were Muted** ${discord.getEmoji("sagiriBleh")}`)
                             .setDescription(`${discord.getEmoji("star")}_You were muted from ${message.guild!.name} for reason:_ **${warnReason}**`)
-                            await discord.channelSend(dm, dmEmbed).catch(() => null)
+                            if (dm) await discord.channelSend(dm, dmEmbed).catch(() => null)
                             guildEmbed
                             .setAuthor({name: "mute", iconURL: "https://kisaragi.moe/assets/embed/mute.png"})
                             .setTitle(`**Member Muted** ${discord.getEmoji("sagiriBleh")}`)
@@ -153,7 +153,7 @@ export default class Warn extends Command {
         }
 
         const reason = reasonArray.join("") ? reasonArray.join(" ") : "None provided!"
-        const modLog = await sql.fetchColumn("logs", "mod log")
+        const modLog = await sql.fetchColumn("guilds", "mod log")
 
         for (let i = 0; i < userArray.length; i++) {
             const hash = Functions.randomString(16)

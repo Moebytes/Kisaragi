@@ -21,7 +21,7 @@ export default class Pokemon extends Command {
             random: "none",
             cooldown: 10,
             unlist: true,
-            subcommandEnabled: true
+            subcommandEnabled: false
         })
         const queryOption = new SlashCommandOption()
             .setType("string")

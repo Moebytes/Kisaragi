@@ -35,6 +35,7 @@ export default class GCount extends Command {
         const sql = new SQLQuery(message)
         const embeds = new Embeds(discord, message)
         if (!perms.checkBotDev()) return
-        this.discord.user!.setPresence({activities: [{type: ActivityType.Playing, name: `=>help | ${this.discord.guilds.cache.size} guilds`, state: "dnd"}]})
+        this.discord.user?.setPresence({activities: [{type: ActivityType.Playing, name: `=>help | ${this.discord.guilds.cache.size} guilds`, state: "dnd"}]})
+        return this.reply("Refreshed guild count!")
     }
 }

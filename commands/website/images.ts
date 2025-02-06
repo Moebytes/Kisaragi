@@ -24,7 +24,7 @@ export default class GoogleImageCommand extends Command {
             cooldown: 10,
             defer: true,
             unlist: true,
-            subcommandEnabled: true
+            subcommandEnabled: false
         })
         const queryOption = new SlashCommandOption()
             .setType("string")

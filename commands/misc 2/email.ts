@@ -23,7 +23,7 @@ export default class Email extends Command {
             aliases: ["gmail", "mail"],
             cooldown: 3,
             unlist: true,
-            subcommandEnabled: true
+            subcommandEnabled: false
         })
         const linkOption = new SlashCommandOption()
             .setType("string")
