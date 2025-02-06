@@ -24,6 +24,7 @@ export default class Musescore extends Command {
             random: "none",
             cooldown: 10,
             defer: true,
+            unlist: true,
             subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()

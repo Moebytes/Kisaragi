@@ -22,6 +22,7 @@ export default class Hastebin extends Command {
             `,
             aliases: [],
             cooldown: 3,
+            unlist: true,
             subcommandEnabled: true
         })
         const textOption = new SlashCommandOption()

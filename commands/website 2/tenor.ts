@@ -26,6 +26,7 @@ export default class TenorCommand extends Command {
             random: "none",
             cooldown: 5,
             defer: true,
+            unlist: true,
             subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
@@ -34,7 +35,7 @@ export default class TenorCommand extends Command {
             .setDescription("The query to search.")
 
         this.subcommand = new SlashCommandSubcommand()
-            .setName(this.constructor.name.toLowerCase())
+            .setName("tenor")
             .setDescription(this.options.description)
             .addOption(queryOption)
     }

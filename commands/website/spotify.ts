@@ -39,7 +39,7 @@ export default class SpotifyCommand extends Command {
             .setDescription("Can be a query/artist.")
 
         this.subcommand = new SlashCommandSubcommand()
-            .setName(this.constructor.name.toLowerCase())
+            .setName("spotify")
             .setDescription(this.options.description)
             .addOption(queryOption)
             .addOption(query2Option)
@@ -119,15 +119,15 @@ export default class SpotifyCommand extends Command {
             )
             spotifyArray.push(spotifyEmbed)
         }
-        const msg = await embeds.createReactionEmbed(spotifyArray, true, true)
+        let msg = await embeds.createReactionEmbed(spotifyArray, true, true)
         await msg.react(discord.getEmoji("spotify"))
-
         const spotifyCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("spotify").id && user.bot === false
         const spotifyCollector = msg.createReactionCollector({filter: spotifyCheck})
 
         const urls = new Set()
         spotifyCollector.on("collect", async (reaction, user) => {
             await reaction.users.remove(user).catch(() => null)
+            msg = await msg.fetch()
             if (urls.has(msg.embeds[0].url)) return
             if (!msg.embeds[0].url) return
             urls.add(msg.embeds[0].url)

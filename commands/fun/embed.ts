@@ -66,6 +66,7 @@ export default class Embed extends Command {
             return this.reply(`The bot needs the permission **Manage Messages** in order to use this command. ${this.discord.getEmoji("kannaFacepalm")}`)
         }
 
+        this.setProcBlock(true)
         const infoEmbed = embeds.createEmbed()
         let embed = new EmbedBuilder()
         embed.setColor(infoEmbed.data.color!)
@@ -284,7 +285,7 @@ export default class Embed extends Command {
                 this.setProcBlock(true)
                 return
             }
-            embed.setAuthor({name: embed.data.author!.name, iconURL: content})
+            embed.setAuthor({name: embed.data.author?.name || null as any, iconURL: content})
             this.edit(msg, embed)
             onInfo = false
             this.setProcBlock(true)
@@ -346,10 +347,12 @@ export default class Embed extends Command {
                 return
             }
             this.setProcBlock()
-            const rep = await this.send(`<@${user.id}>, Set the color of this embed (hex or named color).`)
+            const rep = await this.send(`<@${user.id}>, Set the color of this embed (hex color).`)
             await embeds.createPrompt(getContent, true)
             rep.delete()
-            embed.setColor(content.toUpperCase() as HexColorString)
+            try {
+                embed.setColor(content as HexColorString)
+            } catch {}
             this.edit(msg, embed)
             onInfo = false
             this.setProcBlock(true)

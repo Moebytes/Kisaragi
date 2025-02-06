@@ -34,6 +34,7 @@ export default class ReverseImage extends Command {
             random: "none",
             cooldown: 10,
             defer: true,
+            unlist: true,
             subcommandEnabled: true
         })
         const urlOption = new SlashCommandOption()

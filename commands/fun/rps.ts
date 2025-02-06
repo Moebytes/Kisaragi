@@ -89,7 +89,7 @@ export default class RPS extends Command {
 
         let str = ""
         if (win > 0) {
-            str = `You won! I chose ${botPick}. **${userPick}** beats **${botPick}**. ${discord.getEmoji("triggered")}`
+            str = `You won! I chose ${botPick}. **${userPick}** beats **${botPick}**. ${discord.getEmoji("triggeredSip")}`
         } else if (win < 0) {
             str = `You lost! I chose ${botPick}. **${botPick}** beats **${userPick}**. ${discord.getEmoji("kannaDab")}`
         } else {

@@ -25,6 +25,8 @@ export default class Screenshot extends Command {
             `,
           aliases: ["screencap"],
           cooldown: 15,
+          defer: true,
+          unlist: true,
           subcommandEnabled: true
         })
         const url2Option = new SlashCommandOption()
@@ -49,7 +51,7 @@ export default class Screenshot extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         const perms = new Permission(discord, message)
-        if (!perms.checkNSFW()) return
+        if (!perms.checkBotDev()) return
 
         let input = (args[1] === "return") ? Functions.combineArgs(args, 2) : Functions.combineArgs(args, 1)
         let setMobile = false

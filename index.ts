@@ -49,8 +49,9 @@ const dumps = [
     `./assets/misc/videos/transform`
 ]
 
+Functions.removeDirectory(path.join(__dirname, "./assets/misc"))
+
 for (let i = 0; i < dumps.length; i++) {
-    Functions.removeDirectory(path.join(__dirname, "./assets/misc"))
     fs.mkdirSync(path.join(__dirname, dumps[i]), {recursive: true})
 }
 

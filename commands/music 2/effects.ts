@@ -23,6 +23,7 @@ export default class Effects extends Command {
             aliases: ["fx"],
             guildOnly: true,
             cooldown: 20,
+            defer: true,
             subcommandEnabled: true
         })
         this.subcommand = new SlashCommandSubcommand()

@@ -23,6 +23,7 @@ export default class MDN extends Command {
             aliases: ["jsref"],
             cooldown: 5,
             defer: true,
+            unlist: true,
             subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()

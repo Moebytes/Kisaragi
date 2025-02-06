@@ -22,6 +22,7 @@ export default class Changelog extends Command {
             aliases: ["updates"],
             random: "none",
             cooldown: 10,
+            unlist: true,
             subcommandEnabled: true
         })
         const numOption = new SlashCommandOption()

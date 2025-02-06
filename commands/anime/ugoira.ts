@@ -1,5 +1,4 @@
 import {Message, AttachmentBuilder, MessageReaction, User} from "discord.js"
-import path from "path"
 import Pixiv, {PixivIllust, UgoiraMetaData} from "pixiv.ts"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
 import {Command} from "../../structures/Command"
@@ -9,6 +8,8 @@ import {Images} from "./../../structures/Images"
 import {Kisaragi} from "./../../structures/Kisaragi"
 import {Permission} from "./../../structures/Permission"
 import {PixivApi} from "./../../structures/PixivApi"
+import fs from "fs"
+import path from "path"
 
 export default class Ugoira extends Command {
     constructor(discord: Kisaragi, message: Message) {
@@ -97,7 +98,9 @@ export default class Ugoira extends Command {
         }
         if (String(pixivID).length > 14) return
         try {
-            await pixiv.util.downloadUgoira(String(pixivID), `assets/images/gifs/`, {speed: 1.0})
+            const folder = path.join(__dirname, "../../assets/images/gifs")
+            if (!fs.existsSync(folder)) fs.mkdirSync(folder, {recursive: true})
+            await pixiv.util.downloadUgoira(String(pixivID), path.join(folder, `${pixivID}.gif`), {speed: 1.0})
         } catch {
             return this.invalidQuery(embeds.createEmbed()
             .setAuthor({name: "pixiv", iconURL: "https://kisaragi.moe/assets/embed/ugoira.png"})
@@ -115,7 +118,9 @@ export default class Ugoira extends Command {
         const outGif = new AttachmentBuilder(path.join(__dirname, `../../assets/misc/images/gifs/${pixivID}.gif`))
         const comments = await pixiv.illust.comments({illust_id: pixivID as number})
         const cleanText = details.caption.replace(/<\/?[^>]+(>|$)/g, "")
-        const authorUrl = await pixiv.util.downloadProfilePicture(details, `assets/images/pixiv/profiles`)
+        const profileFolder = path.join(__dirname, "../../assets/images/pixiv/profiles")
+        if (!fs.existsSync(profileFolder)) fs.mkdirSync(profileFolder, {recursive: true})
+        const authorUrl = await pixiv.util.downloadProfilePicture(details, profileFolder)
         const authorAttachment = new AttachmentBuilder(authorUrl, {name: "author.png"})
         const commentArray: string[] = []
         for (let i = 0; i <= 5; i++) {
@@ -167,7 +172,9 @@ export default class Ugoira extends Command {
             await embeds.createPrompt(getSpeedChange)
             rep.delete()
             if (bad) return
-            await pixiv.util.downloadUgoira(String(pixivID), `assets/images/gifs/`, {speed: factor, reverse: setReverse})
+            const folder = path.join(__dirname, "../../assets/images/gifs")
+            if (!fs.existsSync(folder)) fs.mkdirSync(folder, {recursive: true})
+            await pixiv.util.downloadUgoira(String(pixivID), path.join(folder, `${pixivID}.gif`), {speed: factor, reverse: setReverse})
             const outGif = new AttachmentBuilder(path.join(__dirname, `../../assets/misc/images/gifs/${pixivID}.gif`))
             await this.send("", outGif)
         })

@@ -67,7 +67,7 @@ export default class TumblrCommand extends Command {
             .setAuthor({name: "tumblr", iconURL: "https://kisaragi.moe/assets/embed/tumblr.png", url: "https://www.tumblr.com/"})
             .setTitle(`**Tumblr Search** ${discord.getEmoji("chinoSmug")}`)
             .setURL(info.url)
-            .setImage(info.theme.header_image)
+            .setImage(info.theme.header_image || null)
             .setThumbnail(avatar)
             .setDescription(
                 `${discord.getEmoji("star")}_Blog:_ **${info.title}**\n` +
@@ -100,7 +100,7 @@ export default class TumblrCommand extends Command {
             tumblrEmbed
             .setAuthor({name: "tumblr", iconURL: "https://kisaragi.moe/assets/embed/tumblr.png", url: "https://www.tumblr.com/"})
             .setTitle(`**Tumblr Search** ${discord.getEmoji("chinoSmug")}`)
-            .setImage(image)
+            .setImage(image || null)
             .setThumbnail(avatar)
             .setURL(post.short_url)
             .setDescription(

@@ -9,7 +9,7 @@ import {Images} from "./../../structures/Images"
 import {Kisaragi} from "./../../structures/Kisaragi"
 
 let ytEmbeds: EmbedBuilder[] = []
-export default class YoutubeCommand extends Command {
+export default class Youtube extends Command {
     private video = null as any
     private channel = null as any
     private playlist = null as any

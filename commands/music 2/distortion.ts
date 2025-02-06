@@ -90,8 +90,8 @@ export default class Distortion extends Command {
             discord.edit(queue[0].message!, embed)
             const rep = await this.reply("Applied a distortion effect to the file!")
             await Functions.timeout(3000)
-        rep.delete().catch(() => null)
-        if (message instanceof Message) message.delete().catch(() => null)
+            rep.delete().catch(() => null)
+            if (message instanceof Message) message.delete().catch(() => null)
         }
     }
 }

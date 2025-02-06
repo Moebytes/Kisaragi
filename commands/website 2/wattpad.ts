@@ -22,6 +22,7 @@ export default class Wattpad extends Command {
             random: "string",
             cooldown: 10,
             defer: true,
+            unlist: true,
             subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()

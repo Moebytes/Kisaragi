@@ -20,6 +20,7 @@ export default class Pokemon extends Command {
             aliases: ["pokedex"],
             random: "none",
             cooldown: 10,
+            unlist: true,
             subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
@@ -60,7 +61,7 @@ export default class Pokemon extends Command {
         const discord = this.discord
         const message = this.message
         const embeds = new Embeds(discord, message)
-        const Pokedex = require("pokedex-promise-v2")
+        const Pokedex = await import("pokedex-promise-v2").then((r) => r.default)
         const pokemon = new Pokedex()
 
         const query = Functions.combineArgs(args, 1).trim()
@@ -71,9 +72,9 @@ export default class Pokemon extends Command {
             .setTitle(`**Pokemon Search** ${discord.getEmoji("vigneXD")}`))
         }
 
-        const result = await pokemon.getPokemonByName(query)
+        const result = await pokemon.getPokemonByName(query).then((r) => r?.[0])
 
-        if (!result.hasOwnProperty("name")) {
+        if (!result?.hasOwnProperty("name")) {
             return this.invalidQuery(embeds.createEmbed()
             .setAuthor({name: "pokemon", iconURL: "https://kisaragi.moe/assets/embed/pokemon.png", url: "https://pokeapi.co/"})
             .setTitle(`**Pokemon Search** ${discord.getEmoji("vigneXD")}`))

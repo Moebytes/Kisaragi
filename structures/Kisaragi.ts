@@ -47,8 +47,12 @@ export class Kisaragi extends Client {
         }
         if (files) options.files = Array.isArray(files) ? files : [files]
         if (this.deferState.has(input.id)) {
-            let flags = !input.guild ? MessageFlags.Ephemeral : undefined
-          return (input as ChatInputCommandInteraction).followUp({...options, flags})
+            if ("followUp" in input) {
+                let flags = !input.guild ? MessageFlags.Ephemeral : undefined
+                return (input as ChatInputCommandInteraction).followUp({...options, flags})
+            } else {
+                return (input as Message).reply(options)
+            }
         }
         if (!this.deferState.has(input.id)) this.deferState.add(input.id)
         return input.reply(options) as Promise<Message<true>>

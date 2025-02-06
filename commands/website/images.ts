@@ -23,6 +23,7 @@ export default class GoogleImageCommand extends Command {
             random: "string",
             cooldown: 10,
             defer: true,
+            unlist: true,
             subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
@@ -31,7 +32,7 @@ export default class GoogleImageCommand extends Command {
             .setDescription("The query to search.")
 
         this.subcommand = new SlashCommandSubcommand()
-            .setName(this.constructor.name.toLowerCase())
+            .setName("images")
             .setDescription(this.options.description)
             .addOption(queryOption)
     }

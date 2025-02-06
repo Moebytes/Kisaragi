@@ -23,6 +23,7 @@ export default class Equalizer extends Command {
             aliases: ["eq"],
             guildOnly: true,
             cooldown: 20,
+            defer: true,
             subcommandEnabled: true
         })
         this.subcommand = new SlashCommandSubcommand()

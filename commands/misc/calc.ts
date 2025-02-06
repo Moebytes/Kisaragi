@@ -1,6 +1,6 @@
 import {Message} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
-import math from "mathjs"
+import * as math from "mathjs"
 import {Command} from "../../structures/Command"
 import {Embeds} from "./../../structures/Embeds"
 import {Functions} from "./../../structures/Functions"
@@ -47,7 +47,7 @@ export default class Calc extends Command {
         const calcEmbed = embeds.createEmbed()
         calcEmbed
         .setTitle(`**Math Calculation** ${discord.getEmoji("vigneDead")}`)
-        .setDescription(result)
+        .setDescription(String(result))
         return this.reply(calcEmbed)
     }
 }

@@ -25,6 +25,7 @@ export default class StackExchange extends Command {
             random: "none",
             cooldown: 10,
             defer: true,
+            unlist: true,
             subcommandEnabled: true
         })
         const query2Option = new SlashCommandOption()

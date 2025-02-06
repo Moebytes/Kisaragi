@@ -71,7 +71,7 @@ export default class Download extends Command {
         }
         const rand = Math.floor(Math.random()*10000)
         const src = path.join(__dirname, `../../assets/misc/images/dump/${rand}/`)
-        if (!fs.existsSync(src)) fs.mkdirSync(src)
+        if (!fs.existsSync(src)) fs.mkdirSync(src, {recursive: true})
         const dest = path.join(__dirname, `../../assets/misc/images/dump/${rand}/${name}.zip`)
         await i.downloadImages(images, src)
         const downloads = fs.readdirSync(src).map((m) => src + m)

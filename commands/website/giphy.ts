@@ -32,7 +32,7 @@ export default class GiphyCommand extends Command {
             .setDescription("The query to search.")
 
         this.subcommand = new SlashCommandSubcommand()
-            .setName(this.constructor.name.toLowerCase())
+            .setName("giphy")
             .setDescription(this.options.description)
             .addOption(queryOption)
     }

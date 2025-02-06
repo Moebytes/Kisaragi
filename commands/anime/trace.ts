@@ -56,19 +56,19 @@ export default class Trace extends Command {
         if (!url) return this.reply(`What image do you want to trace ${discord.getEmoji("kannaFacepalm")}`)
         const headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36"}
 
-        const json = await axios.get(`https://trace.moe/api/search?url=${url}`, {headers}).then((r) => r.data)
-        if (!json?.docs) return this.reply(`No search results found ${discord.getEmoji("aquaCry")}`)
+        const json = await axios.get(`https://api.trace.moe/search?url=${url}`, {headers}).then((r) => r.data)
+        console.log(json)
+        if (!json?.result) return this.reply(`No search results found ${discord.getEmoji("aquaCry")}`)
 
         const traceArray: EmbedBuilder[] = []
-        for (let i = 0; i < json.docs.length; i++) {
-            const trace = json.docs[i]
+        for (let i = 0; i < json.result.length; i++) {
+            const trace = json.result[i]
             if (trace.is_adult) {
                 if (!perms.checkNSFW(true)) continue
             }
-            const image = `https://trace.moe/thumbnail.php?anilist_id=${trace.anilist_id}&file=${encodeURIComponent(trace.filename)}&t=${trace.at}&token=${trace.tokenthumb}`
-            const videoAround = `https://trace.moe/preview.php?anilist_id=${trace.anilist_id}&file=${encodeURIComponent(trace.filename)}&t=${trace.at}&token=${trace.tokenthumb}`
-            const video = `https://media.trace.moe/video/${trace.anilist_id}/${encodeURIComponent(trace.filename)}?t=${trace.at}&token=${trace.tokenthumb}`
-            const videoMuted = `https://media.trace.moe/video/${trace.anilist_id}/${encodeURIComponent(trace.filename)}?t=${trace.at}&token=${trace.tokenthumb}&mute`
+            const image = trace.image
+            const video = trace.video
+            const videoMuted = trace.video + `&mute`
             const traceEmbed = embeds.createEmbed()
             traceEmbed
             .setURL(video)
@@ -76,18 +76,13 @@ export default class Trace extends Command {
             .setTitle(`Anime Scene Search ${discord.getEmoji("vigneXD")}`)
             .setImage(image)
             .setDescription(
-                `${discord.getEmoji("star")}_Anime:_ **${trace.title_english}**\n` +
-                `${discord.getEmoji("star")}_Japanese Title:_ **${trace.title_native}**\n` +
-                `${discord.getEmoji("star")}_Season:_ **${this.getSeason(trace.season)}**\n` +
+                `${discord.getEmoji("star")}_Name:_ **${trace.filename}**\n` +
                 `${discord.getEmoji("star")}_Episode:_ **${trace.episode}**\n` +
                 `${discord.getEmoji("star")}_Similarity:_ **${(trace.similarity * 100).toFixed(2)}%**\n` +
-                `${discord.getEmoji("star")}_Time:_ \`${this.getTime(trace.at)}\`\n` +
                 `${discord.getEmoji("star")}_Scene:_ \`${this.getTime(trace.from)} - ${this.getTime(trace.to)}\`\n` +
                 `[**Video**](${video})\n` +
                 `[**Video Muted**](${videoMuted})\n` +
-                `[**Video Around**](${videoAround})\n` +
-                `[**AniList**](https://anilist.co/anime/${trace.anilist_id})\n` +
-                `[**MyAnimeList**](https://myanimelist.net/anime/${trace.mal_id})\n`
+                `[**AniList**](https://anilist.co/anime/${trace.anilist})\n`
             )
             traceArray.push(traceEmbed)
         }
@@ -95,7 +90,7 @@ export default class Trace extends Command {
         if (!traceArray[0]) {
             return this.invalidQuery(embeds.createEmbed()
             .setAuthor({name: "trace.moe", iconURL: "https://kisaragi.moe/assets/embed/trace.png", url: "https://trace.moe/"})
-            .setTitle(`Anime Scene Search ${discord.getEmoji("vigneXD")}`), "If this is a hentai, try searching in a NSFW channel.")
+            .setTitle(`Anime Scene Search ${discord.getEmoji("vigneXD")}`))
         }
         if (traceArray.length === 1) {
             return this.reply(traceArray[0])

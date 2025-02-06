@@ -786,7 +786,7 @@ export class Audio {
         .setAuthor({name: `${kind}`, iconURL: topImg})
         .setTitle(`**Song Request** ${discord.getEmoji("aquaUp")}`)
         .setURL(queueObj.url)
-        .setThumbnail(queueObj?.image)
+        .setThumbnail(queueObj?.image || null)
         .setDescription(`Added a new song to position **${pos}** in the queue!\n${queueObj.details}`)
         return queueEmbed
     }
@@ -1151,7 +1151,7 @@ export class Audio {
         .setAuthor({name: "playing", iconURL: "https://clipartmag.com/images/musical-notes-png-11.png"})
         .setTitle(`**Now Playing** ${this.discord.getEmoji("chinoSmug")}`)
         .setURL(now.url)
-        .setThumbnail(now.image)
+        .setThumbnail(now.image || null)
         .setDescription(details)
         return nowEmbed
     }
@@ -1174,6 +1174,7 @@ export class Audio {
             if (name === ".mp3") name = "noname.mp3"
             const data = await axios.get(song, {responseType: "arraybuffer", headers: this.headers}).then((r) => r.data)
             const dest = path.join(__dirname, `../assets/misc/tracks/${name}`)
+            if (!fs.existsSync(path.dirname(dest))) fs.mkdirSync(path.dirname(dest), {recursive: true})
             fs.writeFileSync(dest, Buffer.from(data, "binary"))
             file = dest
         }
@@ -1454,7 +1455,7 @@ export class Audio {
             songEmbed
             .setAuthor({name: "youtube", iconURL: "https://cdn4.iconfinder.com/data/icons/social-media-2210/24/Youtube-512.png", url: "https://www.youtube.com/"})
             .setTitle(`**Youtube Search** ${discord.getEmoji("vigneXD")}`)
-            .setThumbnail(images[i])
+            .setThumbnail(images[i] || null)
             .setDescription(description)
             .setFooter({text: `Page ${Math.floor(i/3) + 1}/${Math.ceil(links.length / 3)}`, iconURL: this.discord.displayAvatar(message)})
             songArray.push(songEmbed)
@@ -1482,7 +1483,7 @@ export class Audio {
             songEmbed
             .setAuthor({name: "soundcloud", iconURL: "https://icons.iconarchive.com/icons/danleech/simple/256/soundcloud-icon.png", url: "https://www.soundcloud.com/"})
             .setTitle(`**Soundcloud Search** ${discord.getEmoji("vigneXD")}`)
-            .setThumbnail(images[i])
+            .setThumbnail(images[i] || null)
             .setDescription(description)
             .setFooter({text: `Page ${Math.floor(i/3) + 1}/${Math.ceil(links.length / 3)}`, iconURL: this.discord.displayAvatar(message)})
             songArray.push(songEmbed)
@@ -1638,7 +1639,7 @@ export class Audio {
             `${discord.getEmoji("lowpass")}_Lowpass Filter_ -> _Removes high frequencies._\n` +
             `_Frequency and width are in Hz. If applicable, resonance is a Q factor and gain is in decibels._`
         )
-        const msg = await this.discord.send(this.message, eqEmbed)
+        const msg = await this.discord.reply(this.message, eqEmbed)
         const reactions = ["highpass", "highshelf", "bandpass", "peak", "bandreject", "lowshelf", "lowpass", "cancel"]
         for (let i = 0; i < reactions.length; i++) await msg.react(discord.getEmoji(reactions[i]))
 
@@ -1817,7 +1818,7 @@ export class Audio {
             `${discord.getEmoji("tremolo")}_Tremelo_ -> _Amplitude modulation with an LFO._`
         )
         const reactions = ["reverb", "delay", "chorus", "phaser", "flanger", "bitcrush", "upsample", "distortion", "compression", "allpass", "tremolo", "cancel"]
-        const msg = await this.discord.send(this.message, fxEmbed)
+        const msg = await this.discord.reply(this.message, fxEmbed)
         for (let i = 0; i < reactions.length; i++) await msg.react(discord.getEmoji(reactions[i]))
 
         const reverbCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("reverb").id && user.bot === false

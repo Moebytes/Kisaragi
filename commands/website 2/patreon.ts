@@ -21,6 +21,7 @@ export default class Patreon extends Command {
             aliases: [],
             cooldown: 10,
             defer: true,
+            unlist: true,
             subcommandEnabled: true
         })
         const creatorOption = new SlashCommandOption()

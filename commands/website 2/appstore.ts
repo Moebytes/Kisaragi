@@ -23,6 +23,7 @@ export default class AppStore extends Command {
             random: "string",
             cooldown: 15,
             defer: true,
+            unlist: true,
             subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()

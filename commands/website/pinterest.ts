@@ -32,6 +32,7 @@ export default class Pinterest extends Command {
             random: "string",
             cooldown: 15,
             defer: true,
+            unlist: true,
             subcommandEnabled: true
         })
         const boardOption = new SlashCommandOption()
@@ -97,7 +98,6 @@ export default class Pinterest extends Command {
             if (!perms.checkNSFW()) return
         }
         const headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"}
-        const accessToken = (process.env.PINTEREST_ACCESS_TOKEN)
         const images = new GoogleImages(process.env.PINTEREST_SEARCH_ID!, process.env.GOOGLE_API_KEY!)
         pinArray = []
         if (args[1]?.match(/pinterest.com/)) {
@@ -180,7 +180,7 @@ export default class Pinterest extends Command {
         if (!query) query = "anime"
         const imageResult = await images.search(query) as any
         const rand = Math.floor(Math.random() * imageResult.length)
-        const randPin = imageResult[rand].parentPage
+        const randPin = imageResult[rand]?.parentPage
         /*
         for (let i = 0; i < imageResult.length; i++) {
             const pinEmbed = embeds.createEmbed()

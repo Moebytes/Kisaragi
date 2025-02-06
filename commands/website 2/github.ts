@@ -29,6 +29,7 @@ export default class Github extends Command {
             random: "string",
             cooldown: 10,
             defer: true,
+            unlist: true,
             subcommandEnabled: true
         })
         const query2Option = new SlashCommandOption()
