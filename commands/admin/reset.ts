@@ -21,6 +21,7 @@ export default class Reset extends Command {
             guildOnly: true,
             aliases: [],
             cooldown: 10,
+            defer: true,
             subcommandEnabled: true
         })
         this.subcommand = new SlashCommandSubcommand()
