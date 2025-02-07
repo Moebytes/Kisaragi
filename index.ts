@@ -28,7 +28,7 @@ const discord = new Kisaragi({
 })
 
 // @ts-ignore
-//DefaultWebSocketManagerOptions.identifyProperties.browser = "Discord iOS"
+DefaultWebSocketManagerOptions.identifyProperties.browser = "Discord iOS"
 
 const dumps = [
     `./assets/misc/images/dump`,
@@ -53,8 +53,14 @@ for (let i = 0; i < dumps.length; i++) {
     fs.mkdirSync(path.join(__dirname, dumps[i]), {recursive: true})
 }
 
+const runDaily = async () => {
+    await SQLQuery.backupDB()
+}
+
 const start = async (): Promise<void> => {
     await SQLQuery.createDB()
+    runDaily()
+    setInterval(runDaily, 24 * 60 * 60 * 1000)
     //await SQLQuery.purgeTable("commands")
 
     let commandCounter = 0

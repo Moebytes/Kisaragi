@@ -4,6 +4,8 @@ import {Message} from "discord.js"
 import {Base64 as base64} from "js-base64"
 import moment from "moment"
 import {Pool, QueryArrayConfig, QueryConfig, QueryResult} from "pg"
+import {pgDump} from "pg-dump-restore"
+import {S3} from "@aws-sdk/client-s3"
 import querystring from "querystring"
 import * as Redis from "redis"
 import config from "../config.json"
@@ -589,5 +591,42 @@ export class SQLQuery {
       text: `DELETE FROM collectors WHERE timestamp < current_timestamp - interval '7 days'`
     }
     await SQLQuery.run(query, true)
+  }
+
+  public static backupDB = async () => {
+    if (process.env.DATABASE_BACKUPS !== "yes") return
+    const folder = path.join(__dirname, "./dump")
+    if (!fs.existsSync(folder)) fs.mkdirSync(folder, {recursive: true})
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-")
+    const filename = `Kisaragi-${timestamp}.dump`
+    const backupPath = path.join(folder, filename)
+
+    let connection = {
+        username: process.env.PG_USER!,
+        host: process.env.PG_HOST!,
+        database: process.env.PG_DATABASE!,
+        password: process.env.PG_PASSWORD!,
+        port: Number(process.env.PG_PORT)
+    }
+    await pgDump(connection, {
+        filePath: backupPath,
+        noOwner: true
+    })
+
+    const backupData = fs.readFileSync(backupPath)
+
+    const r2 = new S3({
+      region: "auto",
+      endpoint: process.env.R2_ENDPOINT,
+      credentials: {
+        accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!
+      }
+    })
+    let bucket = process.env.BACKUP_BUCKET!
+    await r2.putObject({Bucket: bucket, Key: filename, Body: backupData,
+    Expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)})
+
+    fs.unlinkSync(backupPath)
   }
 }
