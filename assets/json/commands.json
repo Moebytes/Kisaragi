@@ -306,15 +306,6 @@
         "cooldown": 3
     },
     {
-        "command": "eval",
-        "category": "botdev",
-        "description": "Evaluates Javascript code.",
-        "help": "eval code - Evaluates the code",
-        "aliases": "none",
-        "examples": "=>code 1+1",
-        "cooldown": 3
-    },
-    {
         "command": "event",
         "category": "botdev",
         "description": "Triggers an event.",
@@ -405,15 +396,6 @@
         "cooldown": 50
     },
     {
-        "command": "resetdb",
-        "category": "botdev",
-        "description": "Reconstructs the database.",
-        "help": "resetdb - Reset the database",
-        "aliases": "purgedb",
-        "examples": "=>resetdb",
-        "cooldown": 3
-    },
-    {
         "command": "set",
         "category": "botdev",
         "description": "Sets the bot's activity text.",
@@ -439,15 +421,6 @@
         "aliases": "none",
         "examples": "=>unblacklist <guild id>\n=>unblacklist user <user id>",
         "cooldown": 3
-    },
-    {
-        "command": "auto",
-        "category": "config",
-        "description": "Configures settings for auto commands.",
-        "help": "auto - Shows the auto settings prompt.\nauto cmd? #channel? num? - Sets the command, channel, and frequency (in hours).\nauto toggle setting - Turns a setting on or off.\nauto edit setting cmd? #channel? num? - Edits an existing setting.\nauto delete setting - Deletes a setting.\nauto reset - Resets all settings.",
-        "aliases": "none",
-        "examples": "=>auto holiday #holidays 24\n=>auto edit 1 #newchannel 12\n=>auto delete 1",
-        "cooldown": 10
     },
     {
         "command": "config",
@@ -502,15 +475,6 @@
         "aliases": "log, logging",
         "examples": "=>logs\n=>logs #message-log [#mod-log] <#user-log>\n=>logs reset",
         "cooldown": 15
-    },
-    {
-        "command": "oauth2",
-        "category": "config",
-        "description": "Authorize Kisaragi with additional permissions over your discord account.",
-        "help": "_Note: The data is only used for commands requiring oauth2. You can delete it at any point._\noauth2 - Follow the url and click on \"Authorize\" to authorize the bot\noauth2 revoke/delete - Revokes your oauth token and deletes your oauth2 data. Also deletes the twitter token.",
-        "aliases": "authorize, discordoauth",
-        "examples": "=>oauth2\n=>oauth2 delete",
-        "cooldown": 10
     },
     {
         "command": "pinboard",
@@ -576,15 +540,6 @@
         "cooldown": 15
     },
     {
-        "command": "twitchnotify",
-        "category": "config",
-        "description": "Configure twitch livestream notifications.",
-        "help": "twitchnotify - Opens the twitch notify prompt\ntwitchnotify name #channel @role/id? - Sets the text channel, text channel, and mention role (optional)\ntwitchnotify delete setting - Deletes a setting\ntwitchnotify edit setting @role/id? - Edits the role mention.\ntwitchnotify reset - Deletes all settings.",
-        "aliases": "twitchnotification, twitchnotifications",
-        "examples": "=>twitchnotify\n=>twitchnotify channel #updates",
-        "cooldown": 15
-    },
-    {
         "command": "welcome",
         "category": "config",
         "description": "Configures settings for welcome messages.",
@@ -592,15 +547,6 @@
         "aliases": "greeting",
         "examples": "=>welcome welcome user to guild! [welcome username! There are now count members.]\n=>welcome enable rainbow",
         "cooldown": 10
-    },
-    {
-        "command": "ytnotify",
-        "category": "config",
-        "description": "Configure youtube video upload notifications.",
-        "help": "ytnotify - Opens the yt notify prompt.\nytnotify ytid/name #channel @role/id? - Sets the youtube channel, text channel, and mention role (optional).\nytnotify delete number - Deletes a setting.\nytnotify edit number @role/id? - Edits the role mention. Omit the role to remove role mentions.\nytnotify reset - Deletes all settings.",
-        "aliases": "ytnotification, ytnotifications",
-        "examples": "=>ytnotify\n=>ytnotify channel #updates",
-        "cooldown": 15
     },
     {
         "command": "8ball",
@@ -774,15 +720,6 @@
         "cooldown": 10
     },
     {
-        "command": "kancolle",
-        "category": "game",
-        "description": "Gets information on a kancolle ship girl.",
-        "help": "kancolle - Gets some handpicked girls\nkancolle shipgirl - Gets information on the shipgirl.",
-        "aliases": "kc, kantai, kantaicollection",
-        "examples": "=>kancolle fubuki\n=>kancolle hibiki",
-        "cooldown": 10
-    },
-    {
         "command": "minesweeper",
         "category": "game",
         "description": "Starts a new game of minesweeper.",
@@ -909,12 +846,12 @@
         "cooldown": 10
     },
     {
-        "command": "grayscale",
+        "command": "greyscale",
         "category": "image",
-        "description": "Makes an image grayscale.",
-        "help": "grayscale url? - Makes the image grayscale",
-        "aliases": "greyscale",
-        "examples": "=>grayscale",
+        "description": "Makes an image greyscale.",
+        "help": "greyscale url? - Makes the image greyscale",
+        "aliases": "grayscale",
+        "examples": "=>greyscale",
         "cooldown": 10
     },
     {
@@ -933,6 +870,15 @@
         "help": "invert url? - Inverts the colors",
         "aliases": "none",
         "examples": "=>invert",
+        "cooldown": 10
+    },
+    {
+        "command": "lightness",
+        "category": "image",
+        "description": "Lightens or darkens an image.",
+        "help": "_Note: The range is -100 to 100._\nlightness amount - Changes the value of the last posted image\nlightness amount url - Changes the value of the linked image",
+        "aliases": "lighten, darken, darkness",
+        "examples": "=>lightness 50\n=>lightness -25",
         "cooldown": 10
     },
     {
@@ -993,7 +939,7 @@
         "command": "saturation",
         "category": "image",
         "description": "Increases or decreases the saturation of an image.",
-        "help": "saturation amount - Changes the saturation of the last posted image\nsaturation amount url - Changes the saturation of the linked image",
+        "help": "_Note: The range is -100 to 100._\nsaturation amount - Changes the saturation of the last posted image\nsaturation amount url - Changes the saturation of the linked image",
         "aliases": "saturate, desaturate",
         "examples": "=>saturation 50\n=>saturation -25",
         "cooldown": 10
@@ -1020,7 +966,7 @@
         "command": "sharpen",
         "category": "image",
         "description": "Sharpens an image.",
-        "help": "sharpen amount? sigma? - Sharpens the last posted image\nsharpen amount? sigma? url - Sharpens the linked image",
+        "help": "sharpen sigma? - Sharpens the last posted image\nsharpen sigma? url - Sharpens the linked image",
         "aliases": "sharp, sharpness",
         "examples": "=>sharpen 5",
         "cooldown": 10
@@ -1029,18 +975,9 @@
         "command": "tint",
         "category": "image",
         "description": "Tints the image with a color.",
-        "help": "tint #hexcolor opacity - Tints the last posted image\ntint #hexcolor opacity url - Tints the linked image",
+        "help": "tint #hexcolor - Tints the last posted image\ntint #hexcolor url - Tints the linked image",
         "aliases": "colorize, photofilter",
-        "examples": "=>tint #ff5ce1 60",
-        "cooldown": 10
-    },
-    {
-        "command": "value",
-        "category": "image",
-        "description": "Lightens or darkens an image (mixes with white/black).",
-        "help": "_Note: Use positive values for lightness, negative for darkness._\nvalue amount - Changes the value of the last posted image\nvalue amount url - Changes the value of the linked image",
-        "aliases": "lighten, darken, lightness, darkness",
-        "examples": "=>value 50\n=>value -25",
+        "examples": "=>tint #ff5ce1",
         "cooldown": 10
     },
     {
@@ -1069,15 +1006,6 @@
         "aliases": "none",
         "examples": "=>banner",
         "cooldown": 5
-    },
-    {
-        "command": "changelog",
-        "category": "info",
-        "description": "The most recent bot updates in chronological order.",
-        "help": "changelog num? - Sends the changelog (or specific one)",
-        "aliases": "updates",
-        "examples": "=>changelog",
-        "cooldown": 10
     },
     {
         "command": "channels",
@@ -1404,30 +1332,12 @@
         "cooldown": 10
     },
     {
-        "command": "holiday",
-        "category": "misc",
-        "description": "Searches for daily holidays.",
-        "help": "holiday - Gets today's holiday.\nholiday date - Gets the holiday for the date",
-        "aliases": "none",
-        "examples": "=>holiday\n=>holiday January 20\n=>holiday 7/3",
-        "cooldown": 10
-    },
-    {
         "command": "nasa",
         "category": "misc",
         "description": "Posts a random picture of space.",
         "help": "nasa - Posts a random picture\nnasa today - Posts the astronomy picture of the day\nnasa date? - Posts the astronomy picture of a day, YYYY-MM-DD format",
         "aliases": "space, apod",
         "examples": "=>nasa\n=>nasa 2020-03-07",
-        "cooldown": 10
-    },
-    {
-        "command": "pokemon",
-        "category": "misc",
-        "description": "Gets information on a pokemon.",
-        "help": "pokemon query - Posts info on a pokemon",
-        "aliases": "pokedex",
-        "examples": "=>pokemon eevee",
         "cooldown": 10
     },
     {
@@ -1438,15 +1348,6 @@
         "aliases": "r, rc, rand, randomcommand",
         "examples": "=>random",
         "cooldown": 10
-    },
-    {
-        "command": "screenshot",
-        "category": "misc",
-        "description": "Posts a website screenshot.",
-        "help": "screenshot url - Posts the screenshot of the webpage\nscreenshot mobile url - Posts the screenshot of the mobile version of the site",
-        "aliases": "screencap",
-        "examples": "=>screenshot https://www.youtube.com/\n=>screenshot mobile https://www.youtube.com/",
-        "cooldown": 15
     },
     {
         "command": "snowflake",
@@ -1512,39 +1413,12 @@
         "cooldown": 3
     },
     {
-        "command": "email",
-        "category": "misc 2",
-        "description": "Sends you an email with text content/attachment. **Requires oauth2**",
-        "help": "_Note: If no link is provided, the attachment on the last message is sent (if any)._\nemail content? link? - Sends you an email with the content and link",
-        "aliases": "gmail, mail",
-        "examples": "=>email (pic of cute anime girl)",
-        "cooldown": 3
-    },
-    {
-        "command": "hastebin",
-        "category": "misc 2",
-        "description": "Uploads a message or text file to hastebin.",
-        "help": "hastebin text? - Uploads the text, or the last uploaded text file",
-        "aliases": "none",
-        "examples": "=>hastebin insert code",
-        "cooldown": 3
-    },
-    {
         "command": "hexadecimal",
         "category": "misc 2",
         "description": "Converts a number to and from hexadecimal.",
         "help": "_Note: Not all hexadecimal numbers contain letters, so add the param decode somewhere to explicitly convert from hex to decimal._\nhexadecimal number/hex string decode? - Converts decimal to hexadecimal or hexadecimal to decimal",
         "aliases": "hex",
         "examples": "=>hexadecimal hi",
-        "cooldown": 3
-    },
-    {
-        "command": "json",
-        "category": "misc 2",
-        "description": "Gets the JSON data of a message, embed, guild, role, channel, or emoji.",
-        "help": "_Note: If the message contains an embed, the JSON for the embed is posted._\njson id? - Gets the json data of the resource, or last posted message.\njson embed - Gets the json data of the last posted embed, specifically.",
-        "aliases": "none",
-        "examples": "=>json",
         "cooldown": 3
     },
     {
@@ -1557,15 +1431,6 @@
         "cooldown": 3
     },
     {
-        "command": "pastebin",
-        "category": "misc 2",
-        "description": "Uploads a message or text file to pastebin.",
-        "help": "pastebin [title]? text? - Uploads the text, or the last uploaded text file\npastebin public [title]? text? - By default, the privacy is unlisted, but this makes it public",
-        "aliases": "none",
-        "examples": "=>pastebin [some code]",
-        "cooldown": 3
-    },
-    {
         "command": "ping",
         "category": "misc 2",
         "description": "Posts the response time.",
@@ -1573,15 +1438,6 @@
         "aliases": "none",
         "examples": "=>ping",
         "cooldown": 3
-    },
-    {
-        "command": "pwned",
-        "category": "misc 2",
-        "description": "Searches have i been pwned.",
-        "help": "pwned - Posts pwned websites\npwned query - Searches for a specific data breach",
-        "aliases": "haveibeenpwned",
-        "examples": "=>pwned\n=>pwned myspace",
-        "cooldown": 5
     },
     {
         "command": "shorten",
@@ -1874,7 +1730,7 @@
     {
         "command": "play",
         "category": "music",
-        "description": "Plays any song from soundcloud, youtube, a link, or an attachment.",
+        "description": "Plays any song from soundcloud, a link, or an attachment.",
         "help": "_Note: You must be in a voice channel._\nplay - Plays the default songs.\nplay song - Searches for songs on soundcloud and plays the one that you pick.\nplay first song - Plays the first result automatically.\nplay reverse song - Starts playback in reverse mode.\nplay loop song - Starts playback in loop mode.",
         "aliases": "pl, stream",
         "examples": "=>play\n=>play reverse first synthion comet",
@@ -2313,24 +2169,6 @@
         "cooldown": 10
     },
     {
-        "command": "dragonmaid",
-        "category": "reddit",
-        "description": "The dragon maid subreddit.",
-        "help": "dragonmaid - Gets a random post from r/dragonmaid",
-        "aliases": "none",
-        "examples": "=>dragonmaid",
-        "cooldown": 10
-    },
-    {
-        "command": "gabrieldropout",
-        "category": "reddit",
-        "description": "The gabriel dropout subreddit.",
-        "help": "gabrieldropout - Gets a random post from r/gabrieldropout",
-        "aliases": "none",
-        "examples": "=>gabrieldropout",
-        "cooldown": 10
-    },
-    {
         "command": "moestash",
         "category": "reddit",
         "description": "Lots of moe art.",
@@ -2358,24 +2196,6 @@
         "cooldown": 10
     },
     {
-        "command": "reddit",
-        "category": "reddit",
-        "description": "Searches posts on a reddit subreddit.",
-        "help": "reddit - Gets a random post\nreddit subreddit query? - Searches for posts in the subreddit or gets random ones\nreddit subreddit hot/new/top/rising/controversial - Gets hot, new, top, etc. posts in the board\nreddit user query - Searches for users\nreddit url - Gets the post from the url",
-        "aliases": "r",
-        "examples": "=>reddit\n=>reddit anime cute\n=>reddit animemes hot",
-        "cooldown": 10
-    },
-    {
-        "command": "redditoauth",
-        "category": "reddit",
-        "description": "Authorize read and write access to your reddit account. **Requires oauth2**.",
-        "help": "redditoauth - Follow the url and click on \"Authorize\" to authorize your reddit account\nredditoauth revoke/delete - Deletes and revokes your reddit token",
-        "aliases": "roauth",
-        "examples": "=>redditoauth\n=>redditoauth revoke",
-        "cooldown": 10
-    },
-    {
         "command": "smugs",
         "category": "reddit",
         "description": "Smug anime girls.",
@@ -2394,42 +2214,6 @@
         "cooldown": 10
     },
     {
-        "command": "status",
-        "category": "twitter",
-        "description": "Updates your twitter profile description. **Requires twitteroauth**",
-        "help": "status content - Update your status",
-        "aliases": "none",
-        "examples": "=>status Visit my website at www.website.com",
-        "cooldown": 5
-    },
-    {
-        "command": "tweet",
-        "category": "twitter",
-        "description": "Posts a new tweet onto your account, on your behalf. **Requires twitteroauth**",
-        "help": "tweet content - Posts a new tweet",
-        "aliases": "none",
-        "examples": "=>tweet posted by Kisaragi Bot!",
-        "cooldown": 5
-    },
-    {
-        "command": "twitter",
-        "category": "twitter",
-        "description": "Searches for twitter tweets and users.",
-        "help": "twitter query - Searches for tweets with the query\ntwitter user query - Searches for a user\ntwitter url - Gets the resource from the url",
-        "aliases": "t",
-        "examples": "=>twitter anime\n=>twitter user name",
-        "cooldown": 10
-    },
-    {
-        "command": "twitteroauth",
-        "category": "twitter",
-        "description": "Authorize read and write access to your twitter account. **Requires oauth2**.",
-        "help": "twitteroauth - Follow the url and click on \"Authorize\" to authorize your twitter account\ntwitteroauth revoke/delete - Deletes your twitter oauth token. To revoke it, you have to go into your application settings.",
-        "aliases": "toauth",
-        "examples": "=>twitteroauth\n=>twitteroauth delete",
-        "cooldown": 10
-    },
-    {
         "command": "gifspeed",
         "category": "video",
         "description": "Speeds up a gif by constraining the amount of frames.",
@@ -2445,33 +2229,6 @@
         "help": "reversevideo - Reverses the last posted video\nreversevideo url - Reverses the linked video",
         "aliases": "vreverse, reversevid",
         "examples": "=>reversevideo",
-        "cooldown": 20
-    },
-    {
-        "command": "video2gif",
-        "category": "video",
-        "description": "Converts a portion of a video to a gif.",
-        "help": "_Note: The maximum length is 10 seconds._\nvideo2gif start length - Converts the last posted video\nvideo2gif start length url - Converts the linked video",
-        "aliases": "vgif, vid2gif",
-        "examples": "=>video2gif 30 3",
-        "cooldown": 20
-    },
-    {
-        "command": "video2mp3",
-        "category": "video",
-        "description": "Converts a video file or link to mp3.",
-        "help": "_Note: Passing in youtube links is an alias for the youtube download mp3 command._\nvideo2mp3 - Convert the last posted video\nvideo2mp3 url - Convert the linked video",
-        "aliases": "vid2mp3, yt2mp3",
-        "examples": "=>video2mp3",
-        "cooldown": 20
-    },
-    {
-        "command": "videospeed",
-        "category": "video",
-        "description": "Changes the speed of a video.",
-        "help": "videospeed factor - Changes the speed of the last posted video\nvideospeed factor url - Changes the speed of the linked video",
-        "aliases": "vspeed",
-        "examples": "=>videospeed 1.5",
         "cooldown": 20
     },
     {
@@ -2682,15 +2439,6 @@
         "cooldown": 10
     },
     {
-        "command": "4chan",
-        "category": "website",
-        "description": "Searches for posts and images on 4chan.",
-        "help": "_Note: NSFW boards are restricted to nsfw channels._\n4chan images? - Default search is \"a anime\".\n4chan board query - Searches the specified board with the query.\n4chan images board query - Similar, but only sends all of the images.",
-        "aliases": "4, 4ch",
-        "examples": "=>4chan\n=>4chan a kawaii\n=>4chan images c cute",
-        "cooldown": 15
-    },
-    {
         "command": "bandcamp",
         "category": "website",
         "description": "Searches for artists, tracks, and albums on bandcamp.",
@@ -2716,51 +2464,6 @@
         "aliases": "gif",
         "examples": "=>giphy\n=>giphy anime",
         "cooldown": 5
-    },
-    {
-        "command": "google",
-        "category": "website",
-        "description": "Searches a search term on google.",
-        "help": "google query - Searches google for the query.",
-        "aliases": "g",
-        "examples": "=>google anime",
-        "cooldown": 10
-    },
-    {
-        "command": "images",
-        "category": "website",
-        "description": "Searches for images on google images.",
-        "help": "images query - Searches google images for the query.",
-        "aliases": "i, image, googleimages",
-        "examples": "=>images anime",
-        "cooldown": 10
-    },
-    {
-        "command": "mal",
-        "category": "website",
-        "description": "Searches for anime, characters, and users on my anime list.",
-        "help": "mal - Gets the top anime\nmal query - Searches for anime matching the query\nmal character query - Searches for characters with the query\nmal user query - Searches for users matching the query",
-        "aliases": "myanimelist",
-        "examples": "=>mal gabriel dropout\n=>mal satania",
-        "cooldown": 10
-    },
-    {
-        "command": "pinterest",
-        "category": "website",
-        "description": "Searches for images on pinterest.",
-        "help": "pinterest query - Searches pinterest for the query\npinterest user username - Searches for pins by the user\npinterest board username boardname - Searches for pins in a user's board",
-        "aliases": "pint",
-        "examples": "=>pinterest anime\n=>pinterest user name\n=>pinterest board name anime",
-        "cooldown": 15
-    },
-    {
-        "command": "reverseimage",
-        "category": "website",
-        "description": "Reverse image searches an image, avatar, or guild icon.",
-        "help": "_Note:_ If no image is found, it defaults to your avatar.\nreverseimage - Reverse searches the last sent image.\nreverseimage url - Reverse searches the image from the url.\nreverseimage @user/id - Reverse searches the user's avatar.\nreverseimage guild - Reverse searches the guild's icon.\nreverseimage me - Reverse searches your avatar.",
-        "aliases": "revimg, reverseimg",
-        "examples": "=>reverseimage\n=>reverseimage https://i.imgur.com/Dt2KANz.jpg\n=>reverseimage guild",
-        "cooldown": 10
     },
     {
         "command": "saucenao",
@@ -2790,24 +2493,6 @@
         "cooldown": 10
     },
     {
-        "command": "trello",
-        "category": "website",
-        "description": "Searches for trello boards and users.",
-        "help": "trello query - Searches for users with the query\ntrello url - Fetches the board from the url",
-        "aliases": "none",
-        "examples": "=>trello name\n=>trello https://trello.com/b/boardID",
-        "cooldown": 10
-    },
-    {
-        "command": "twitch",
-        "category": "website",
-        "description": "Searches for twitch streams and channels.",
-        "help": "twitch query - Searches for streams with the query\ntwitch channel query - Searches for a channel\ntwitch url - Gets the resource from the url",
-        "aliases": "tw",
-        "examples": "=>twitch osu\n=>twitch channel name",
-        "cooldown": 10
-    },
-    {
         "command": "wikipedia",
         "category": "website",
         "description": "Searches for wikipedia articles.",
@@ -2815,51 +2500,6 @@
         "aliases": "w, wiki",
         "examples": "=>wikipedia\n=>wikipedia anime",
         "cooldown": 10
-    },
-    {
-        "command": "appstore",
-        "category": "website 2",
-        "description": "Searches for apps on the iphone app store.",
-        "help": "appstore query - Searches the app store with the query.\nappstore url - Searches for the url",
-        "aliases": "app, istore",
-        "examples": "=>appstore geometry dash",
-        "cooldown": 15
-    },
-    {
-        "command": "crunchyroll",
-        "category": "website 2",
-        "description": "Searches for an anime on crunchyroll.",
-        "help": "crunchyroll url/query - Searches crunchyroll for the url/query.",
-        "aliases": "cr, crunchy",
-        "examples": "=>crunchyroll konosuba",
-        "cooldown": 10
-    },
-    {
-        "command": "discordjs",
-        "category": "website 2",
-        "description": "Searches the discord.js docs.",
-        "help": "discordjs query - Searches the docs for the query (master branch)\ndiscordjs master/stable/rpc/command/akairo/akairo-master/collection query - Searches the specified branch for the query\ndiscordjs url - Gets the resource from the url",
-        "aliases": "djs",
-        "examples": "=>discordjs attachment\n=>discordjs stable message",
-        "cooldown": 5
-    },
-    {
-        "command": "github",
-        "category": "website 2",
-        "description": "Searches for github repositories and users.",
-        "help": "github query - Searches for repositories with the query\ngithub user query - Searches for users with the query",
-        "aliases": "gh",
-        "examples": "=>github anime\n=>github user github",
-        "cooldown": 10
-    },
-    {
-        "command": "googleplay",
-        "category": "website 2",
-        "description": "Searches for apps on the google play store.",
-        "help": "googleplay query - Searches google play with the query.",
-        "aliases": "gplay, playstore",
-        "examples": "=>googleplay discord",
-        "cooldown": 15
     },
     {
         "command": "imdb",
@@ -2871,15 +2511,6 @@
         "cooldown": 10
     },
     {
-        "command": "imgur",
-        "category": "website 2",
-        "description": "Searches for images on imgur.",
-        "help": "imgur query - Searches for images with the query",
-        "aliases": "img, image",
-        "examples": "=>imgur anime",
-        "cooldown": 5
-    },
-    {
         "command": "itunes",
         "category": "website 2",
         "description": "Searches the itunes store for tracks.",
@@ -2887,15 +2518,6 @@
         "aliases": "none",
         "examples": "=>itunes anime",
         "cooldown": 15
-    },
-    {
-        "command": "mdn",
-        "category": "website 2",
-        "description": "Searches the mdn docs.",
-        "help": "mdn query - Searches mdn for the query\nmdn url - Searches the url",
-        "aliases": "jsref",
-        "examples": "=>mdn array",
-        "cooldown": 5
     },
     {
         "command": "npm",
@@ -2907,24 +2529,6 @@
         "cooldown": 5
     },
     {
-        "command": "patreon",
-        "category": "website 2",
-        "description": "Searches for a patreon creator.",
-        "help": "patreon creator - Searches for the creator page of the creator.",
-        "aliases": "none",
-        "examples": "=>patreon creator",
-        "cooldown": 10
-    },
-    {
-        "command": "tenor",
-        "category": "website 2",
-        "description": "Searches for gifs on tenor.",
-        "help": "tenor - Posts a random gif\ntenor query - Searches for a gif with the query\ntenor url - Gets the gif from the url",
-        "aliases": "ten",
-        "examples": "=>tenor\n=>tenor anime",
-        "cooldown": 5
-    },
-    {
         "command": "urban",
         "category": "website 2",
         "description": "Searches for words on urban dictionary.",
@@ -2932,15 +2536,6 @@
         "aliases": "none",
         "examples": "=>urban\n=>urban anime",
         "cooldown": 5
-    },
-    {
-        "command": "wattpad",
-        "category": "website 2",
-        "description": "Searches for stories on wattpad.",
-        "help": "wattpad query - Searches for stories",
-        "aliases": "none",
-        "examples": "=>wattpad gabriel dropout",
-        "cooldown": 10
     },
     {
         "command": "xkcd",
@@ -2985,42 +2580,6 @@
         "help": "_Note: The invocation of this command is removed for privacy reasons._\ngravatar email - Gets the profile picture of the email",
         "aliases": "none",
         "examples": "=>gravatar someone@gmail.com",
-        "cooldown": 10
-    },
-    {
-        "command": "instagram",
-        "category": "website 3",
-        "description": "Searches for posts and users on instagram.",
-        "help": "instagram query - Searches for tagged posts\ninstagram user name - Searches for a user",
-        "aliases": "insta",
-        "examples": "=>instagram anime\n=>instagram user name",
-        "cooldown": 10
-    },
-    {
-        "command": "musescore",
-        "category": "website 3",
-        "description": "Searches for midi files and sheet music on musescore.",
-        "help": "musescore query - Search for scores",
-        "aliases": "none",
-        "examples": "=>musescore anime",
-        "cooldown": 10
-    },
-    {
-        "command": "stackexchange",
-        "category": "website 3",
-        "description": "Searches for questions on a stack exchange site, use alias `stackoverflow` for stack overflow.",
-        "help": "_Note: You must use the stackoverflow alias in order to search on stackoverflow._\nstackoverflow query - Gets questions and answers from stack overflow\nstackexchange site query - Gets questions and answers from the stack exchange site",
-        "aliases": "stack, stackoverflow",
-        "examples": "=>stackoverflow typescript\n=>stackexchange anime slice of life",
-        "cooldown": 10
-    },
-    {
-        "command": "steam",
-        "category": "website 3",
-        "description": "Searches the steam store.",
-        "help": "steam query - Searches steam.",
-        "aliases": "none",
-        "examples": "=>steam anime",
         "cooldown": 10
     },
     {
