@@ -107,7 +107,7 @@ export class Images {
         if (!dest.endsWith(".jpg") || !dest.endsWith(".png")) return this.download(url, dest)
         const writeStream = fs.createWriteStream(dest)
         await axios.get(url, {responseType: "stream", headers: this.headers}).then((r) => r.data.pipe(writeStream))
-        await new Promise((resolve, reject) => {
+        await new Promise<void>((resolve, reject) => {
             writeStream.on("finish", resolve)
             writeStream.on("error", reject)
         })

@@ -1,0 +1,32 @@
+#Sensitive data
+.env
+.ssh
+dist/.env
+dump.rdb
+
+#Node modules
+node_modules
+
+#Compiled folder
+dist
+
+#VS Code settings
+.vscode
+
+#Typescript declarations
+declarations
+
+#Downloaded Files
+assets/images/gifs/*
+assets/images/pages/*
+assets/images/pixiv/*
+assets/images/misc/*
+assets/images/dump/*
+assets/images/waifu2x/*
+assets/misc/videos/*
+assets/misc/tracks/*
+assets/misc/images/*
+assets/misc/dump/*
+
+#Other
+.DS_Store

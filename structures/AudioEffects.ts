@@ -1,6 +1,6 @@
 import axios from "axios"
 import child_process from "child_process"
-import {Message, AttachmentBuilder, EmbedBuilder} from "discord.js"
+import {Message, AttachmentBuilder} from "discord.js"
 import ffmpeg from "fluent-ffmpeg"
 import fs from "fs"
 import path from "path"
@@ -9,7 +9,8 @@ import {Functions} from "./Functions"
 import {Images} from "./Images"
 import {Kisaragi} from "./Kisaragi"
 
-const soxPath = process.platform === "win32" ? path.join(__dirname, "../../sox/sox.exe") : path.join(__dirname, "../../sox/sox")
+const soxPath = process.platform === "win32" ? path.join(__dirname, "../../sox/sox.exe") : 
+process.platform === "darwin" ? path.join(__dirname, "../../sox/sox") : "sox"
 
 export class AudioEffects {
     private readonly headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"}

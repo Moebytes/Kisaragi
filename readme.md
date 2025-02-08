@@ -18,32 +18,6 @@ _Double click on the same reaction to toggle a compact form of the help menu._
 
 Please let me know by submitting an issue or using the `feedback` command on the bot. I appreciate all ideas.
 
-## Tips
-
-Because discord.js makes breaking changes to the send/reply methods very frequently, for the least pain when developing (avoiding having to change hundreds 
-of files) make sure that you centralize your bots reply method... Something like:
-
-```ts
-public reply = (input: Message | ChatInputCommandInteraction, embeds: EmbedBuilder | EmbedBuilder[] | string, 
-    files?: AttachmentBuilder | AttachmentBuilder[], opts?: MessageReplyOptions) => {
-        let options = {...opts} as any
-        if (Array.isArray(embeds)) {
-            options.embeds = embeds
-        } else if (embeds instanceof EmbedBuilder) {
-          options.embeds = [embeds]
-        } else if (typeof embeds === "string") {
-          options.content = embeds
-        }
-        if (files) options.files = Array.isArray(files) ? files : [files]
-        if (this.deferState.has(input.id)) {
-            let flags = !input.guild ? MessageFlags.Ephemeral : undefined
-            return (input as ChatInputCommandInteraction).followUp({...options, flags})
-        }
-        if (!this.deferState.has(input.id)) this.deferState.add(input.id)
-        return input.reply(options) as Promise<Message<true>>
-    }
-```
-
 ## Self Hosting
 
 - The bot runs on Node.js: https://nodejs.org/en/

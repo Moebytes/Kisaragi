@@ -18,6 +18,7 @@ export default class MessageReactionAdd {
         const retriggerEmbed = async (reaction: MessageReaction) => {
             if (reaction.message.partial) reaction.message = await reaction.message.fetch()
             if (user.partial) user = await user.fetch()
+            console.log(reaction)
             if (reaction.message.author.id === discord.user!.id) {
                 if (active.has(reaction.message.id)) return
                 const newArray = await SQLQuery.selectColumn("collectors", "message", true)

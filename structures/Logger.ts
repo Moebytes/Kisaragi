@@ -3,10 +3,10 @@ import moment from "moment"
 
 export class Logger {
     public static returnLog = (content: string, type: string, color: string): void => {
-        const timestamp = `${moment().format("MM DD YYYY hh:mm:ss")} ->`
-        const logString = `${timestamp} ${type} ${content}`
-        return console.log(chalk`{${color} ${logString}}`)
-      }
+      const timestamp = `${moment().format("MM DD YYYY hh:mm:ss")} ->`
+      const logString = `${timestamp} ${type} ${content}`
+      return console.log(chalk[color](logString))
+   }
 
     public static getLogColor = (logType: string): string => {
         switch (logType) {

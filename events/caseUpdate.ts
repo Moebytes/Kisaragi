@@ -17,7 +17,7 @@ export default class CaseUpdate {
         let context = ""
         if (instance.context) {
             const {channelID} = discord.parseMessageURL(instance.context)
-            channelName = "#" + (discord.channels.cache.get(channelID) as TextChannel)?.name ?? ""
+            channelName = "#" + ((discord.channels.cache.get(channelID) as TextChannel)?.name ?? "")
             context = `[**Context**](${instance.context})`
         }
         embed
@@ -57,7 +57,7 @@ export default class CaseUpdate {
             case "warn":
                 const warnEmbed = embeds.createEmbed()
                 warnEmbed
-                .setAuthor({name: "warn", iconURL: "https://www.emoji.co.uk/files/phantom-open-emojis/symbols-phantom/13025-warning-sign.png"})
+                .setAuthor({name: "warn", iconURL: "https://kisaragi.moe/assets/embed/warn.png"})
                 .setTitle(`**Warn | Case #${caseNumber}** ${discord.getEmoji("raphi")}`)
                 .setColor("#ffab3d")
                 await this.insert(sql, warnEmbed, instance, cases)
@@ -65,7 +65,7 @@ export default class CaseUpdate {
             case "ban":
                 const banEmbed = embeds.createEmbed()
                 banEmbed
-                .setAuthor({name: "ban", iconURL: "https://discordemoji.com/assets/emoji/bancat.png"})
+                .setAuthor({name: "ban", iconURL: "https://kisaragi.moe/assets/embed/ban.png"})
                 .setTitle(`**Ban | Case #${caseNumber}** ${discord.getEmoji("kannaFU")}`)
                 .setColor("#ff2457")
                 await this.insert(sql, banEmbed, instance, cases)
@@ -73,7 +73,7 @@ export default class CaseUpdate {
             case "unban":
                 const unbanEmbed = embeds.createEmbed()
                 unbanEmbed
-                .setAuthor({name: "unban", iconURL: "https://discordemoji.com/assets/emoji/bancat.png"})
+                .setAuthor({name: "unban", iconURL: "https://kisaragi.moe/assets/embed/unban.png"})
                 .setTitle(`**Unban | Case #${caseNumber}** ${discord.getEmoji("ceaseBullying")}`)
                 .setColor("#3daeff")
                 await this.insert(sql, unbanEmbed, instance, cases)
@@ -81,7 +81,7 @@ export default class CaseUpdate {
             case "kick":
                 const kickEmbed = embeds.createEmbed()
                 kickEmbed
-                .setAuthor({name: "kick", iconURL: "https://discordemoji.com/assets/emoji/4331_UmaruWave.png"})
+                .setAuthor({name: "kick", iconURL: "https://kisaragi.moe/assets/embed/kick.png"})
                 .setTitle(`**Kick | Case #${caseNumber}** ${discord.getEmoji("kannaFU")}`)
                 .setColor("#ff3dfc")
                 await this.insert(sql, kickEmbed, instance, cases)
@@ -89,7 +89,7 @@ export default class CaseUpdate {
             case "mute":
                 const muteEmbed = embeds.createEmbed()
                 muteEmbed
-                .setAuthor({name: "mute", iconURL: "https://images.emojiterra.com/mozilla/512px/1f507.png"})
+                .setAuthor({name: "mute", iconURL: "https://kisaragi.moe/assets/embed/mute.png"})
                 .setTitle(`**Mute | Case #${caseNumber}** ${discord.getEmoji("sagiriBleh")}`)
                 .setColor("#ff3df5")
                 await this.insert(sql, muteEmbed, instance, cases)
@@ -97,7 +97,7 @@ export default class CaseUpdate {
             case "unmute":
                 const unmuteEmbed = embeds.createEmbed()
                 unmuteEmbed
-                .setAuthor({name: "unmute", iconURL: "https://images.emojiterra.com/mozilla/512px/1f507.png"})
+                .setAuthor({name: "unmute", iconURL: "https://kisaragi.moe/assets/embed/unmute.png"})
                 .setTitle(`**Unmute | Case #${caseNumber}** ${discord.getEmoji("mexShrug")}`)
                 .setColor("#3de2ff")
                 await this.insert(sql, unmuteEmbed, instance, cases)
@@ -105,7 +105,7 @@ export default class CaseUpdate {
             case "restrict":
                 const restrictEmbed = embeds.createEmbed()
                 restrictEmbed
-                .setAuthor({name: "restrict", iconURL: "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/mozilla/36/no-entry-sign_1f6ab.png"})
+                .setAuthor({name: "restrict", iconURL: "https://kisaragi.moe/assets/embed/restrict.png"})
                 .setTitle(`**Restrict | Case #${caseNumber}** ${discord.getEmoji("no")}`)
                 .setColor("#ff873d")
                 await this.insert(sql, restrictEmbed, instance, cases)
@@ -113,7 +113,7 @@ export default class CaseUpdate {
             case "unrestrict":
                 const unrestrictEmbed = embeds.createEmbed()
                 unrestrictEmbed
-                .setAuthor({name: "unrestrict", iconURL: "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/mozilla/36/no-entry-sign_1f6ab.png"})
+                .setAuthor({name: "unrestrict", iconURL: "https://kisaragi.moe/assets/embed/unrestrict.png"})
                 .setTitle(`**Unrestrict | Case #${caseNumber}** ${discord.getEmoji("yes")}`)
                 .setColor("#5e3dff")
                 await this.insert(sql, unrestrictEmbed, instance, cases)
@@ -121,7 +121,7 @@ export default class CaseUpdate {
             case "deafen":
                 const deafenEmbed = embeds.createEmbed()
                 deafenEmbed
-                .setAuthor({name: "deafen", iconURL: "https://cdn4.iconfinder.com/data/icons/music-audio-4/24/mute_sound_speaker_headphone_headset_music-512.png"})
+                .setAuthor({name: "deafen", iconURL: "https://kisaragi.moe/assets/embed/deafen.png"})
                 .setTitle(`**Deafen | Case #${caseNumber}** ${discord.getEmoji("sataniaDead")}`)
                 .setColor("#be3dff")
                 await this.insert(sql, deafenEmbed, instance, cases)
@@ -129,7 +129,7 @@ export default class CaseUpdate {
             case "undeafen":
                 const undeafenEmbed = embeds.createEmbed()
                 undeafenEmbed
-                .setAuthor({name: "undeafen", iconURL: "https://d29fhpw069ctt2.cloudfront.net/icon/image/39276/preview.png"})
+                .setAuthor({name: "undeafen", iconURL: "https://kisaragi.moe/assets/embed/undeafen.png"})
                 .setTitle(`**Undeafen | Case #${caseNumber}** ${discord.getEmoji("mexShrug")}`)
                 .setColor("#3dabff")
                 await this.insert(sql, undeafenEmbed, instance, cases)
@@ -137,7 +137,7 @@ export default class CaseUpdate {
             case "vcmute":
                 const vcmuteEmbed = embeds.createEmbed()
                 vcmuteEmbed
-                .setAuthor({name: "voice mute", iconURL: "https://www.kindpng.com/picc/m/499-4998592_mute-microphone-comments-mute-mic-icon-png-transparent.png"})
+                .setAuthor({name: "voice mute", iconURL: "https://kisaragi.moe/assets/embed/vcmute.png"})
                 .setTitle(`**Voice Mute | Case #${caseNumber}** ${discord.getEmoji("vigneDead")}`)
                 .setColor("#ff3db8")
                 await this.insert(sql, vcmuteEmbed, instance, cases)
@@ -145,7 +145,7 @@ export default class CaseUpdate {
             case "vcunmute":
                 const vcunmuteEmbed = embeds.createEmbed()
                 vcunmuteEmbed
-                .setAuthor({name: "voice unmute", iconURL: "https://images.assetsdelivery.com/compings_v2/vectorgalaxy/vectorgalaxy1808/vectorgalaxy180807510.jpg"})
+                .setAuthor({name: "voice unmute", iconURL: "https://kisaragi.moe/assets/embed/vcunmute.png"})
                 .setTitle(`**Voice Unmute | Case #${caseNumber}** ${discord.getEmoji("aquaUp")}`)
                 .setColor("#3ddfff")
                 await this.insert(sql, vcunmuteEmbed, instance, cases)
@@ -153,7 +153,7 @@ export default class CaseUpdate {
             case "vckick":
                 const vckickEmbed = embeds.createEmbed()
                 vckickEmbed
-                .setAuthor({name: "voice kick", iconURL: "https://cdn1.iconfinder.com/data/icons/interface-filled-blue/32/Microphone_recorder_sound_voice-512.png"})
+                .setAuthor({name: "voice kick", iconURL: "https://kisaragi.moe/assets/embed/vckick.png"})
                 .setTitle(`**Voice Kick | Case #${caseNumber}** ${discord.getEmoji("tohruSmug")}`)
                 .setColor("#47ff3d")
                 await this.insert(sql, vckickEmbed, instance, cases)
@@ -161,7 +161,7 @@ export default class CaseUpdate {
             case "tempban":
                 const tempbanEmbed = embeds.createEmbed()
                 tempbanEmbed
-                .setAuthor({name: "tempban", iconURL: "https://cdn.discordapp.com/emojis/579870079735562261.png"})
+                .setAuthor({name: "tempban", iconURL: "https://kisaragi.moe/assets/embed/tempban.png"})
                 .setTitle(`**Temp Ban | Case #${caseNumber}** ${discord.getEmoji("kannaFU")}`)
                 .setColor("#ff3d64")
                 await this.insert(sql, tempbanEmbed, instance, cases)
@@ -169,7 +169,7 @@ export default class CaseUpdate {
             case "tempmute":
                 const tempmuteEmbed = embeds.createEmbed()
                 tempmuteEmbed
-                .setAuthor({name: "tempmute", iconURL: "https://images.emojiterra.com/mozilla/512px/1f507.png"})
+                .setAuthor({name: "tempmute", iconURL: "https://kisaragi.moe/assets/embed/tempmute.png"})
                 .setTitle(`**Temp Mute | Case #${caseNumber}** ${discord.getEmoji("sagiriBleh")}`)
                 .setColor("#a13dff")
                 await this.insert(sql, tempmuteEmbed, instance, cases)
@@ -177,7 +177,7 @@ export default class CaseUpdate {
             case "softban":
                 const softbanEmbed = embeds.createEmbed()
                 softbanEmbed
-                .setAuthor({name: "softban", iconURL: "https://cdn.discordapp.com/emojis/593867503055274006.png"})
+                .setAuthor({name: "softban", iconURL: "https://kisaragi.moe/assets/embed/softban.png"})
                 .setTitle(`**Soft Ban | Case #${caseNumber}** ${discord.getEmoji("sagiriBleh")}`)
                 .setColor("#ff24ba")
                 await this.insert(sql, softbanEmbed, instance, cases)

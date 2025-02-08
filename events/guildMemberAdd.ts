@@ -64,7 +64,7 @@ export default class GuildMemberAdd {
                 const channel = defaultChannel
                 const reason = "Has the default discord avatar."
                 banEmbed
-                .setAuthor({name: "ban", iconURL: "https://discordemoji.com/assets/emoji/bancat.png"})
+                .setAuthor({name: "ban", iconURL: "https://kisaragi.moe/assets/embed/ban.png"})
                 .setTitle(`**Member Banned** ${discord.getEmoji("kannaFU")}`)
                 .setDescription(`${discord.getEmoji("star")}_Successfully banned <@${member.user.id}> for reason:_ **${reason}**`)
                 if (channel) this.discord.channelSend(channel, banEmbed)

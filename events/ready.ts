@@ -13,8 +13,8 @@ export default class Ready {
       const timestamp = `${moment().format("MM DD YYYY hh:mm:ss")} ->`
       const logString = `${timestamp} Logged in as ${this.discord.user!.tag}!`
       const readyString = `${timestamp} Ready in ${this.discord.guilds.cache.size} guilds on ${this.discord.channels.cache.size} channels, for a total of ${this.discord.users.cache.size} users.`
-      console.log(chalk`{magentaBright ${logString}}`)
-      console.log(chalk`{magentaBright ${readyString}}`)
+      console.log(chalk.magentaBright(logString))
+      console.log(chalk.magentaBright(readyString))
       SQLQuery.cleanup()
   }
 }

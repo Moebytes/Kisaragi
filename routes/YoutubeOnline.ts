@@ -1,11 +1,11 @@
 import {WebhookClient} from "discord.js"
-import {Express, NextFunction, Request, Response} from "express"
+import {Request, Response, NextFunction} from "express"
 import {yt} from "../server"
 import {Kisaragi} from "../structures/Kisaragi"
 import {SQLQuery} from "../structures/SQLQuery"
 
 export class YoutubeOnline {
-    public static youtubeRoutes = (app: Express) => {
+    public static youtubeRoutes = (app: any) => {
         app.post("/youtube", async (req: Request, res: Response, next: NextFunction) => {
             if (!req.body.channel) return res.status(400)
             const first = [{channel: req.body.channel || null, name: req.body.name || null, text: req.body.text || null, guild: req.body.guild || null, mention: req.body.mention || "", state: req.body.state || "Off", id: req.body.id || null, token: req.body.token || null}]

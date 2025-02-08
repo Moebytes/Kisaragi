@@ -71,7 +71,7 @@ export default class Reason extends Command {
             const executor = await discord.users.fetch(cases[index].executor)
             if (cases[index].context) {
                 const {channelID} = discord.parseMessageURL(cases[index].context)
-                channelName = "#" + (discord.channels.cache.get(channelID) as TextChannel)?.name ?? ""
+                channelName = "#" + ((discord.channels.cache.get(channelID) as TextChannel)?.name ?? "")
                 context = `[**Context**](${cases[index].context})`
             }
             EmbedBuilder.from(embed)

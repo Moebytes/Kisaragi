@@ -4,7 +4,7 @@ import langs from "../../assets/json/langs.json"
 import {Command} from "../../structures/Command"
 import {Functions} from "../../structures/Functions"
 import {Kisaragi} from "../../structures/Kisaragi"
-import translate from "@vitalets/google-translate-api"
+import {translate} from "@vitalets/google-translate-api"
 
 export default class Translate extends Command {
     constructor(discord: Kisaragi, message: Message) {

@@ -74,7 +74,7 @@ export default class Leave extends Command {
         const leaveBGToggle = await sql.fetchColumn("guilds", "leave bg toggle")
         const attachment = await images.createCanvas(message.member!, leaveImages, leaveText, leaveColor, false, false, leaveBGToggle) as AttachmentBuilder
         const urls: string[] = []
-        for (let i = 0; i < leaveImages?.length ?? 0; i++) {
+        for (let i = 0; i < leaveImages?.length; i++) {
             const json = await axios.get(`https://is.gd/create.php?format=json&url=${leaveImages[i]}`)
             urls.push(json.data.shorturl)
         }

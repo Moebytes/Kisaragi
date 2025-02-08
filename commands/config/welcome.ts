@@ -73,7 +73,7 @@ export default class Welcome extends Command {
         const welcomeBGToggle = await sql.fetchColumn("guilds", "welcome bg toggle")
         const attachment = await images.createCanvas(message.member!, welcomeImages, welcomeText, welcomeColor, false, false, welcomeBGToggle) as AttachmentBuilder
         const urls: string[] = []
-        for (let i = 0; i < welcomeImages?.length ?? 0; i++) {
+        for (let i = 0; i < welcomeImages?.length; i++) {
             const json = await axios.get(`https://is.gd/create.php?format=json&url=${welcomeImages[i]}`)
             urls.push(json.data.shorturl)
         }
