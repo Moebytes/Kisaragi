@@ -14,11 +14,10 @@ services:
         condition: service_healthy
     env_file:
       - .env
-    command: ["npm", "start"]
     restart: always
 
   db:
-    image: postgres:16
+    image: postgres:15
     platform: linux/amd64
     restart: always
     mem_limit: "4g"

@@ -1,7 +1,7 @@
 FROM node:23
 
-RUN apt-get update && apt-get install -y make g++ python3 ffmpeg sox \
-postgresql-16 supervisor && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y make g++ python3 ffmpeg sox supervisor \
+postgresql-client-common && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY package.json package-lock.json ./
