@@ -4,6 +4,7 @@ services:
     build: .
     platform: linux/amd64
     image: kisaragi-bot
+    mem_limit: "8g"
     ports:
       - "4000:4000"
     depends_on:
@@ -20,7 +21,8 @@ services:
     image: postgres:16
     platform: linux/amd64
     restart: always
-    shm_size: "1g"
+    mem_limit: "4g"
+    shm_size: "2g"
     env_file:
       - .env
     environment:
@@ -39,7 +41,8 @@ services:
     image: redis:7
     platform: linux/amd64
     restart: always
-    command: ["redis-server", "--daemonize", "no"]
+    mem_limit: "1g"
+    command: ["redis-server", "--appendonly", "no", "--save", ""]
     ports:
       - "6379:6379"
     healthcheck:

@@ -123,8 +123,8 @@ const start = async (): Promise<void> => {
     discord.setPfp(discord.user!.displayAvatarURL({extension: "png"}))
     discord.setUsername(discord.user!.username)
 
-    //Functions.pollTwitch(discord)
-    //Functions.youtubeReSubscribe()
+    Functions.pollTwitch(discord)
+    Functions.youtubeReSubscribe()
     SQLQuery.redisSet("state", JSON.stringify([]))
 }
 

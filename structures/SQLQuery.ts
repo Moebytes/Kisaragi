@@ -592,7 +592,7 @@ export class SQLQuery {
   /** Cleanup old records */
   public static cleanup = async () => {
     const query: QueryConfig = {
-      text: `DELETE FROM collectors WHERE timestamp < current_timestamp - interval '7 days'`
+      text: `DELETE FROM collectors WHERE timestamp < NOW() - INTERVAL '7 days'`
     }
     await SQLQuery.run(query, true)
   }

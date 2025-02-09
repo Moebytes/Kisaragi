@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS "collectors" (
     "collapse" text,
     "page" int,
     "help" boolean,
-    "download" boolean
+    "download" boolean,
+    "timestamp" timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS "commands" (

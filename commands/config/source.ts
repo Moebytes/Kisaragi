@@ -62,18 +62,18 @@ export default class Source extends Command {
             return
         }
 
-        const source = await sql.fetchColumn("guilds", "source")
+        const sources = await sql.fetchColumn("guilds", "sources")
         const step = 5.0
-        const increment = Math.ceil((source ? source.length : 1) / step)
+        const increment = Math.ceil((sources ? sources.length : 1) / step)
         const sourceArray: EmbedBuilder[] = []
         for (let i = 0; i < increment; i++) {
             let description = ""
             for (let j = 0; j < step; j++) {
-                if (source) {
+                if (sources) {
                     const k = (i*step)+j
-                    if (!source[k]) break
+                    if (!sources[k]) break
                     description += `**${k + 1} =>**\n` +
-                    `${discord.getEmoji("star")}Channel: <#${source[k]}>\n`
+                    `${discord.getEmoji("star")}Channel: <#${sources[k]}>\n`
                 } else {
                     description = "None"
                 }
@@ -104,10 +104,10 @@ export default class Source extends Command {
         }
 
         async function sourcePrompt(msg: Message) {
-            let source = await sql.fetchColumn("guilds", "source")
+            let sources = await sql.fetchColumn("guilds", "sources")
             const responseEmbed = embeds.createEmbed()
             responseEmbed.setTitle(`**Source Channels** ${discord.getEmoji("tohruThumbsUp2")}`)
-            if (!source) source = []
+            if (!sources) sources = []
             if (msg.content.toLowerCase() === "cancel") {
                 responseEmbed
                 .setDescription(`${discord.getEmoji("star")}Canceled the prompt!`)
@@ -115,7 +115,7 @@ export default class Source extends Command {
                 return
             }
             if (msg.content.toLowerCase() === "reset") {
-                await sql.updateColumn("guilds", "source", null)
+                await sql.updateColumn("guilds", "sources", null)
                 responseEmbed
                 .setDescription(`${discord.getEmoji("star")}All settings were **reset**!`)
                 discord.send(msg, responseEmbed)
@@ -125,9 +125,9 @@ export default class Source extends Command {
                 const newMsg = Number(msg.content.replace(/delete/g, "").trim())
                 const num = newMsg - 1
                 if (newMsg) {
-                    source[num] = ""
-                    source = source.filter(Boolean)
-                    await sql.updateColumn("guilds", "source", source)
+                    sources[num] = ""
+                    sources = sources.filter(Boolean)
+                    await sql.updateColumn("guilds", "sources", sources)
                     return discord.send(msg, responseEmbed.setDescription(`Setting **${newMsg}** was deleted!`))
                 } else {
                     return discord.send(msg, responseEmbed.setDescription("Setting not found!"))
@@ -140,10 +140,10 @@ export default class Source extends Command {
             let description = ""
 
             for (let i = 0; i < newChan.length; i++) {
-                source.push(newChan[i])
+                sources.push(newChan[i])
                 description += `${discord.getEmoji("star")}Added <#${newChan[i]}>!\n`
             }
-            await sql.updateColumn("guilds", "source", source)
+            await sql.updateColumn("guilds", "sources", sources)
             responseEmbed
             .setDescription(description)
             return discord.send(msg, responseEmbed)
