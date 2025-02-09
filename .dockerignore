@@ -10,6 +10,9 @@ node_modules
 #Compiled folder
 dist
 
+#Tests
+test
+
 #VS Code settings
 .vscode
 

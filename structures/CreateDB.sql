@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS "blacklist" (
-    "guild id" text PRIMARY KEY,
+    "guild id" bigint PRIMARY KEY,
     "user id" text
 );
 
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS "oauth2" (
 );
 
 CREATE TABLE IF NOT EXISTS "pixiv" (
-    "id" text PRIMARY KEY,
+    "id" bigint PRIMARY KEY,
     "embed" text
 );
 
@@ -153,11 +153,15 @@ CREATE TABLE IF NOT EXISTS "guilds" (
     "scores" text[],
     "level roles" text[],
     "level channels" text[],
-    "auto" text[],
+    "auto commands" text[],
+    "auto channels" text[],
+    "auto frequencies" int[],
+    "auto timeouts" int[],
+    "auto toggles" text[],
     "birthdays" text[],
     "birthday channel" text,
     "birthday message" text,
     "birthday toggle" text,
     "guild log" text,
-    "source" text[]
+    "sources" text[]
 );

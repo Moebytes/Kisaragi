@@ -1250,7 +1250,7 @@ export class Audio {
         const settings = this.getSettings()
         let next: string | null
         let skipPlaying = false
-        if (settings.looping === true) {
+        if (settings.looping) {
             next = file
             if (settings.seekOffset > 0) {
                 next = queue[0].originalFile
@@ -1263,8 +1263,12 @@ export class Audio {
             next = this.next()
         }
         if (next) {
-            const nextFX = await this.applyEffects(next)
-            await this.play(nextFX)
+            if (settings.looping) {
+                await this.play(next)
+            } else {
+                const nextFX = await this.applyEffects(next)
+                await this.play(nextFX)
+            }
             let nowPlaying: string | undefined
             if (!skipPlaying) nowPlaying = await this.nowPlaying()
             if (nowPlaying) await this.discord.send(this.message, nowPlaying)

@@ -75,25 +75,25 @@ export default class Auto extends Command {
             return
         }
 
-        const command = await sql.fetchColumn("auto", "command")
-        const channel = await sql.fetchColumn("auto", "channel")
-        const frequency = await sql.fetchColumn("auto", "frequency")
-        const toggle = await sql.fetchColumn("auto", "toggle")
+        const commands = await sql.fetchColumn("guilds", "auto commands")
+        const channels = await sql.fetchColumn("guilds", "auto channels")
+        const frequencies = await sql.fetchColumn("guilds", "auto frequencies")
+        const toggles = await sql.fetchColumn("guilds", "auto toggles")
         const step = 3.0
-        const increment = Math.ceil((command ? command.length : 1) / step)
+        const increment = Math.ceil((commands ? commands.length : 1) / step)
         const autoArray: EmbedBuilder[] = []
         for (let i = 0; i < increment; i++) {
             let settings = ""
             for (let j = 0; j < step; j++) {
-                if (command) {
+                if (commands) {
                     const k = (i*step)+j
-                    if (!command.join("")) settings = "None"
-                    if (!command[k]) break
+                    if (!commands.join("")) settings = "None"
+                    if (!commands[k]) break
                     settings += `${k + 1} **=>**\n` +
-                    `${discord.getEmoji("star")}_Command:_ **${command[k] ? command[k] : "None"}**\n`+
-                    `${discord.getEmoji("star")}_Channel:_ **${channel[k] ? "<#" + channel[k] + ">" : "None"}**\n`+
-                    `${discord.getEmoji("star")}_Frequency:_ **${frequency[k] ? frequency[k] : "None"}**\n` +
-                    `${discord.getEmoji("star")}_State:_ **${toggle[k]}**\n`
+                    `${discord.getEmoji("star")}_Command:_ **${commands[k] ? commands[k] : "None"}**\n`+
+                    `${discord.getEmoji("star")}_Channel:_ **${channels[k] ? "<#" + channels[k] + ">" : "None"}**\n`+
+                    `${discord.getEmoji("star")}_Frequency:_ **${frequencies[k] ? frequencies[k] : "None"}**\n` +
+                    `${discord.getEmoji("star")}_State:_ **${toggles[k]}**\n`
                 } else {
                     settings = "None"
                 }
@@ -135,26 +135,26 @@ export default class Auto extends Command {
             const responseEmbed = embeds.createEmbed()
             responseEmbed.setTitle(`**Auto Commands** ${discord.getEmoji("think")}`)
             let [setCmd, setChannel, setFreq, setInit] = [] as boolean[]
-            let cmd = await sql.fetchColumn("auto", "command")
-            let chan = await sql.fetchColumn("auto", "channel")
-            let freq = await sql.fetchColumn("auto", "frequency")
-            let tog = await sql.fetchColumn("auto", "toggle")
-            const tim = await sql.fetchColumn("auto", "timeout")
-            if (!cmd) cmd = [""]; setInit = true
-            if (!chan) chan = [""]; setInit = true
-            if (!freq) freq = [""]; setInit = true
-            if (!tog) tog = [""]; setInit = true
+            let cmds = await sql.fetchColumn("guilds", "auto commands")
+            let chans = await sql.fetchColumn("guilds", "auto channels")
+            let freqs = await sql.fetchColumn("guilds", "auto frequencies")
+            let togs = await sql.fetchColumn("guilds", "auto toggles")
+            const tims = await sql.fetchColumn("guilds", "auto timeouts")
+            if (!cmds) cmds = [""]; setInit = true
+            if (!chans) chans = [""]; setInit = true
+            if (!freqs) freqs = [""]; setInit = true
+            if (!togs) togs = [""]; setInit = true
             if (msg.content.toLowerCase().startsWith("cancel")) {
                 responseEmbed
                 .setDescription(`${discord.getEmoji("star")}Canceled the prompt!`)
                 return discord.send(msg, responseEmbed)
             }
             if (msg.content.toLowerCase().startsWith("reset")) {
-                await sql.updateColumn("auto", "command", null)
-                await sql.updateColumn("auto", "channel", null)
-                await sql.updateColumn("auto", "frequency", null)
-                await sql.updateColumn("auto", "toggle", null)
-                await sql.updateColumn("auto", "timeout", null)
+                await sql.updateColumn("guilds", "auto commands", null)
+                await sql.updateColumn("guilds", "auto channels", null)
+                await sql.updateColumn("guilds", "auto frequencies", null)
+                await sql.updateColumn("guilds", "auto toggles", null)
+                await sql.updateColumn("guilds", "auto timeouts", null)
                 responseEmbed
                 .setDescription(`${discord.getEmoji("star")}Auto settings were wiped!`)
                 return discord.send(msg, responseEmbed)
@@ -163,21 +163,21 @@ export default class Auto extends Command {
                 const newMsg = Number(msg.content.replace(/delete/g, "").trim())
                 const num = newMsg - 1
                 if (newMsg) {
-                        cmd[num] = ""
-                        chan[num] = ""
-                        freq[num] = ""
-                        tog[num] = ""
-                        tim[num] = ""
-                        const arrCmd = cmd.filter(Boolean)
-                        const arrChan = chan.filter(Boolean)
-                        const arrFreq = freq.filter(Boolean)
-                        const arrTog = tog.filter(Boolean)
-                        const arrTim = tim.filter(Boolean)
-                        await sql.updateColumn("auto", "command", arrCmd)
-                        await sql.updateColumn("auto", "channel", arrChan)
-                        await sql.updateColumn("auto", "frequency", arrFreq)
-                        await sql.updateColumn("auto", "toggle", arrTog)
-                        await sql.updateColumn("auto", "timeout", arrTim)
+                        cmds[num] = ""
+                        chans[num] = ""
+                        freqs[num] = ""
+                        togs[num] = ""
+                        tims[num] = ""
+                        const arrCmd = cmds.filter(Boolean)
+                        const arrChan = chans.filter(Boolean)
+                        const arrFreq = freqs.filter(Boolean)
+                        const arrTog = togs.filter(Boolean)
+                        const arrTim = tims.filter(Boolean)
+                        await sql.updateColumn("guilds", "auto commands", arrCmd)
+                        await sql.updateColumn("guilds", "auto channels", arrChan)
+                        await sql.updateColumn("guilds", "auto frequencies", arrFreq)
+                        await sql.updateColumn("guilds", "auto toggles", arrTog)
+                        await sql.updateColumn("guilds", "auto timeouts", arrTim)
                         return discord.send(msg, responseEmbed.setDescription(`Setting **${newMsg}** was deleted!`))
                 } else {
                     return discord.send(msg, responseEmbed.setDescription("Setting not found!"))
@@ -186,15 +186,15 @@ export default class Auto extends Command {
             if (msg.content.toLowerCase().startsWith("toggle")) {
                 const newMsg = Number(msg.content.replace(/toggle/g, "").trim())
                 const num = newMsg - 1
-                const testCmd = await sql.fetchColumn("auto", "command")
-                const testChan = await sql.fetchColumn("auto", "channel")
-                const testFreq = await sql.fetchColumn("auto", "frequency")
-                if (newMsg && testCmd && testChan && testFreq) {
-                        if (tog[num] === "inactive") {
-                            await sql.updateColumn("auto", "toggle", "active")
+                const testCmds = await sql.fetchColumn("guilds", "auto commands")
+                const testChans = await sql.fetchColumn("guilds", "auto channels")
+                const testFreqs = await sql.fetchColumn("guilds", "auto frequencies")
+                if (newMsg && testCmds && testChans && testFreqs) {
+                        if (togs[num] === "inactive") {
+                            await sql.updateColumn("guilds", "auto toggles", "active")
                             return discord.send(msg, responseEmbed.setDescription(`State of setting **${newMsg}** is now **active**!`))
                         } else {
-                            await sql.updateColumn("auto", "toggle", "inactive")
+                            await sql.updateColumn("guilds", "auto toggles", "inactive")
                             return discord.send(msg, responseEmbed.setDescription(`State of setting **${newMsg}** is now **inactive**!`))
                         }
                 } else {
@@ -211,33 +211,33 @@ export default class Auto extends Command {
                     const tempFreq = tempMsg.replace(/\D+/gi, "").replace(tempChan, "").replace(/\s+/g, "")
                     let editDesc = ""
                     if (tempCmd) {
-                        cmd[num] = tempCmd
-                        await sql.updateColumn("auto", "command", cmd)
+                        cmds[num] = tempCmd
+                        await sql.updateColumn("guilds", "auto commands", cmds)
                         editDesc += `${discord.getEmoji("star")}Command set to **${tempCmd}**!\n`
                     }
                     if (tempChan) {
-                        chan[num] = tempChan
-                        await sql.updateColumn("auto", "channel", chan)
+                        chans[num] = tempChan
+                        await sql.updateColumn("guilds", "auto channels", chans)
                         editDesc += `${discord.getEmoji("star")}Channel set to **${tempChan}**!\n`
                     }
                     if (tempFreq) {
-                        freq[num] = tempFreq
-                        await sql.updateColumn("auto", "frequency", freq)
+                        freqs[num] = tempFreq
+                        await sql.updateColumn("guilds", "auto frequencies", freqs)
                         editDesc += `${discord.getEmoji("star")}Frequency set to **${tempFreq}**!\n`
                     }
-                    tim[num] = ""
-                    await sql.updateColumn("auto", "timeout", tim)
-                    const testCmd = await sql.fetchColumn("auto", "command")
-                    const testChan = await sql.fetchColumn("auto", "channel")
-                    const testFreq = await sql.fetchColumn("auto", "frequency")
-                    if (testCmd[num] && testChan[num] && testFreq[num]) {
-                        tog[num] = "active"
-                        await sql.updateColumn("auto", "toggle", tog)
+                    tims[num] = ""
+                    await sql.updateColumn("guilds", "auto timeouts", tims)
+                    const testCmds = await sql.fetchColumn("guilds", "auto commands")
+                    const testChans = await sql.fetchColumn("guilds", "auto channels")
+                    const testFreqs = await sql.fetchColumn("guilds", "auto frequencies")
+                    if (testCmds[num] && testChans[num] && testFreqs[num]) {
+                        togs[num] = "active"
+                        await sql.updateColumn("guilds", "auto toggles", togs)
                         editDesc += `${discord.getEmoji("star")}This setting is **active**!\n`
                         cmdFunc.autoCommand()
                     } else {
-                        tog[num] = "inactive"
-                        await sql.updateColumn("auto", "toggle", tog)
+                        togs[num] = "inactive"
+                        await sql.updateColumn("guilds", "auto toggles", togs)
                         editDesc += `${discord.getEmoji("star")}This setting is **inactive**!\n`
                     }
                     return discord.send(msg, responseEmbed.setDescription(editDesc))
@@ -256,64 +256,64 @@ export default class Auto extends Command {
             let description = ""
 
             if (setCmd) {
-                if (cmd.length >= 10) {
+                if (cmds.length >= 10) {
                     return discord.send(msg, responseEmbed.setDescription("You can only set 10 auto commands!"))
                 } else {
-                    cmd.push(newCmd)
-                    const arrCmd = cmd.filter(Boolean)
-                    await sql.updateColumn("auto", "command", arrCmd)
+                    cmds.push(newCmd)
+                    const arrCmd = cmds.filter(Boolean)
+                    await sql.updateColumn("guilds", "auto commands", arrCmd)
                     description += `${discord.getEmoji("star")}Command set to **${newCmd}**!\n`
                 }
             }
 
             if (setChannel) {
-                if (cmd.length === 10) {
+                if (cmds.length === 10) {
                     return discord.send(msg, responseEmbed.setDescription("You can only set 10 auto commands!"))
                 } else {
-                    chan.push(newChan)
-                    const arrChan = chan.filter(Boolean)
-                    await sql.updateColumn("auto", "channel", arrChan)
+                    chans.push(newChan)
+                    const arrChan = chans.filter(Boolean)
+                    await sql.updateColumn("guilds", "auto channels", arrChan)
                     description += `${discord.getEmoji("star")}Channel set to <#${newChan}>!\n`
                 }
             }
 
             if (setFreq) {
-                if (cmd.length === 10) {
+                if (cmds.length === 10) {
                     return discord.send(msg, responseEmbed.setDescription("You can only set 10 auto commands!"))
                 } else {
-                    freq.push(newFreq)
-                    const arrFreq = freq.filter(Boolean)
-                    await sql.updateColumn("auto", "frequency", arrFreq)
+                    freqs.push(newFreq)
+                    const arrFreq = freqs.filter(Boolean)
+                    await sql.updateColumn("guilds", "auto frequencies", arrFreq)
                     description += `${discord.getEmoji("star")}Frequency set to **${newFreq}**!\n`
                 }
             }
 
             if (!setCmd) {
-                if (setInit) cmd = cmd.filter(Boolean)
-                cmd.push("")
-                await sql.updateColumn("auto", "command", cmd)
+                if (setInit) cmds = cmds.filter(Boolean)
+                cmds.push("")
+                await sql.updateColumn("guilds", "auto commands", cmds)
             }
             if (!setChannel) {
-                if (setInit) chan = chan.filter(Boolean)
-                chan.push("")
-                await sql.updateColumn("auto", "command", chan)
+                if (setInit) chans = chans.filter(Boolean)
+                chans.push("")
+                await sql.updateColumn("guilds", "auto commands", chans)
             }
             if (!setFreq) {
-                if (setInit) freq = freq.filter(Boolean)
-                freq.push("")
-                await sql.updateColumn("auto", "command", freq)
+                if (setInit) freqs = freqs.filter(Boolean)
+                freqs.push("")
+                await sql.updateColumn("guilds", "auto commands", freqs)
             }
 
             if (setCmd && setChannel && setFreq) {
-                tog = tog.filter(Boolean)
-                tog.push("active")
-                await sql.updateColumn("auto", "toggle", tog)
+                togs = togs.filter(Boolean)
+                togs.push("active")
+                await sql.updateColumn("guilds", "auto toggles", togs)
                 description += `${discord.getEmoji("star")}This setting is **active**!\n`
                 cmdFunc.autoCommand()
             } else {
-                tog = tog.filter(Boolean)
-                tog.push("inactive")
-                await sql.updateColumn("auto", "toggle", tog)
+                togs = togs.filter(Boolean)
+                togs.push("inactive")
+                await sql.updateColumn("guilds", "auto toggles", togs)
                 description += `${discord.getEmoji("star")}This setting is **inactive**!\n`
             }
             responseEmbed

@@ -4,10 +4,10 @@
   "description": "Kisaragi is the best girl!",
   "main": "dist/shard.js",
   "scripts": {
-    "start": "npm run build && npm run post && npm run bot",
+    "start": "npm run build && npm run bot",
     "server-start": "npm run build && npm run server",
     "build": "tsc -p tsconfig.json",
-    "bot": "node --max-old-space-size=8192 --optimize-for-size dist/index.js",
+    "bot": "npm run post && node --max-old-space-size=8192 --optimize-for-size dist/index.js",
     "server": "node --max-old-space-size=8192 --optimize-for-size dist/server.js",
     "pm2": "pm2 start ecosystem.config.js --env production",
     "test": "ts-mocha --timeout 10000 -p tsconfig.json test/**/*.spec.ts",

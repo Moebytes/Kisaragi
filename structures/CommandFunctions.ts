@@ -57,22 +57,22 @@ export class CommandFunctions {
     // Auto Command
     public autoCommand = async () => {
         const sql = new SQLQuery(this.message)
-        const command = await sql.fetchColumn("auto", "command")
-        if (!command) return
-        const channel = await sql.fetchColumn("auto", "channel")
-        const frequency = await sql.fetchColumn("auto", "frequency")
-        const toggle = await sql.fetchColumn("auto", "toggle")
-        for (let i = 0; i < command.length; i++) {
-            if (!toggle?.[i] || toggle[i] === "inactive") continue
-            const guildChannel = (this.message.guild?.channels.cache.find((c) => c.id === channel[i])) as TextChannel
+        const commands = await sql.fetchColumn("guilds", "auto commands")
+        if (!commands) return
+        const channels = await sql.fetchColumn("guilds", "auto channels")
+        const frequencies = await sql.fetchColumn("guilds", "auto frequencies")
+        const toggles = await sql.fetchColumn("guilds", "auto toggles")
+        for (let i = 0; i < commands.length; i++) {
+            if (!toggles?.[i] || toggles[i] === "inactive") continue
+            const guildChannel = (this.message.guild?.channels.cache.find((c) => c.id === channels[i])) as TextChannel
             if (!guildChannel) return
-            const cmd = command[i].split(" ")
-            const timeout = Number(frequency[i]) * 3600000
-            let rawTimeLeft = await sql.fetchColumn("auto", "timeout")
-            if (!rawTimeLeft) rawTimeLeft = []
+            const cmd = commands[i].split(" ")
+            const timeout = Number(frequencies[i]) * 3600000
+            let rawTimesLeft = await sql.fetchColumn("guilds", "timeouts")
+            if (!rawTimesLeft) rawTimesLeft = []
             let timeLeft = timeout
-            if (rawTimeLeft[i]) {
-                let remaining = Number(rawTimeLeft[i])
+            if (rawTimesLeft[i]) {
+                let remaining = Number(rawTimesLeft[i])
                 if (remaining <= 0) remaining = timeout
                 timeLeft = remaining
             }
@@ -80,15 +80,15 @@ export class CommandFunctions {
             const update = async () => {
                 let newTimeLeft = timeLeft - 60000
                 if (newTimeLeft <= 0) newTimeLeft = timeout
-                const toggle = await sql.fetchColumn("auto", "toggle")
-                if (!toggle?.[i] || toggle?.[i] === "inactive" || newTimeLeft === timeout) return
-                rawTimeLeft[i] = newTimeLeft
-                await sql.updateColumn("auto", "timeout", rawTimeLeft)
+                const toggles = await sql.fetchColumn("guilds", "auto toggles")
+                if (!toggles?.[i] || toggles?.[i] === "inactive" || newTimeLeft === timeout) return
+                rawTimesLeft[i] = newTimeLeft
+                await sql.updateColumn("guilds", "auto timeouts", rawTimesLeft)
                 setTimeout(update, 60000)
             }
             setTimeout(update, 60000)
             const autoRun = async () => {
-                if (!toggle?.[i] || toggle?.[i] === "inactive") return
+                if (!toggles?.[i] || toggles?.[i] === "inactive") return
                 const msg = guildMsg ?? this.message
                 msg.author.id = this.discord.user!.id
                 await this.runCommand(msg, cmd, true)

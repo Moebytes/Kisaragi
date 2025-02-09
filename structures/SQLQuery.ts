@@ -15,18 +15,22 @@ import {Settings} from "./Settings"
 import fs from "fs"
 import path from "path"
 
-const redis = Redis.createClient({
-  url: process.env.REDIS_URL
-})
-
-const pgPool = new Pool({
-  host: process.env.PG_HOST,
+const pgPool = process.env.LOCAL_DATABASE === "yes" ? new Pool({
+  user: process.env.PG_LOCAL_USER,
+  host: process.env.PG_LOCAL_HOST,
+  database: process.env.PG_LOCAL_DATABASE,
+  password: process.env.PG_LOCAL_PASSWORD,
+  port: Number(process.env.PG_LOCAL_PORT)
+}) : new Pool({
   user: process.env.PG_USER,
+  host: process.env.PG_HOST,
   database: process.env.PG_DATABASE,
   password: process.env.PG_PASSWORD,
-  port: Number(process.env.PG_PORT),
-  ssl: false,
-  max: 20
+  port: Number(process.env.PG_PORT)
+})
+
+const redis = Redis.createClient({
+  url: process.env.LOCAL_DATABASE === "yes" ? process.env.LOCAL_REDIS_URL : process.env.REDIS_URL
 })
 
 if (process.env.REDIS === "on") redis.connect()
