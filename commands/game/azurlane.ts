@@ -101,7 +101,7 @@ export default class AzurLane extends Command {
         const matches2 = res.data.match(/(?<=Trivia)((.|\n)*?)(?=<!--)/gm)?.[0] || "None available!"
         const description = Functions.cleanHTML(String(matches2))
         if (chibis.length < pics.length) {
-            chibis = Functions.fillArray(chibis, chibis[length-1], pics.length)
+            chibis = Functions.fillArray(chibis, chibis[chibis.length-1], pics.length)
         }
 
         const azurArray: EmbedBuilder[] = []

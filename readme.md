@@ -20,32 +20,30 @@ Please let me know by submitting an issue or using the `feedback` command on the
 
 ## Self Hosting
 
-- The bot runs on Node.js: https://nodejs.org/en/
-- You will also need to install git if you haven't already: https://git-scm.com/
-- The primary database is PostgreSQL (I recommend installing the GUI too): https://www.postgresql.org/
-- The secondary database is Redis (caches stuff in-memory): https://redis.io/
-- The music effects commands use Sox: http://sox.sourceforge.net/
+First you will need to download all of these.
+
+- Node.js v23: https://nodejs.org/en/
+- PostgreSQL v16: https://www.postgresql.org/
+- Redis v7: https://redis.io/
+- Sox: http://sox.sourceforge.net/
 
 The first step is to clone this repo to download all of the code.
 ```git clone <url>```
-In the same directory, you can install all of the dependencies with the command:
+In the same directory, install all of the dependencies with the command:
 ```npm install```
 
-Next you need to create a bot application on Discord. Create a new application at: https://discord.com/developers/applications
+You need to create a bot application on Discord. Create a new application at: https://discord.com/developers/applications
 Create a bot under the bot tab, you can give it any name and profile picture that you wish. Rename the file named `.env.example` to
 `.env` - this file has all of your credentials, so it should never be shared. Add your token after the variable named `TOKEN`.
-For the variable `OWNER_ID`, put your own user ID. This is the person that is considered the bot owner and is the only person that can use bot
-developer commands. Filling out the rest of the file is relatively self-explanatory. For example, to use Twitter commands you will need credentials for Twitter's API. You can get this by googling "twitter api" and creating an application in their developer portal - it is the same for the other sites. 
+Filling out the rest of the file is relatively self-explanatory, only your token and database credentials are mandatory. API keys can 
+be omitted, but their respective commands won't work.
 
-You can instantiate the database by restoring from the sql file that I provided in the self hosting tab. To avoid errors, you need to restore with the option "Do not save owner". The databse credentials should go in the `PG_DATABASE`, `PG_PASSWORD`, etc. variables. For redis use `REDIS_URL`, a new empty Redis database is fine. 
+The bot uses a lot of custom emojis, which you can find in assets/custom emojis. Add all of these emojis to your bot application in 
+the discord developer portal.
 
-The bot uses a lot of custom emojis, so you need to make sure that it can find all of them. You need to create a bunch of Discord servers (around 5-6) and add the bot to all of them. It's important to note that you must be the owner of the servers, because the bot only checks for emojis in the servers that the bot owner owns. All of the emojis are in the self hosting folder. The URL to add this bot is the following, you need to replace CLIENT_ID with the client ID of your bot:
+The URL to add this bot is the following, replacing CLIENT_ID with the client ID of your bot:
 
 `https://discord.com/oauth2/authorize?client_id=CLIENT_ID&permissions=2113793271&scope=bot`
-
-In `events/ready.ts`, remove the following line:
-```this.discord.postGuildCount()```
-Since your version of the bot will not be on any bot lists.
 
 Finally, you can start the bot with the following command:
 ```npm start```

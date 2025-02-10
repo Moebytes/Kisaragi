@@ -6,7 +6,7 @@ module.exports = {
         autorestart: true,
         max_memory_restart: "8G",
         node_args: "--max-old-space-size=8192 --optimize-for-size",
-        env: {
+        env_production: {
           NODE_ENV: "production"
         }
       },
@@ -16,7 +16,7 @@ module.exports = {
         autorestart: true,
         max_memory_restart: "8G",
         node_args: "--max-old-space-size=8192 --optimize-for-size",
-        env: {
+        env_production: {
           NODE_ENV: "production"
         }
       }

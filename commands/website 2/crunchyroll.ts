@@ -110,7 +110,7 @@ export default class Crunchyroll extends Command {
             return this.noQuery(embeds.createEmbed())
         }
 
-        const results = await fetch(`https://www.crunchyroll.com/content/v2/discover/search?q=${query}`, {headers: {Authorization: `Bearer ${process.env.CRUNCHYROLL_TOKEN}`}}).then((r) => r.json())
+        const results = await fetch(`https://www.crunchyroll.com/content/v2/discover/search?q=${query}`, {headers: {Authorization: `Bearer ${process.env.CRUNCHYROLL_TOKEN}`}}).then((r) => r.json()) as any
         const shows = results.data?.[0].items
 
         if (!shows?.length) {

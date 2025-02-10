@@ -1,6 +1,7 @@
 import type {Message, EmbedBuilder} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
-import TwitchClient from "twitch"
+import {AppTokenAuthProvider} from "@twurple/auth"
+import {ApiClient} from "@twurple/api"
 import {Command} from "../../structures/Command"
 import {Permission} from "../../structures/Permission"
 import {Embeds} from "./../../structures/Embeds"
@@ -53,7 +54,8 @@ export default class Twitch extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         const perms = new Permission(discord, message)
-        const twitch = TwitchClient.withCredentials(process.env.TWITCH_CLIENT_ID!, process.env.TWITCH_ACCESS_TOKEN!)
+        const authProvider = new AppTokenAuthProvider(process.env.TWITCH_CLIENT_ID!, process.env.TWITCH_CLIENT_SECRET!)
+        const twitch = new ApiClient({authProvider})
 
         if (args[1]?.match(/twitch.tv/)) {
             const matches = args[1].replace("https://www.twitch.tv", "").match(/(?<=\/)(.*?)(?=$|\/)/g)
@@ -71,22 +73,33 @@ export default class Twitch extends Command {
                 .setAuthor({name: "twitch", iconURL: "https://kisaragi.moe/assets/embed/twitch.png", url: "https://www.twitch.tv/"})
                 .setTitle(`**Twitch Channel** ${discord.getEmoji("gabSip")}`))
             }
-            const result = await twitch.kraken.search.searchChannels(term, 1, 1)
+            
+            const result = await twitch.search.searchChannels(term, {limit: 1})
+            const channel = result.data?.[0]
+            if (!channel) {
+                return this.invalidQuery(embeds.createEmbed()
+                .setAuthor({name: "twitch", iconURL: "https://kisaragi.moe/assets/embed/twitch.png", url: "https://www.twitch.tv/"})
+                .setTitle(`**Twitch Channel** ${discord.getEmoji("gabSip")}`))
+            }
+            const user = await channel.getUser()
+            const followers = await user.getChannelFollowers()
+            const stream = await user.getStream()
+
             const twitchEmbed = embeds.createEmbed()
             twitchEmbed
             .setAuthor({name: "twitch", iconURL: "https://kisaragi.moe/assets/embed/twitch.png", url: "https://www.twitch.tv/"})
             .setTitle(`**Twitch Channel** ${discord.getEmoji("gabSip")}`)
-            .setURL(result[0].url)
-            .setThumbnail(result[0].logo)
-            .setImage(result[0].profileBanner as string)
+            .setURL(`https://www.twitch.tv/${channel.name}`)
+            .setThumbnail(user.profilePictureUrl)
+            .setImage(channel.thumbnailUrl)
             .setDescription(
-                `${discord.getEmoji("star")}_Name:_ **${result[0].name}**\n` +
-                `${discord.getEmoji("star")}_Creation Date:_ **${Functions.formatDate(new Date(result[0].creationDate.getTime()))}**\n` +
-                `${discord.getEmoji("star")}_Views:_ **${result[0].views}**\n` +
-                `${discord.getEmoji("star")}_Followers:_ **${result[0].followers}**\n` +
-                `${discord.getEmoji("star")}_Status:_ **${result[0].status}**\n` +
-                `${discord.getEmoji("star")}_Game:_ **${result[0].game}**\n` +
-                `${discord.getEmoji("star")}_Description:_ ${result[0].description}\n`
+                `${discord.getEmoji("star")}_Name:_ **${channel.name}**\n` +
+                `${discord.getEmoji("star")}_Creation Date:_ **${Functions.formatDate(new Date(user.creationDate.getTime()))}**\n` +
+                `${discord.getEmoji("star")}_Followers:_ **${followers.total}**\n` +
+                `${discord.getEmoji("star")}_Title:_ **${stream?.title || "None"}**\n` +
+                `${discord.getEmoji("star")}_Game:_ **${channel.gameName}**\n` +
+                `${discord.getEmoji("star")}_Viewers:_ **${stream?.viewers || 0}**\n` +
+                `${discord.getEmoji("star")}_Description:_ ${user.description}\n`
             )
             return this.reply(twitchEmbed)
         }
@@ -97,9 +110,12 @@ export default class Twitch extends Command {
             .setAuthor({name: "twitch", iconURL: "https://kisaragi.moe/assets/embed/twitch.png", url: "https://www.twitch.tv/"})
             .setTitle(`**Twitch Stream** ${discord.getEmoji("gabSip")}`))
         }
-        const result = await twitch.kraken.search.searchStreams(term.trim(), 1, 11)
+        const result = await twitch.streams.getStreams({game: term.trim(), limit: 10})
+        const streams = result.data
         const twitchArray: EmbedBuilder[] = []
-        for (let i = 0; i < result.length; i++) {
+        for (let i = 0; i < streams.length; i++) {
+            const stream = streams[i]
+            const channel = await stream.getUser()
             const twitchEmbed = embeds.createEmbed()
             twitchEmbed
             .setAuthor({name: "twitch", iconURL: "https://kisaragi.moe/assets/embed/twitch.png", url: "https://www.twitch.tv/"})
@@ -108,13 +124,13 @@ export default class Twitch extends Command {
             .setImage(result[i].getPreviewUrl("large"))
             .setThumbnail(result[i].channel.logo)
             .setDescription(
-                `${discord.getEmoji("star")}_Title:_ **${result[i].channel.status}**\n` +
-                `${discord.getEmoji("star")}_Channel:_ **${result[i].channel.name}**\n` +
-                `${discord.getEmoji("star")}_Game:_ **${result[i].channel.game}**\n` +
-                `${discord.getEmoji("star")}_Viewers:_ **${result[i].viewers}**\n` +
-                `${discord.getEmoji("star")}_Creation Date:_ **${Functions.formatDate(new Date(result[i].startDate.getTime()))}**\n` +
+                `${discord.getEmoji("star")}_Title:_ **${stream.title}**\n` +
+                `${discord.getEmoji("star")}_Channel:_ **${stream.userName}**\n` +
+                `${discord.getEmoji("star")}_Game:_ **${stream.gameName}**\n` +
+                `${discord.getEmoji("star")}_Viewers:_ **${stream.viewers}**\n` +
+                `${discord.getEmoji("star")}_Start Date:_ **${Functions.formatDate(new Date(stream.startDate.getTime()))}**\n` +
                 `${discord.getEmoji("star")}_FPS:_ **${Math.floor(result[i].averageFPS)}**\n` +
-                `${discord.getEmoji("star")}_Description:_ ${result[i].channel.description}\n`
+                `${discord.getEmoji("star")}_Description:_ ${channel.description}\n`
             )
             twitchArray.push(twitchEmbed)
         }

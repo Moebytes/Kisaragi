@@ -6,12 +6,13 @@ import emojiRegex from "emoji-regex"
 import fs from "fs"
 import path from "path"
 import stream from "stream"
-import TwitchClient from "twitch"
+import {AppTokenAuthProvider} from "@twurple/auth"
+import {ApiClient} from "@twurple/api"
 import config from "../config.json"
 import {Kisaragi} from "./Kisaragi"
 import {SQLQuery} from "./SQLQuery"
 
-const activeStreams = new Set()
+const activeStreams = new Set<string>()
 
 export class Functions {
     constructor(private readonly message: Message) {}
@@ -456,19 +457,20 @@ export class Functions {
 
     /** Polls the twitch api for stream notifications */
     public static pollTwitch = (discord: Kisaragi) => {
-        const twitch = TwitchClient.withCredentials(process.env.TWITCH_CLIENT_ID!, process.env.TWITCH_ACCESS_TOKEN)
+        const authProvider = new AppTokenAuthProvider(process.env.TWITCH_CLIENT_ID!, process.env.TWITCH_CLIENT_SECRET!)
+        const twitch = new ApiClient({authProvider})
         const callAPI = async () => {
             const channels = await SQLQuery.selectColumn("twitch", "channel")
             if (!channels?.[0]) return
-            const streams = await twitch.helix.streams.getStreams({userName: channels})
-            if (!streams.data) return
+            const streams = await twitch.streams.getStreamsByUserNames(channels)
+            if (!streams?.length) return
             const currentStreamers: string[] = []
-            for (let i = 0; i < streams.data.length; i++) {
-                if (!activeStreams.has(streams.data[i].userDisplayName)) {
-                    discord.emit("twitchOnline", streams.data[i])
-                    activeStreams.add(streams.data[i].userDisplayName)
+            for (let i = 0; i < streams.length; i++) {
+                if (!activeStreams.has(streams[i].userDisplayName)) {
+                    discord.emit("twitchOnline", streams[i])
+                    activeStreams.add(streams[i].userDisplayName)
                 }
-                currentStreamers.push(streams.data[i].userDisplayName)
+                currentStreamers.push(streams[i].userDisplayName)
             }
             if (currentStreamers?.[0]) {
                 const recordedStreams = Array.from(activeStreams) as string[]

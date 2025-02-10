@@ -1,5 +1,5 @@
 import {WebhookClient} from "discord.js"
-import {HelixStream} from "twitch"
+import {HelixStream} from "@twurple/api"
 import {Kisaragi} from "./../structures/Kisaragi"
 import {SQLQuery} from "./../structures/SQLQuery"
 

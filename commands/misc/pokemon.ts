@@ -20,8 +20,7 @@ export default class Pokemon extends Command {
             aliases: ["pokedex"],
             random: "none",
             cooldown: 10,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
             .setType("string")
@@ -72,7 +71,7 @@ export default class Pokemon extends Command {
             .setTitle(`**Pokemon Search** ${discord.getEmoji("vigneXD")}`))
         }
 
-        const result = await pokemon.getPokemonByName(query).then((r) => r?.[0])
+        const result = await pokemon.getPokemonByName(query)
 
         if (!result?.hasOwnProperty("name")) {
             return this.invalidQuery(embeds.createEmbed()
