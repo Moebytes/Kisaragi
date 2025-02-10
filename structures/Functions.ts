@@ -581,4 +581,8 @@ export class Functions {
     public static transformRange = (value: number, oldMin: number, oldMax: number, newMin: number, newMax: number) => {
         return ((value - oldMin) / (oldMax - oldMin)) * (newMax - newMin) + newMin
     }
+
+    public static arrayBufferToBase64 = (arrayBuffer: ArrayBuffer, mime = "image/png") => {
+        return `data:${mime};base64,${Buffer.from(arrayBuffer).toString("base64")}`
+    }
 }

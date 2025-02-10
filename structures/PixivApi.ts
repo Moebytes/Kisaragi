@@ -1,5 +1,4 @@
 import {Message, AttachmentBuilder, EmbedBuilder} from "discord.js"
-import path from "path"
 import Pixiv, {PixivFolderMap, PixivIllust} from "pixiv.ts"
 import {CommandFunctions} from "./CommandFunctions"
 import {Embeds} from "./Embeds"
@@ -8,6 +7,8 @@ import {Images} from "./Images"
 import {Kisaragi} from "./Kisaragi"
 import {Permission} from "./Permission"
 import {SQLQuery} from "./SQLQuery"
+import path from "path"
+import fs from "fs"
 
 export class PixivApi {
     private readonly images: Images
@@ -31,8 +32,8 @@ export class PixivApi {
             if (discord.checkMuted(this.message)) return
         }
         const pixivEmbed = this.embeds.createEmbed()
-        if (!image) return
-        const comments = await this.pixiv.illust.comments({illust_id: image?.id})
+        if (!image?.id) return
+        const comments = await this.pixiv.illust.comments({illust_id: image.id})
         const commentArray: string[] = []
         for (let i = 0; i <= 5; i++) {
                 if (!comments.comments[i]) break
@@ -40,6 +41,7 @@ export class PixivApi {
         }
         // const viewLink = await this.pixiv.util.viewLink(String(image.id))
         const url = await this.pixiv.util.downloadIllust(image, path.join(__dirname, `../assets/misc/images/pixiv/illusts`))
+        if (!url) return
         const authorUrl = await this.pixiv.util.downloadProfilePicture(image, path.join(__dirname, `../assets/misc/images/pixiv/profiles`))
         // const viewLinkAppend = viewLink ? `_Image not showing? Click_ [**here**](${viewLink}).` : ""
         let files = [] as AttachmentBuilder[]
@@ -60,7 +62,7 @@ export class PixivApi {
         }
         const cleanText = image.caption.replace(/<\/?[^>]+(>|$)/g, "")
         pixivEmbed
-        .setAuthor({name: "pixiv", iconURL: "https://dme8nb6778xpo.cloudfront.net/images/app/service_logos/12/0f3b665db199/large.png?1532986814", url: "https://www.pixiv.net/en/"})
+        .setAuthor({name: "pixiv", iconURL: "https://kisaragi.moe/assets/embed/pixiv.png", url: "https://www.pixiv.net/en/"})
         .setTitle(`**Pixiv Image** ${this.discord.getEmoji("chinoSmug")}`)
         .setURL(`https://www.pixiv.net/member_illust.php?mode=medium&illust_id=${image?.id}`)
         .setDescription(
@@ -79,7 +81,7 @@ export class PixivApi {
     public pixivErrorEmbed = () => {
         const pixivEmbed = this.embeds.createEmbed()
         pixivEmbed
-        .setAuthor({name: "pixiv", iconURL: "https://dme8nb6778xpo.cloudfront.net/images/app/service_logos/12/0f3b665db199/large.png?1532986814", url: "https://www.pixiv.net/en/"})
+        .setAuthor({name: "pixiv", iconURL: "https://kisaragi.moe/assets/embed/pixiv.png", url: "https://www.pixiv.net/en/"})
         .setTitle(`**Pixiv Image** ${this.discord.getEmoji("chinoSmug")}`)
         .setDescription("No results were found. You can turn off the bookmark filter by adding **all**. Also, try searching for the japanese tag on the " +
         "[**Pixiv Website**](https://www.pixiv.net/), as some tags can't be translated to english.")
@@ -127,7 +129,7 @@ export class PixivApi {
             }
         }
         if (msg1) msg1.delete()
-        const illusts = json
+        const illusts = Functions.shuffleArray(json).filter((i) => i.illust_ai_type !== 2)
         if (!illusts[0]) return this.pixivErrorEmbed() as Promise<T extends true ? PixivIllust : Message>
         if (noEmbed) {
             const index = Math.floor(Math.random() * (illusts.length - illusts.length/2) + illusts.length/2)
@@ -291,32 +293,16 @@ export class PixivApi {
         const dest = path.join(__dirname, `../assets/misc/images/pixiv/zip/${name}.zip`)
         await Functions.zipDir(dir, dest)
         const attachment = new AttachmentBuilder(dest, {name: `${name}.zip`})
-        const images = await Promise.all(files.map((f) => this.pixiv!.util.viewLink(path.basename(f).match(/\d{4,}/)?.[0] ?? ""))).then((r) => r.filter(Boolean))
-        const downloadArray: EmbedBuilder[] = []
-        // let att = false
-        // if (images.length < 1) images.length = 1; att = true
-        for (let i = 0; i < images.length; i++) {
-            const downloadEmbed = embeds.createEmbed()
-            .setImage(images[i])
-            .setAuthor({name: "pixiv", iconURL: "https://dme8nb6778xpo.cloudfront.net/images/app/service_logos/12/0f3b665db199/large.png?1532986814", url: "https://www.pixiv.net/en/"})
-            .setTitle(`**Pixiv Download** ${this.discord.getEmoji("chinoSmug")}`)
-            .setDescription(`${this.discord.getEmoji("star")}Downloaded **${files.length}** images for the tag **${tag ? tag : "default"}**! Not every image has a viewable direct link.`)
-            /*if (att) {
-                downloadEmbed
-                .attachFiles([files[0]])
-                .setImage(`attachment://${path.basename(files[0])}`)
-            }*/
-            downloadArray.push(downloadEmbed)
-        }
+        const imgBuffer = fs.readFileSync(files[0])
+        const imgAttachment = new AttachmentBuilder(imgBuffer, {name: `${name}.png`})
+        const downloadEmbed = embeds.createEmbed()
+        .setImage(`attachment://${name}.png`)
+        .setAuthor({name: "pixiv", iconURL: "https://kisaragi.moe/assets/embed/pixiv.png", url: "https://www.pixiv.net/en/"})
+        .setTitle(`**Pixiv Download** ${this.discord.getEmoji("chinoSmug")}`)
+        .setDescription(`${this.discord.getEmoji("star")}Downloaded **${files.length}** images for the tag **${tag ? tag : "default"}**!`)
         if (msg2) msg2.delete()
-        if (downloadArray.length === 1) {
-            await this.discord.send(this.message, downloadArray[0])
-        } else {
-            await this.embeds.createReactionEmbed(downloadArray)
-        }
-        await this.discord.send(this.message, "", attachment)
+        await this.discord.send(this.message, downloadEmbed, [attachment, imgAttachment])
         Functions.removeDirectory(src)
-        return
     }
 
     public animeEndpoint = async (endpoint: string, limit?: number, update?: boolean) => {
@@ -381,7 +367,7 @@ export class PixivApi {
                     const cleanText = illust.caption.replace(/<\/?[^>]+(>|$)/g, "")
                     const pixivEmbed = this.embeds.createEmbed()
                     pixivEmbed
-                    .setAuthor({name: "pixiv", iconURL: "https://dme8nb6778xpo.cloudfront.net/images/app/service_logos/12/0f3b665db199/large.png?1532986814", url: "https://www.pixiv.net/en/"})
+                    .setAuthor({name: "pixiv", iconURL: "https://kisaragi.moe/assets/embed/pixiv.png", url: "https://www.pixiv.net/en/"})
                     .setTitle(`**${Functions.toProperCase(endpoint)}** ${this.discord.getEmoji(emoji)}`)
                     .setURL(`https://www.pixiv.net/member_illust.php?mode=medium&illust_id=${illust?.id}`)
                     .setImage(pictures[i])
@@ -406,7 +392,7 @@ export class PixivApi {
                     const author = id.match(/(?<=\()(.*?)(?=\))/)?.[0] ?? "Unknown"
                     const pixivEmbed = this.embeds.createEmbed()
                     pixivEmbed
-                    .setAuthor({name: "pixiv", iconURL: "https://dme8nb6778xpo.cloudfront.net/images/app/service_logos/12/0f3b665db199/large.png?1532986814", url: "https://www.pixiv.net/en/"})
+                    .setAuthor({name: "pixiv", iconURL: "https://kisaragi.moe/assets/embed/pixiv.png", url: "https://www.pixiv.net/en/"})
                     .setTitle(`**Pixiv Image** ${this.discord.getEmoji(emoji)}`)
                     .setImage(pictures[i])
                     .setDescription(

@@ -6,6 +6,7 @@ import {Embeds} from "../../structures/Embeds"
 import {Functions} from "../../structures/Functions"
 import {Kisaragi} from "../../structures/Kisaragi"
 import {Permission} from "../../structures/Permission"
+import fs from "fs"
 
 export default class Kancolle extends Command {
     private readonly defaults = [
@@ -30,8 +31,7 @@ export default class Kancolle extends Command {
             aliases: ["kc", "kantai", "kantaicollection"],
             random: "none",
             cooldown: 10,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const girlOption = new SlashCommandOption()
             .setType("string")
@@ -52,7 +52,7 @@ export default class Kancolle extends Command {
         if (discord.checkMuted(message)) if (!perms.checkNSFW()) return
         const headers = {
             "referer": "https://kancolle.fandom.com/",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36"
+            "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:135.0) Gecko/20100101 Firefox/135.0"
         }
 
         let query = Functions.combineArgs(args, 1)
@@ -62,36 +62,22 @@ export default class Kancolle extends Command {
         if (query.match(/kancolle.fandom.com/)) {
             query = query.replace("https://kancolle.fandom.com/wiki/", "")
         }
-        const res = await axios.get(`https://kancolle.fandom.com/wiki/${query}`, {headers})
-        console.log(res)
-        const id = res.data?.items[0]?.id
-        if (!id) {
+        const response = await axios.get(`https://kancolle.fandom.com/wiki/${query}`, {headers}).catch(() => null)
+        if (!response) {
             return this.invalidQuery(embeds.createEmbed()
             .setAuthor({name: "kancolle", iconURL: "https://kisaragi.moe/assets/embed/kancolle.png"})
             .setTitle(`**Kancolle Search** ${discord.getEmoji("poiHug")}`))
         }
-        const res2 = await axios.get(`https://kancolle.fandom.com/api/v1/Articles/AsSimpleJson?id=${id}`, {headers})
-        const thumb = await axios.get(`https://kancolle.fandom.com/api/v1/Articles/Details?ids=${id}`, {headers}).then((r: any) => r.data.items[id].thumbnail)
-        const girl = res2.data.sections[0]?.title
-        const rawGallery = await axios.get(`https://kancolle.fandom.com/wiki/${girl}/Gallery`, {headers}).then((r)=>r.data)
-        const matches = rawGallery.match(/(https:\/\/vignette.wikia.nocookie.net\/kancolle\/images\/)(.*?)(.png)/g)
+        const res = response.data
+        const thumb = res.match(/(?<=<div class="infobox-ship-card"><a href=")(.*?)(?=")/gm)?.[0]
+        const girl = res.match(/(?<=<title>)(\w+)(?=\s*\|)/gm)?.[0]
+        const rawGallery = await axios.get(`https://kancolle.fandom.com/wiki/${girl}/Gallery`, {headers}).then((r) => r.data)
+        const matches = rawGallery.match(/(https:\/\/static.wikia.nocookie.net\/kancolle\/images\/)(.*?)(.png)/g)
         let filtered = matches.filter((m: any)=> m.includes(girl))
         filtered = Functions.removeDuplicates(filtered)
-        let description = ""
-        let index = 1
-        let done = false
+        let rawDescription = res.match(/(?<=<span class="mw-headline" id="Trivia">Trivia)[\s\S]*?(?=<div class="ship-page-gallery">)/gm)?.[0]
+        let description = rawDescription ? Functions.cleanHTML(rawDescription).replace("[]", "").trim() : ""
 
-        while (description.length < 1500 && done === false) {
-            if (!res2.data.sections[index]?.title) {
-                done = true
-                continue
-            } else if (!res2.data.sections[index]?.content[0]?.elements?.map((c: any) => c.text)) {
-                index++
-                continue
-            }
-            description += `${discord.getEmoji("star")}_${res2.data.sections[index]?.title}_: ${res2.data.sections[index]?.content[0]?.elements?.map((c: any) => c.text).join("\n")}\n`
-            index++
-        }
         const kancolleArray: EmbedBuilder[] = []
         for (let i = 0; i < filtered.length; i++) {
             const kancolleEmbed = embeds.createEmbed()

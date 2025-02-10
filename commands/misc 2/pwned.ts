@@ -23,7 +23,6 @@ export default class Pwned extends Command {
             aliases: ["haveibeenpwned"],
             random: "none",
             cooldown: 5,
-            unlist: true,
             subcommandEnabled: true
         })
         const textOption = new SlashCommandOption()

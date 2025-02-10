@@ -22,8 +22,6 @@ export default class Ugoira extends Command {
             \`ugoira link/id\` - Gets the pixiv ugoira from the link.
             \`ugoira tag\` - Gets a pixiv ugoira from the tag (translated to japanese).
             \`ugoira en tag\` - Gets a pixiv ugoira from the tag (not translated).
-            \`ugoira r18 tag\` - Gets an R-18 ugoira from the tag (translated to japanese).
-            \`ugoira r18 en tag\` - Gets an R-18 ugoira from the tag (not translated).
             `,
             examples:
             `
@@ -97,10 +95,11 @@ export default class Ugoira extends Command {
             }
         }
         if (String(pixivID).length > 14) return
+        let dest = ""
         try {
             const folder = path.join(__dirname, "../../assets/images/gifs")
             if (!fs.existsSync(folder)) fs.mkdirSync(folder, {recursive: true})
-            await pixiv.util.downloadUgoira(String(pixivID), path.join(folder, `${pixivID}.gif`), {speed: 1.0})
+            dest = await pixiv.util.downloadUgoira(String(pixivID), path.join(folder, `${pixivID}.gif`), {speed: 1.0})
         } catch {
             return this.invalidQuery(embeds.createEmbed()
             .setAuthor({name: "pixiv", iconURL: "https://kisaragi.moe/assets/embed/ugoira.png"})
@@ -115,13 +114,13 @@ export default class Ugoira extends Command {
         }
         Functions.deferDelete(msg1, 1000)
         const ugoiraEmbed = embeds.createEmbed()
-        const outGif = new AttachmentBuilder(path.join(__dirname, `../../assets/misc/images/gifs/${pixivID}.gif`))
+        const outGif = new AttachmentBuilder(fs.readFileSync(dest), {name: `${pixivID}.gif`})
         const comments = await pixiv.illust.comments({illust_id: pixivID as number})
         const cleanText = details.caption.replace(/<\/?[^>]+(>|$)/g, "")
         const profileFolder = path.join(__dirname, "../../assets/images/pixiv/profiles")
         if (!fs.existsSync(profileFolder)) fs.mkdirSync(profileFolder, {recursive: true})
         const authorUrl = await pixiv.util.downloadProfilePicture(details, profileFolder)
-        const authorAttachment = new AttachmentBuilder(authorUrl, {name: "author.png"})
+        const authorAttachment = new AttachmentBuilder(fs.readFileSync(authorUrl), {name: "author.png"})
         const commentArray: string[] = []
         for (let i = 0; i <= 5; i++) {
                     if (!comments.comments[i]) break
@@ -142,7 +141,7 @@ export default class Ugoira extends Command {
             )
         .setThumbnail(`attachment://author.png`)
         .setImage(`attachment://${pixivID}.gif`)
-        const msg = await this.send(ugoiraEmbed, [outGif.attachment as any, authorAttachment])
+        const msg = await this.send(ugoiraEmbed, [outGif, authorAttachment])
 
         const reactions = ["reverse"]
         await msg.react(discord.getEmoji(reactions[0]))
@@ -174,9 +173,9 @@ export default class Ugoira extends Command {
             if (bad) return
             const folder = path.join(__dirname, "../../assets/images/gifs")
             if (!fs.existsSync(folder)) fs.mkdirSync(folder, {recursive: true})
-            await pixiv.util.downloadUgoira(String(pixivID), path.join(folder, `${pixivID}.gif`), {speed: factor, reverse: setReverse})
-            const outGif = new AttachmentBuilder(path.join(__dirname, `../../assets/misc/images/gifs/${pixivID}.gif`))
-            await this.send("", outGif)
+            let dest = await pixiv.util.downloadUgoira(String(pixivID), path.join(folder, `${pixivID}.gif`), {speed: factor, reverse: setReverse})
+            const outGif = new AttachmentBuilder(fs.readFileSync(dest), {name: `${pixivID}.gif`})
+            await this.send("Here is the new gif!", outGif)
         })
     }
 }

@@ -229,25 +229,19 @@ export class Embeds {
         numberSelect.on("collect", async (reaction: MessageReaction, user: User) => {
             if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
-                setTimeout(() => rep.delete(), 3000)
+                Functions.deferDelete(rep, 3000)
                 return
             }
             const self = this
             async function getPageNumber(response: Message) {
                 if (Number.isNaN(Number(response.content)) || Number(response.content) > embeds.length) {
                     const rep = await response.reply("That page number is invalid.")
-                    await new Promise<void>((resolve) => {
-                        setTimeout(() => {
-                            rep.delete()
-                            resolve()
-                        }, 2000)
-                    })
                     await Functions.timeout(2000)
                     await rep.delete().catch(() => null)
                 } else {
                     page = Number(response.content) - 1
                     const embed = await self.updateEmbed(embeds, page, user, msg)
-                    if (embed) this.discord.edit(msg, embed)
+                    if (embed) self.discord.edit(msg, embed)
                 }
                 await response.delete().catch(() => null)
             }
