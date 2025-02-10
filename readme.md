@@ -28,7 +28,7 @@ First you will need to download all of these.
 - Sox: http://sox.sourceforge.net/
 
 The first step is to clone this repo to download all of the code.
-```git clone <url>```
+```git clone <url>``` \
 In the same directory, install all of the dependencies with the command:
 ```npm install```
 
@@ -47,5 +47,8 @@ The URL to add this bot is the following, replacing CLIENT_ID with the client ID
 
 Finally, you can start the bot with the following command:
 ```npm start```
+
+In production, it is recommended to run it with pm2 so it auto-restarts on any errors:
+```npm run pm2```
 
 That's all!
