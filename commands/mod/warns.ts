@@ -209,7 +209,7 @@ export default class Warns extends Command {
                             if (warnOneRole) {
                                 if (member.roles.cache.has(warnOneRole.id)) {
                                     await member.roles.remove(warnOneRole)
-                                    await this.send(`<@${userID}>, you were removed from the ${warnOneRole} role because you do not have any warns.`)
+                                    await self.send(`<@${userID}>, you were removed from the ${warnOneRole} role because you do not have any warns.`)
                                 }
                             }
                         }
@@ -217,7 +217,7 @@ export default class Warns extends Command {
                             if (warnTwoRole) {
                                 if (member.roles.cache.has(warnTwoRole.id)) {
                                     await member.roles.remove(warnTwoRole)
-                                    await this.send(`<@${userID}>, you were removed from the ${warnTwoRole} role because you do not have two warns.`)
+                                    await self.send(`<@${userID}>, you were removed from the ${warnTwoRole} role because you do not have two warns.`)
                                 }
                             }
                         }
@@ -265,7 +265,7 @@ export default class Warns extends Command {
                             if (warnOneRole) {
                                 if (member.roles.cache.has(warnOneRole.id)) {
                                     await member.roles.remove(warnOneRole)
-                                    await this.send(`<@${userID}>, you were removed from the ${warnOneRole} role because you do not have any warns.`)
+                                    await self.send(`<@${userID}>, you were removed from the ${warnOneRole} role because you do not have any warns.`)
                                 }
                             }
                         }
@@ -273,7 +273,7 @@ export default class Warns extends Command {
                             if (warnTwoRole) {
                                 if (member.roles.cache.has(warnTwoRole.id)) {
                                     await member.roles.remove(warnTwoRole)
-                                    await this.send(`<@${userID}>, you were removed from the ${warnTwoRole} role because you do not have two warns.`)
+                                    await self.send(`<@${userID}>, you were removed from the ${warnTwoRole} role because you do not have two warns.`)
                                 }
                             }
                         }

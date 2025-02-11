@@ -39,7 +39,7 @@ export default class MessageDelete {
                 logEmbed
                 .setAuthor({name: `${message.author?.tag} (${message.author?.id})`, iconURL: this.discord.displayAvatar(message as any)})
                 .setTitle(`**Message Deleted** ${discord.getEmoji("chinoSmug")}`)
-                .setImage(image)
+                .setImage(image || null)
                 .setDescription(executor + content + imageText + attachments)
                 .setFooter({text: `#${(message.channel as TextChannel).name} • ${Functions.formatDate(message.createdAt)}`})
                 await this.discord.channelSend(msgChannel, logEmbed).catch(() => null)

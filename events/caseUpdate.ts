@@ -21,7 +21,7 @@ export default class CaseUpdate {
             context = `[**Context**](${instance.context})`
         }
         embed
-        .setThumbnail(user.displayAvatarURL({extension: "png"}))
+        .setThumbnail(user.displayAvatarURL({extension: "png"}) || null)
         .setDescription(
             `${discord.getEmoji("star")}_User:_ **${user.tag}** \`(${user.id})\`\n` +
             `${discord.getEmoji("star")}_Moderator:_ **${executor.tag}** \`(${executor.id})\`\n` +

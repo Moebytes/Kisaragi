@@ -113,10 +113,10 @@ export default class MessageReactionAdd {
                 starEmbed
                 .setAuthor({name: "star", iconURL: "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/microsoft/74/white-medium-star_2b50.png"})
                 .setTitle(`**New Starboard Message!** ${discord.getEmoji("raphiSmile")}`)
-                .setThumbnail(this.discord.displayAvatar(reaction.message))
+                .setThumbnail(this.discord.displayAvatar(reaction.message) || null)
                 .setURL(reaction.message.url)
                 .setDescription(`[**Message Link**](${reaction.message.url})\n` + content)
-                .setImage(reaction.message.attachments.first() ? reaction.message.attachments.first()!.url : "")
+                .setImage(reaction.message.attachments.first() ? reaction.message.attachments.first()!.url : null)
                 .setFooter({text: `${reaction.message.author.tag} • #${(reaction.message.channel as TextChannel).name}`, iconURL: this.discord.displayAvatar(reaction.message)})
                 await this.discord.channelSend(starChannel, starEmbed)
                 active.push(reaction.message.id)

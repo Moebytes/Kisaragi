@@ -24,8 +24,8 @@ export default class GuildDelete {
             logEmbed
             .setAuthor({name: "guild leave", iconURL: "https://steamuserimages-a.akamaihd.net/ugc/956342034402318288/74A95F211FAF8ABF470C3F5716A1D6C1A90B0C9F/"})
             .setTitle(`**Left guild!** ${discord.getEmoji("cirNo")}`)
-            .setThumbnail(guild.iconURL() ? guild.iconURL({extension: "png"})! : "")
-            .setImage(guild.bannerURL() ? guild.bannerURL({extension: "png"})! : (guild.splashURL() ? guild.splashURL({extension: "png"})! : ""))
+            .setThumbnail(guild.iconURL() ? guild.iconURL({extension: "png"})! : null)
+            .setImage(guild.bannerURL() ? guild.bannerURL({extension: "png"})! : (guild.splashURL() ? guild.splashURL({extension: "png"})! : null))
             .setDescription(
                 `${discord.getEmoji("star")}_Guild Name:_ **${guild.name}**\n` +
                 `${discord.getEmoji("star")}_Guild Owner:_ **${guildOwner.user.username}**\n` +

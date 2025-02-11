@@ -39,7 +39,7 @@ export default class MessageDeleteBulk {
                 logEmbed
                 .setAuthor({name: `${message.author.tag} (${message.author.id})`, iconURL: this.discord.displayAvatar(message)})
                 .setTitle(`**Messages Bulk Deleted** ${discord.getEmoji("tohruSmug")}`)
-                .setImage(image)
+                .setImage(image || null)
                 .setDescription(
                     `${discord.getEmoji("star")}_Count:_ **${count}**\n` +
                     executor + content + imageText + attachments

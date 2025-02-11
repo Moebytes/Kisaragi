@@ -32,7 +32,7 @@ export default class UserUpdate {
                     logEmbed
                     .setAuthor({name: "username", iconURL: "https://cdn.discordapp.com/emojis/623182675355762690.png"})
                     .setTitle(`**Username Change** ${discord.getEmoji("tohruSmug")}`)
-                    .setThumbnail(newUser.displayAvatarURL({extension: "png"}) ?? "")
+                    .setThumbnail(newUser.displayAvatarURL({extension: "png"}) || null)
                     .setDescription(
                         `${discord.getEmoji("star")}_User:_ **<@!${newUser.id}> (${newUser.tag})**\n` +
                         `${discord.getEmoji("star")}_User ID:_ \`${newUser.id}\`\n` +
@@ -54,7 +54,7 @@ export default class UserUpdate {
                     logEmbed
                     .setAuthor({name: "profile picture", iconURL: "https://cdn.discordapp.com/emojis/607052423172718607.png"})
                     .setTitle(`**Profile Picture Change** ${discord.getEmoji("kannaXD")}`)
-                    .setThumbnail(newUser.displayAvatarURL({extension: "png"}))
+                    .setThumbnail(newUser.displayAvatarURL({extension: "png"}) || null)
                     .setDescription(
                         `${discord.getEmoji("star")}_User:_ **<@!${newUser.id}> (${newUser.username})**\n` +
                         `${discord.getEmoji("star")}_User ID:_ \`${newUser.id}\`\n` +

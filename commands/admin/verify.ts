@@ -78,6 +78,9 @@ export default class Verify extends Command {
                             const result = await captchaClass.createCaptcha(String(type), String(color), String(difficulty))
                             return sendCaptcha(result.captcha, result.text, result.files)
                         } else if (msg.content.trim() === txt) {
+                            responseEmbed
+                            .setDescription(`${discord.getEmoji("pinkCheck")} **${msg.member!.displayName}** was verified!`)
+                            await discord.send(msg, responseEmbed)
                             if (msg.member!.roles.cache.has(role!.id)) {
                                 try {
                                     await msg.member!.roles.remove(role!)
@@ -94,9 +97,7 @@ export default class Verify extends Command {
                                     return this.send("Verification failed. Either I don't have the **Manage Roles** permission, or the verify role is above my highest role in the role hierarchy.")
                                 }
                             }
-                            responseEmbed
-                            .setDescription(`${discord.getEmoji("pinkCheck")} **${msg.member!.displayName}** was verified!`)
-                            return discord.send(msg, responseEmbed)
+                            return
                         } else {
                             msg.reply("Wrong answer! Please try again.")
                             const result = await captchaClass.createCaptcha(String(type), String(color), String(difficulty))

@@ -89,7 +89,7 @@ export default class GuildMemberAdd {
                 joinEmbed
                 .setAuthor({name: "join", iconURL: "https://cdn.discordapp.com/emojis/588199024906207271.gif"})
                 .setTitle(`**Member Join** ${discord.getEmoji("aquaUp")}`)
-                .setThumbnail(member.displayAvatarURL({extension: "png"}))
+                .setThumbnail(member.displayAvatarURL({extension: "png"}) || null)
                 .setDescription(
                     `${discord.getEmoji("star")}_Member:_ **<@!${member.id}> (${member.user.tag})**\n` +
                     `${discord.getEmoji("star")}_Member ID:_ \`${member.id}\`\n` +

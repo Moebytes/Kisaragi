@@ -34,7 +34,7 @@ export default class ChannelPinsUpdate {
         .setTitle(`**Message Pinned!**`)
         .setURL(pin.url)
         .setDescription(`[**Message Link**](${pin.url})\n` + pin.content)
-        .setImage(pin.attachments.first() ? pin.attachments.first()!.url : "")
+        .setImage(pin.attachments.first() ? pin.attachments.first()!.url : null)
         .setFooter({text: `${pin.author.tag} • #${(message.channel as TextChannel).name}`, iconURL: this.discord.displayAvatar(pin)})
         await webhook.send({embeds: [pinEmbed], avatarURL: this.discord.displayAvatar(pin), username: pin.member?.displayName})
         await pin.unpin()
