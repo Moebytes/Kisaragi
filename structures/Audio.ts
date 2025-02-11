@@ -1158,7 +1158,7 @@ export class Audio {
 
     public getDuration = async () => {
         const queue = this.getQueue()
-        let duration = await this.fx.duration(queue[0].file)
+        let duration = await this.fx.duration(queue[0].originalFile)
         return Math.round(duration)
     }
 
@@ -1185,30 +1185,30 @@ export class Audio {
         const settings = this.getSettings()
         if (settings.reverse) {
             await this.reverse(newFile, false, true)
+            newFile = this.getQueue()[0].file
         }
-        newFile = this.getQueue()[0].file
         if (Number(settings.pitch) !== 0) {
             await this.pitch(newFile, Number(settings.pitch), false, true)
+            newFile = this.getQueue()[0].file
         }
-        newFile = this.getQueue()[0].file
         if (Number(settings.speed) !== 1) {
             await this.speed(newFile, Number(settings.speed), Boolean(settings.speedParam), false, true)
+            newFile = this.getQueue()[0].file
         }
-        newFile = this.getQueue()[0].file
         if (settings.filters[0]) {
             for (let i = 0; i < settings.filters.length; i++) {
                 const params = Functions.removeDuplicates(settings.filterParams[settings.filters[i]])
                 await this[settings.filters[i]]?.(newFile, ...params)
             }
+            newFile = this.getQueue()[0].file
         }
-        newFile = this.getQueue()[0].file
         if (settings.effects[0]) {
             for (let i = 0; i < settings.effects.length; i++) {
                 const params = Functions.removeDuplicates(settings.effectParams[settings.effects[i]])
                 await this[settings.effects[i]]?.(newFile, ...params)
             }
+            newFile = this.getQueue()[0].file
         }
-        newFile = this.getQueue()[0].file
         return newFile
     }
 
@@ -1263,12 +1263,8 @@ export class Audio {
             next = this.next()
         }
         if (next) {
-            if (settings.looping) {
-                await this.play(next)
-            } else {
-                const nextFX = await this.applyEffects(next)
-                await this.play(nextFX)
-            }
+            const nextFX = await this.applyEffects(next)
+            await this.play(nextFX)
             let nowPlaying: string | undefined
             if (!skipPlaying) nowPlaying = await this.nowPlaying()
             if (nowPlaying) await this.discord.send(this.message, nowPlaying)

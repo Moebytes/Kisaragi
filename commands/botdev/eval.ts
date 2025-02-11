@@ -38,8 +38,7 @@ export default class Eval extends Command {
           aliases: [],
           cooldown: 3,
           botdev: true,
-          unlist: true,
-          subcommandEnabled: false
+          subcommandEnabled: true
       })
       const codeOption = new SlashCommandOption()
           .setType("string")

@@ -22,8 +22,7 @@ export default class SQL extends Command {
             aliases: [],
             cooldown: 3,
             botdev: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
             .setType("string")

@@ -219,7 +219,7 @@
         "command": "pixiv",
         "category": "anime",
         "description": "Searches for or downloads anime images on pixiv.",
-        "help": "_Note: Put the folder mapping in brackets in the format [folderName:tagName, folderName2:tagName2, etc.]._\npixiv - Gets a pixiv image with some defaults.\npixiv link/id - Gets the pixiv or ugoira image from the link.\npixiv tag - Gets a pixiv image with the tag (translated to japanese).\npixiv en tag - Gets a pixiv image with the tag (not translated).\npixiv popular - Gets a pixiv image from the daily rankings.\npixiv download/dl query [folderMap]? - Downloads images on pixiv and uploads the zip file. Folder map will organize certain tags into sub folders.\npixiv r18 tag - Gets an R-18 pixiv image from the tag (translated to japanese).\npixiv r18 en tag - Gets an R-18 pixiv image from the tag (not translated).\npixiv r18 popular - Gets a random image from the R-18 daily rankings.\npixiv r18 download/dl query [folderMap]? - Downloads R-18 images and uploads the zip file.\n=>pixiv r18 sagiri izumi\n=>pixiv r18 megumin\n=>pixiv r18 popular",
+        "help": "_Note: Put the folder mapping in brackets in the format [folderName:tagName, folderName2:tagName2, etc.]._\npixiv - Gets a pixiv image with some defaults.\npixiv link/id - Gets the pixiv or ugoira image from the link.\npixiv tag - Gets a pixiv image with the tag (translated to japanese).\npixiv en tag - Gets a pixiv image with the tag (not translated).\npixiv popular - Gets a pixiv image from the daily rankings.\npixiv download/dl query [folderMap]? - Downloads images on pixiv and uploads the zip file. Folder map will organize certain tags into sub folders.",
         "aliases": "p",
         "examples": "=>pixiv\n=>pixiv azur lane\n=>pixiv download black tights\n=>pixiv download gabriel dropout [gabriel:gabriel, satania:satania, raphiel:raphiel, vignette:vignette]",
         "cooldown": 60
@@ -246,7 +246,7 @@
         "command": "ugoira",
         "category": "anime",
         "description": "Searches for animated pixiv images (pixiv ugoira).",
-        "help": "_Note: Using the **pixiv** command on a ugoira link will run this command too!_\nugoira - Gets a pixiv ugoira with some defaults.\nugoira link/id - Gets the pixiv ugoira from the link.\nugoira tag - Gets a pixiv ugoira from the tag (translated to japanese).\nugoira en tag - Gets a pixiv ugoira from the tag (not translated).\nugoira r18 tag - Gets an R-18 ugoira from the tag (translated to japanese).\nugoira r18 en tag - Gets an R-18 ugoira from the tag (not translated).",
+        "help": "_Note: Using the **pixiv** command on a ugoira link will run this command too!_\nugoira - Gets a pixiv ugoira with some defaults.\nugoira link/id - Gets the pixiv ugoira from the link.\nugoira tag - Gets a pixiv ugoira from the tag (translated to japanese).\nugoira en tag - Gets a pixiv ugoira from the tag (not translated).",
         "aliases": "u",
         "examples": "=>ugoira\n=>ugoira izumi sagiri\n=>ugoira kisaragi (azur lane)",
         "cooldown": 30
@@ -402,15 +402,6 @@
         "help": "set activity, status - Set the activity and status",
         "aliases": "none",
         "examples": "=>set watching anime, dnd",
-        "cooldown": 3
-    },
-    {
-        "command": "sql",
-        "category": "botdev",
-        "description": "Runs an sql query on the database.",
-        "help": "sql query - Run sql query",
-        "aliases": "none",
-        "examples": "=>sql select * from guilds",
         "cooldown": 3
     },
     {
@@ -711,12 +702,30 @@
         "cooldown": 10
     },
     {
+        "command": "gd",
+        "category": "game",
+        "description": "Searches for geometry dash players and levels.",
+        "help": "gd query - Searches for levels with the query\ngd user name - Gets the profile of a user",
+        "aliases": "none",
+        "examples": "=>gd anime\n=>gd user viprin",
+        "cooldown": 10
+    },
+    {
         "command": "genshin",
         "category": "game",
         "description": "Gets information on a genshin impact character.",
         "help": "genshin - Gets some picked characters.\ngenshin character - Gets information on the character.",
         "aliases": "genshinimpact",
         "examples": "=>genshin klee\n=>genshin lumine",
+        "cooldown": 10
+    },
+    {
+        "command": "kancolle",
+        "category": "game",
+        "description": "Gets information on a kancolle ship girl.",
+        "help": "kancolle - Gets some handpicked girls\nkancolle shipgirl - Gets information on the shipgirl.",
+        "aliases": "kc, kantai, kantaicollection",
+        "examples": "=>kancolle fubuki\n=>kancolle hibiki",
         "cooldown": 10
     },
     {
@@ -1006,6 +1015,15 @@
         "aliases": "none",
         "examples": "=>banner",
         "cooldown": 5
+    },
+    {
+        "command": "changelog",
+        "category": "info",
+        "description": "The most recent bot updates in chronological order.",
+        "help": "changelog num? - Sends the changelog (or specific one)",
+        "aliases": "updates",
+        "examples": "=>changelog",
+        "cooldown": 10
     },
     {
         "command": "channels",
@@ -1341,6 +1359,15 @@
         "cooldown": 10
     },
     {
+        "command": "pokemon",
+        "category": "misc",
+        "description": "Gets information on a pokemon.",
+        "help": "pokemon query - Posts info on a pokemon",
+        "aliases": "pokedex",
+        "examples": "=>pokemon eevee",
+        "cooldown": 10
+    },
+    {
         "command": "random",
         "category": "misc",
         "description": "Executes a random command, excluding permission related commands.",
@@ -1438,6 +1465,15 @@
         "aliases": "none",
         "examples": "=>ping",
         "cooldown": 3
+    },
+    {
+        "command": "pwned",
+        "category": "misc 2",
+        "description": "Searches have i been pwned.",
+        "help": "pwned - Posts pwned websites\npwned query - Searches for a specific data breach",
+        "aliases": "haveibeenpwned",
+        "examples": "=>pwned\n=>pwned myspace",
+        "cooldown": 5
     },
     {
         "command": "shorten",
@@ -2135,7 +2171,7 @@
     {
         "command": "animeponytails",
         "category": "reddit",
-        "description": "For people with a ponytail fetish...",
+        "description": "Anime ponytails.",
         "help": "animeponytails - Gets a random post from r/animeponytails",
         "aliases": "none",
         "examples": "=>animeponytails",

@@ -1,4 +1,4 @@
-import {Collection, Message, SlashCommandSubcommandBuilder, EmbedBuilder, 
+import {Collection, Message, AttachmentBuilder, EmbedBuilder, 
 MessageReaction, TextChannel, User, HexColorString} from "discord.js"
 import {SlashCommandSubcommand} from "../../structures/SlashCommandOption"
 import {Command} from "../../structures/Command"
@@ -62,6 +62,7 @@ export default class Embed extends Command {
         const discord = this.discord
         const message = this.message
         const embeds = new Embeds(discord, message)
+        let attachments = [] as AttachmentBuilder[]
         if (message.guild && !(message.channel as TextChannel).permissionsFor(message.guild?.members.me!)?.has("ManageMessages")) {
             return this.reply(`The bot needs the permission **Manage Messages** in order to use this command. ${this.discord.getEmoji("kannaFacepalm")}`)
         }
@@ -130,10 +131,24 @@ export default class Embed extends Command {
         const cancel = msg.createReactionCollector({filter: cancelCheck})
         let onInfo = true
 
+        const updateAttachments = (attachment: AttachmentBuilder | null, type: string, remove?: boolean) => {
+            const index = attachments.findIndex((i) => i.name === `${type}.png`)
+            if (index !== -1) {
+                if (remove) {
+                    attachments[index] = null as unknown as AttachmentBuilder
+                    attachments = attachments.filter(Boolean)
+                } else {
+                    if (attachment) attachments[index] = attachment
+                }
+            } else {
+                if (!remove && attachment) attachments = [attachment]
+            }
+        }
+
         info.on("collect", async (reaction, user) => {
             await reaction.users.remove(user).catch(() => null)
             if (onInfo) {
-                this.edit(msg, embed)
+                this.edit(msg, embed, attachments)
                 onInfo = false
             } else {
                 this.edit(msg, infoEmbed)
@@ -155,7 +170,7 @@ export default class Embed extends Command {
                 Functions.deferDelete(proc, 3000)
             }
             this.setProcBlock()
-            const rep = await this.send(`<@${user.id}>, Enter the title of this embed.`)
+            const rep = await this.send(`<@${user.id}>, Enter the title of this embed or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
             rep.delete()
             if (content.length > 256) {
@@ -164,8 +179,12 @@ export default class Embed extends Command {
                 this.setProcBlock(true)
                 return
             }
-            embed.setTitle(content)
-            this.edit(msg, embed)
+            if (content?.trim() === "remove") {
+                embed.setTitle(null)
+            } else {
+                embed.setTitle(content)
+            }
+            this.edit(msg, embed, attachments)
             onInfo = false
             this.setProcBlock(true)
         })
@@ -178,7 +197,7 @@ export default class Embed extends Command {
                 return
             }
             this.setProcBlock()
-            const rep = await this.send(`<@${user.id}>, Enter the description of this embed.`)
+            const rep = await this.send(`<@${user.id}>, Enter the description of this embed or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
             rep.delete()
             if (content.length > 2048) {
@@ -187,8 +206,12 @@ export default class Embed extends Command {
                 this.setProcBlock(true)
                 return
             }
-            embed.setDescription(content)
-            this.edit(msg, embed)
+            if (content?.trim() === "remove") {
+                embed.setDescription(null)
+            } else {
+                embed.setDescription(content)
+            }
+            this.edit(msg, embed, attachments)
             onInfo = false
             this.setProcBlock(true)
         })
@@ -201,19 +224,27 @@ export default class Embed extends Command {
                 return
             }
             this.setProcBlock()
-            const rep = await this.send(`<@${user.id}>, Post an image for this embed (png, jpg, gif). Type \`me\` for your profile pic, and \`guild\` for the guild icon.`)
+            const rep = await this.send(`<@${user.id}>, Post an image for this embed (png, jpg, gif). Type \`me\` for your profile pic, and \`guild\` for the guild icon, or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
             rep.delete()
             if (content === "me") content = user.displayAvatarURL({extension: "png"})
             if (content === "guild") content = this.message.guild?.iconURL({extension: "png"}) ?? ""
-            if (!/.(png|jpg|gif)/gi.test(content)) {
-                const rep2 = await this.send(`<@${user.id}>, This image is invalid.`)
-                Functions.deferDelete(rep2, 3000)
-                this.setProcBlock(true)
-                return
+            if (content?.trim() === "remove") {
+                embed.setImage(null)
+                updateAttachments(null, "image", true)
+            } else {
+                if (!/.(png|jpg|gif)/gi.test(content)) {
+                    const rep2 = await this.send(`<@${user.id}>, This image is invalid.`)
+                    Functions.deferDelete(rep2, 3000)
+                    this.setProcBlock(true)
+                    return
+                }
+                const buffer = await fetch(content).then((r) => r.arrayBuffer())
+                const attachment = new AttachmentBuilder(Buffer.from(buffer), {name: "image.png"})
+                updateAttachments(attachment, "image")
+                embed.setImage(`attachment://image.png`)
             }
-            embed.setImage(content)
-            this.edit(msg, embed)
+            this.edit(msg, embed, attachments)
             onInfo = false
             this.setProcBlock(true)
         })
@@ -226,19 +257,27 @@ export default class Embed extends Command {
                 return
             }
             this.setProcBlock()
-            const rep = await this.send(`<@${user.id}>, Post a thumbnail for this embed (png, jpg, gif). Type \`me\` for your profile pic, and \`guild\` for the guild icon.`)
+            const rep = await this.send(`<@${user.id}>, Post a thumbnail for this embed (png, jpg, gif). Type \`me\` for your profile pic, and \`guild\` for the guild icon, or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
             rep.delete()
             if (content === "me") content = user.displayAvatarURL({extension: "png"})
             if (content === "guild") content = this.message.guild?.iconURL({extension: "png"}) ?? ""
-            if (!/.(png|jpg|gif)/gi.test(content)) {
-                const rep2 = await this.send(`<@${user.id}>, This thumbnail is invalid.`)
-                Functions.deferDelete(rep2, 3000)
-                this.setProcBlock(true)
-                return
+            if (content?.trim() === "remove") {
+                embed.setThumbnail(null)
+                updateAttachments(null, "thumbnail", true)
+            } else {
+                if (!/.(png|jpg|gif)/gi.test(content)) {
+                    const rep2 = await this.send(`<@${user.id}>, This thumbnail is invalid.`)
+                    Functions.deferDelete(rep2, 3000)
+                    this.setProcBlock(true)
+                    return
+                }
+                const buffer = await fetch(content).then((r) => r.arrayBuffer())
+                const attachment = new AttachmentBuilder(Buffer.from(buffer), {name: "thumbnail.png"})
+                updateAttachments(attachment, "thumbnail")
+                embed.setThumbnail(`attachment://thumbnail.png`)
             }
-            embed.setThumbnail(content)
-            this.edit(msg, embed)
+            this.edit(msg, embed, attachments)
             onInfo = false
             this.setProcBlock(true)
         })
@@ -251,7 +290,7 @@ export default class Embed extends Command {
                 return
             }
             this.setProcBlock()
-            const rep = await this.send(`<@${user.id}>, Enter the author of this embed.`)
+            const rep = await this.send(`<@${user.id}>, Enter the author of this embed or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
             rep.delete()
             if (content.length > 256) {
@@ -260,8 +299,12 @@ export default class Embed extends Command {
                 this.setProcBlock(true)
                 return
             }
-            embed.setAuthor({name: content})
-            this.edit(msg, embed)
+            if (content?.trim() === "remove") {
+                embed.setAuthor(null)
+            } else {
+                embed.setAuthor({name: content})
+            }
+            this.edit(msg, embed, attachments)
             onInfo = false
             this.setProcBlock(true)
         })
@@ -274,19 +317,23 @@ export default class Embed extends Command {
                 return
             }
             this.setProcBlock()
-            const rep = await this.send(`<@${user.id}>, Post an author image for this embed (png, jpg, gif). Type \`me\` for your profile pic, and \`guild\` for the guild icon.`)
+            const rep = await this.send(`<@${user.id}>, Post an author image for this embed (png, jpg, gif). Type \`me\` for your profile pic, and \`guild\` for the guild icon, or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
             rep.delete()
             if (content === "me") content = user.displayAvatarURL({extension: "png"})
             if (content === "guild") content = this.message.guild?.iconURL({extension: "png"}) ?? ""
-            if (!/.(png|jpg|gif)/gi.test(content)) {
-                const rep2 = await this.send(`<@${user.id}>, This image is invalid.`)
-                Functions.deferDelete(rep2, 3000)
-                this.setProcBlock(true)
-                return
+            if (content?.trim() === "remove") {
+                embed.setAuthor(null)
+            } else {
+                if (!/.(png|jpg|gif)/gi.test(content)) {
+                    const rep2 = await this.send(`<@${user.id}>, This image is invalid.`)
+                    Functions.deferDelete(rep2, 3000)
+                    this.setProcBlock(true)
+                    return
+                }
+                embed.setAuthor({name: embed.data.author?.name || null as any, iconURL: content})
             }
-            embed.setAuthor({name: embed.data.author?.name || null as any, iconURL: content})
-            this.edit(msg, embed)
+            this.edit(msg, embed, attachments)
             onInfo = false
             this.setProcBlock(true)
         })
@@ -299,7 +346,7 @@ export default class Embed extends Command {
                 return
             }
             this.setProcBlock()
-            const rep = await this.send(`<@${user.id}>, Enter the footer of this embed.`)
+            const rep = await this.send(`<@${user.id}>, Enter the footer of this embed or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
             rep.delete()
             if (content.length > 2048) {
@@ -308,8 +355,12 @@ export default class Embed extends Command {
                 this.setProcBlock(true)
                 return
             }
-            embed.setFooter({text: content})
-            this.edit(msg, embed)
+            if (content?.trim() === "remove") {
+                embed.setFooter(null)
+            } else {
+                embed.setFooter({text: content})
+            }
+            this.edit(msg, embed, attachments)
             onInfo = false
             this.setProcBlock(true)
         })
@@ -322,19 +373,23 @@ export default class Embed extends Command {
                 return
             }
             this.setProcBlock()
-            const rep = await this.send(`<@${user.id}>, Post a footer image for this embed (png, jpg, gif). Type \`me\` for your profile pic, and \`guild\` for the guild icon.`)
+            const rep = await this.send(`<@${user.id}>, Post a footer image for this embed (png, jpg, gif). Type \`me\` for your profile pic, and \`guild\` for the guild icon, or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
             rep.delete()
             if (content === "me") content = user.displayAvatarURL({extension: "png"})
             if (content === "guild") content = this.message.guild?.iconURL({extension: "png"}) ?? ""
-            if (!/.(png|jpg|gif)/gi.test(content)) {
-                const rep2 = await this.send(`<@${user.id}>, This image is invalid.`)
-                Functions.deferDelete(rep2, 3000)
-                this.setProcBlock(true)
-                return
+            if (content?.trim() === "remove") {
+                embed.setFooter(null)
+            } else {
+                if (!/.(png|jpg|gif)/gi.test(content)) {
+                    const rep2 = await this.send(`<@${user.id}>, This image is invalid.`)
+                    Functions.deferDelete(rep2, 3000)
+                    this.setProcBlock(true)
+                    return
+                }
+                embed.setFooter({text: embed.data.footer!.text, iconURL: content})
             }
-            embed.setFooter({text: embed.data.footer!.text, iconURL: content})
-            this.edit(msg, embed)
+            this.edit(msg, embed, attachments)
             onInfo = false
             this.setProcBlock(true)
         })
@@ -347,13 +402,17 @@ export default class Embed extends Command {
                 return
             }
             this.setProcBlock()
-            const rep = await this.send(`<@${user.id}>, Set the color of this embed (hex color).`)
+            const rep = await this.send(`<@${user.id}>, Set the color of this embed (hex color) or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
             rep.delete()
-            try {
-                embed.setColor(content as HexColorString)
-            } catch {}
-            this.edit(msg, embed)
+            if (content?.trim() === "remove") {
+                embed.setColor(null)
+            } else {
+                try {
+                    embed.setColor(content as HexColorString)
+                } catch {}
+            }
+            this.edit(msg, embed, attachments)
             onInfo = false
             this.setProcBlock(true)
         })
@@ -366,12 +425,16 @@ export default class Embed extends Command {
                 return
             }
             this.setProcBlock()
-            const rep = await this.send(`<@${user.id}>, Set the timestamp of this embed (type \`now\` for the time now).`)
+            const rep = await this.send(`<@${user.id}>, Set the timestamp of this embed (type \`now\` for the time now) or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
             rep.delete()
             const date = content === "now" ? Date.now() : new Date(content)
-            embed.setTimestamp(date)
-            this.edit(msg, embed)
+            if (content?.trim() === "remove") {
+                embed.setTimestamp(null)
+            } else {
+                embed.setTimestamp(date)
+            }
+            this.edit(msg, embed, attachments)
             onInfo = false
             this.setProcBlock(true)
         })
@@ -384,17 +447,21 @@ export default class Embed extends Command {
                 return
             }
             this.setProcBlock()
-            const rep = await this.send(`<@${user.id}>, Enter the url of this embed.`)
+            const rep = await this.send(`<@${user.id}>, Enter the url of this embed or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
             rep.delete()
-            if (!/http/gi.test(content)) {
-                const rep2 = await this.send(`<@${user.id}>, This is not a valid url.`)
-                Functions.deferDelete(rep2, 3000)
-                this.setProcBlock(true)
-                return
+            if (content?.trim() === "remove") {
+                embed.setURL(null)
+            } else {
+                if (!/http/gi.test(content)) {
+                    const rep2 = await this.send(`<@${user.id}>, This is not a valid url.`)
+                    Functions.deferDelete(rep2, 3000)
+                    this.setProcBlock(true)
+                    return
+                }
+                embed.setURL(content)
             }
-            embed.setURL(content)
-            this.edit(msg, embed)
+            this.edit(msg, embed, attachments)
             onInfo = false
             this.setProcBlock(true)
         })
@@ -407,18 +474,22 @@ export default class Embed extends Command {
                 return
             }
             this.setProcBlock()
-            const rep = await this.send(`<@${user.id}>, Enter the json data for this embed. The current embed will be replaced.`)
+            const rep = await this.send(`<@${user.id}>, Enter the json data for this embed or \`cancel\` to cancel. The current embed will be replaced.`)
             await embeds.createPrompt(getContent, true)
-            try {
-                embed = new EmbedBuilder(JSON.parse(content))
-            } catch {
-                const rep2 = await this.send(`<@${user.id}>, This json data is invalid.`)
-                Functions.deferDelete(rep2, 3000)
-                this.setProcBlock(true)
-                return
+            if (content?.trim() === "cancel") {
+                // ignore
+            } else {
+                try {
+                    embed = new EmbedBuilder(JSON.parse(content))
+                } catch {
+                    const rep2 = await this.send(`<@${user.id}>, This json data is invalid.`)
+                    Functions.deferDelete(rep2, 3000)
+                    this.setProcBlock(true)
+                    return
+                }
             }
             rep.delete()
-            this.edit(msg, embed)
+            this.edit(msg, embed, attachments)
             onInfo = false
             this.setProcBlock(true)
         })
@@ -426,7 +497,7 @@ export default class Embed extends Command {
         done.on("collect", async (reaction, user) => {
             await reaction.users.remove(user).catch(() => null)
             await msg.delete()
-            await this.send(embed)
+            await this.send(embed, attachments)
         })
 
         cancel.on("collect", async (reaction, user) => {

@@ -160,7 +160,7 @@ export default class Help extends Command {
                         counter++
                     }
                     dmEmbed
-                    .addFields([{name: `${discord.getEmoji(this.emojiMap[category])} ${Functions.toProperCase(category)} (${counter})`.trim(), value: help || null as any}])
+                    .addFields([{name: `${discord.getEmoji(this.emojiMap[category])} ${Functions.toProperCase(category)} (${counter})`.trim(), value: help || "Not available" as any}])
                 }
                 dmEmbed
                 .setAuthor({name: "help", iconURL: "https://kisaragi.moe/assets/embed/help.png"})
