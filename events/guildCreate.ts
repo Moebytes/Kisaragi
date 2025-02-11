@@ -14,7 +14,7 @@ export default class GuildCreate {
         const message = await this.discord.fetchFirstMessage(guild) as Message
         if (!message) {
             const chan = guild.channels.cache.find(((c) => c.permissionsFor(guild.members.me!)?.has("SendMessages") ?? false))
-            if (chan) await this.discord.channelSend(chan as TextChannel, `The permissions **View Channel** and **Read Message History** are missing. Various features will not work properly. ${discord.getEmoji("kannaFacepalm")}`)
+            if (chan) await this.discord.channelSend(chan as TextChannel, `The permission **Read Message History** is missing. Various features will not work properly. ${discord.getEmoji("kannaFacepalm")}`)
             return
         }
         const embeds = new Embeds(discord, message)
@@ -50,8 +50,15 @@ export default class GuildCreate {
             }
         }
 
-        SQLQuery.initGuild(message, true)
+        let exists = false
+        try {
+            const sql = new SQLQuery(message)
+            const prefix = await sql.fetchColumn("guilds", "prefix")
+            if (prefix) exists = true
+        } catch {}
 
+        if (!exists) await SQLQuery.initGuild(message, true)
+        
         try {
             let botRole = guild.roles.cache.find((r) => r.name.toLowerCase().includes("kisaragi"))
             if (!botRole) botRole = await guild.roles.create({name: "✨ Kisaragi ✨", color: "#ff58f4"})
