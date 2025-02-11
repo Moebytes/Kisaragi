@@ -85,6 +85,7 @@ export class Detector {
     }
 
     public sourceDetails = (source: any) => {
+        console.log(source)
         let description = ""
         let url = ""
         switch (source.site) {
@@ -96,9 +97,9 @@ export class Detector {
                 url = `https://www.pixiv.net/en/artworks/${source?.raw?.data?.pixiv_id}`
                 break
             default:
-                const artist = source?.raw?.data?.member_name ? source.authorUrl ? `[${source?.raw?.data?.member_name}](${source.authorUrl})` : source?.raw?.data?.member_name : "Not found"
+                const artist = source?.raw?.data?.creator ? source?.raw?.data?.creator : "Not found"
                 description +=
-                `Title: ${source?.raw?.data?.title ?? "Not found"} Artist: ${artist} Similarity: ${source.similarity}\n` +
+                `Character: ${source?.raw?.data?.characters ?? "Not found"} Artist: ${artist} Similarity: ${source.similarity}\n` +
                 `Source: ${source?.raw?.data?.ext_urls ? source?.raw?.data?.ext_urls[0] : "Not found"}\n`
                 url = source?.raw?.data?.ext_urls ? source?.raw?.data?.ext_urls[0] : ""
         }
@@ -109,7 +110,7 @@ export class Detector {
         if (!this.message.attachments.size) return
         const sql = new SQLQuery(this.message)
         const embeds = new Embeds(this.discord, this.message)
-        const channels = await sql.fetchColumn("guilds", "source")
+        const channels = await sql.fetchColumn("guilds", "sources")
         if (!channels?.includes(this.message.channel.id)) return
         const images = this.message.attachments.map((a) => a.url)
         const sagiri = Sagiri(process.env.SAUCENAO_API_KEY!)

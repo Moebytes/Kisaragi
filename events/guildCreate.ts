@@ -66,7 +66,7 @@ export default class GuildCreate {
             const logEmbed = embeds.createEmbed()
             logEmbed
             .setAuthor({name: "guild join", iconURL: "https://discordemoji.com/assets/emoji/8994_TohruThumbsUp.gif"})
-            .setTitle(`**Joined a new guild!** ${discord.getEmoji("MeimeiYay")}`)
+            .setTitle(`**Joined a new guild!** ${discord.getEmoji("meimeiYay")}`)
             .setThumbnail(guild.iconURL() ? guild.iconURL({extension: "png"})! : null)
             .setImage(guild.bannerURL() ? guild.bannerURL({extension: "png"})! : (guild.splashURL() ? guild.splashURL({extension: "png"})! : null))
             .setDescription(

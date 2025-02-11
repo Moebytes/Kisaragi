@@ -44,7 +44,9 @@ export default class ChannelPinsUpdate {
 
     public run = async (channel: TextBasedChannel, time: Date) => {
         if (!(channel instanceof TextChannel)) return
-        const message = channel.lastMessage! as Message
+        let message = channel.lastMessage! as Message
+        if (!message) message = await this.discord.fetchFirstMessage(channel.guild) as Message
+        if (!message) return
         const sql = new SQLQuery(message)
 
         const pinboardID = await sql.fetchColumn("guilds", "pinboard")
