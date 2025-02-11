@@ -30,7 +30,7 @@ export default class MessageUpdate {
                 .setAuthor({name: `${newMsg.author.tag} (${newMsg.author.id})`, iconURL: this.discord.displayAvatar(newMsg)})
                 .setTitle(`**Message Edited** ${discord.getEmoji("mexShrug")}`)
                 .setImage(image || null)
-                .setDescription(oldContent + newContent + attachments)
+                .setDescription((oldContent + newContent + attachments) || null)
                 .setFooter({text: `#${(newMsg.channel as TextChannel).name} • ${Functions.formatDate(newMsg.editedAt!)}`})
                 await this.discord.channelSend(msgChannel, logEmbed).catch(() => null)
             }
