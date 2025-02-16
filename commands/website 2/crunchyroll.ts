@@ -64,8 +64,7 @@ export default class Crunchyroll extends Command {
             random: "string",
             cooldown: 10,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
             .setType("string")
@@ -107,7 +106,9 @@ export default class Crunchyroll extends Command {
         const query = Functions.combineArgs(args, 1).trim()
 
         if (!query) {
-            return this.noQuery(embeds.createEmbed())
+            return this.noQuery(embeds.createEmbed()
+            .setAuthor({name: "crunchyroll", iconURL: "https://kisaragi.moe/assets/embed/crunchyroll.png", url: "https://www.crunchyroll.com/"})
+            .setTitle(`**Crunchyroll Search** ${discord.getEmoji("himeHappy")}`))
         }
 
         const results = await fetch(`https://www.crunchyroll.com/content/v2/discover/search?q=${query}`, {headers: {Authorization: `Bearer ${process.env.CRUNCHYROLL_TOKEN}`}}).then((r) => r.json()) as any
@@ -116,7 +117,7 @@ export default class Crunchyroll extends Command {
         if (!shows?.length) {
             return this.invalidQuery(embeds.createEmbed()
             .setAuthor({name: "crunchyroll", iconURL: "https://kisaragi.moe/assets/embed/crunchyroll.png", url: "https://www.crunchyroll.com/"})
-            .setTitle(`**Crunchyroll Search** ${discord.getEmoji("himeHappy")}`))
+            .setTitle(`**Crunchyroll Search** ${discord.getEmoji("himeHappy")}`), "Or the authorization token expired.")
         }
 
         const crunchyArray: EmbedBuilder[] = []

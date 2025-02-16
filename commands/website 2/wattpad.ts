@@ -22,8 +22,7 @@ export default class Wattpad extends Command {
             random: "string",
             cooldown: 10,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
             .setType("string")
@@ -46,8 +45,8 @@ export default class Wattpad extends Command {
         }
 
         const headers = {
-            "accept": `application/json`,
-            "authorization": `Basic ${process.env.WATTPAD_API_KEY}`,
+            "accept": "application/json",
+            "authorization": `${process.env.WATTPAD_API_KEY}`,
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"
         }
         const result = await axios.get(`https://api.wattpad.com/v4/stories?query=${query}`, {headers})
@@ -59,8 +58,8 @@ export default class Wattpad extends Command {
         .setAuthor({name: "wattpad", iconURL: "https://kisaragi.moe/assets/embed/wattpad.png", url: "https://www.wattpad.com/"})
         .setTitle(`**Wattpad Story** ${discord.getEmoji("raphiSmile")}`)
         .setURL(story.url)
-        .setImage(story.cover)
-        .setThumbnail(story.user.avatar)
+        .setImage(story.cover || null)
+        .setThumbnail(story.user.avatar || null)
         .setDescription(
             `${discord.getEmoji("star")}_Title:_ **${story.title}**\n` +
             `${discord.getEmoji("star")}_Writer:_ **${story.user.name}**\n` +
@@ -100,14 +99,14 @@ export default class Wattpad extends Command {
             `${discord.getEmoji("star")}_Comments:_ **${partComments[i]}**\n` +
             `${match}`
             const splits = Functions.splitMessage(description, {maxLength: 2000, char: "."})
-            for (let j = 0; j < splits.length; j++) {
+            for (let j = 0; j < splits?.length; j++) {
                 const wattpadEmbed = embeds.createEmbed()
                 wattpadEmbed
                 .setAuthor({name: "wattpad", iconURL: "https://kisaragi.moe/assets/embed/wattpad.png", url: "https://www.wattpad.com/"})
                 .setTitle(`**Wattpad Story** ${discord.getEmoji("raphiSmile")}`)
                 .setURL(partURLS[i])
-                .setImage(partPhotos[i])
-                .setThumbnail(story.user.avatar)
+                .setImage(partPhotos[i] || null)
+                .setThumbnail(story.user.avatar || null)
                 .setDescription(splits[j].trim())
                 wattpadArray.push(wattpadEmbed)
             }

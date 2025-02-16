@@ -8,18 +8,7 @@ import {Kisaragi} from "../../structures/Kisaragi"
 
 export default class Fiverr extends Command {
     private readonly headers = {
-        "authority": "www.fiverr.com",
-        "method": "GET",
-        "scheme": "https",
-        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-        "cookie": "__cfduid=d58fa79ad9a90c1a570ea20203df712041588807562; _pxhd=cfaaf18e9117d5f5b61514ce42c39c8e5a1cb5b4c3efc31f85f2cd192dc4af1d:f3851691-8ff0-11ea-9be9-e1100a0583b0; logged_out_currency=USD; u_guid=ceea14e9-47f2-4a09-84fb-456c5a5487d6; pv_monthly=1%3B1%3B1; last_content_pages_=users%7C%7C%7Cshow%7C%7C%7Cimtenpi%3B; visited_fiverr=true; _fiverr_session_key=9255eac29bd344d02c8b00ec4ff40dd3; __cfruid=58fb95774b4b7b8af4c916cc29bfbd77a246d01e-1588807563; _gcl_au=1.1.253808082.1588807569; _pxvid=f3851691-8ff0-11ea-9be9-e1100a0583b0; _ga=GA1.2.510703574.1588807573; _gid=GA1.2.1362746301.1588807573; _pxde=3c678a76e2b344e93f070497cbf1d7a1eba36e8894f8fb59fc09db149e5126c4:eyJ0aW1lc3RhbXAiOjE1ODg4MDc1NzIxMjIsImZfa2IiOjAsImlwY19pZCI6W119; _dc_gtm_UA-12078752-1=1",
-        "accept-language": "en-US,en;q=0.9",
-        "if-none-match": "W/\"1e8930d9e33e15d19f1aea765f958bb5\"",
-        "sec-fetch-dest": "document",
-        "sec-fetch-mode": "navigate",
-        "sec-fetch-site": "same-origin",
-        "sec-fetch-user": "?1",
-        "upgrade-insecure-requests": "1",
+        "cookie": "u_guid=1739385757000-e307bd15b381ace120214960294ae574f4949a5d; logged_out_currency=USD; redirect_url=%2Fsearch%2Fgigs%3Fquery%3Danime%26source%3Dtop-bar%26search_in%3Deverywhere%26search-autocomplete-original-term%3Danime; _pxhd=Xab1Zi/BwTASLxvKeJnuKjMDHJ9ayYusDsTakdhOZBsIkvaMYYgpOI8xGnPaGJLOSSuiOv2qMQpXmgxY11D1Fg==:8fiWSLRkzfaEIBZgHLa7hVsdJT0IRCtp/ZD2VTdZGaxnbPII1p6MSu8gvrwiM196JHB7EwzZ0Qpwr6WdIZW78ATXwlyMkhi4wryF1I4bCcg=; _cfuvid=G_aUFI4VGTIlxUAbJ9yvjZmaLlE1NxxsFgDU4qJY1V4-1739385757178-0.0.1.1-604800000; forterToken=f2f3f74cf7af4fef95cf5b6ead6e216e_1739385757455_111_UAS9_17ck; page_views=1; g_state={\"i_p\":1739392961743,\"i_l\":1}",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"
     }
     constructor(discord: Kisaragi, message: Message) {
@@ -60,7 +49,8 @@ export default class Fiverr extends Command {
         const h = {path: `/search/gigs?query=${query}&source=top-bar&search_in=everywhere&search-autocomplete-original-term=${query}`, referer: "https://www.fiverr.com/?source=top_nav"}
         const searchURL = `https://www.fiverr.com/search/gigs?query=${query}&source=top-bar&search_in=everywhere&search-autocomplete-original-term=${query}`
         const html = await axios.get(searchURL, {headers: {...this.headers, ...h}}).then((r) => r.data)
-        const json = JSON.parse(html.match(/({"loggerOptions":)((.|\n)*?)(}}}})/gm)?.[0])
+        const json = JSON.parse(html.match(/(?<=<script type="application\/json" id="perseus-initial-props">)(.|\n)*(?=<\/script>)/gm)?.[0])
+        console.log(json)
         const gigs = json.listings.gigs
         const max = gigs.length > 10 ? 10 : gigs.length
 

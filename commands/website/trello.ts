@@ -25,8 +25,7 @@ export default class TrelloCommand extends Command {
             random: "string",
             cooldown: 10,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
             .setType("string")

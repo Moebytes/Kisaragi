@@ -12,7 +12,7 @@ import {Permission} from "./../../structures/Permission"
 export default class Play extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Plays any song from soundcloud, a link, or an attachment.",
+            description: "Plays a song from soundcloud or an attachment.",
             help:
             `
             _Note: You must be in a voice channel._

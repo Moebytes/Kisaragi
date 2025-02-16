@@ -54,7 +54,6 @@ export default class GifSpeed extends Command {
         const embeds = new Embeds(discord, message)
         const images = new Images(discord, message)
         const perms = new Permission(discord, message)
-        if (discord.checkMuted(message)) if (!perms.checkNSFW()) return
         const regex = new RegExp(/.gif/)
         args[1] = String(args[1]).replace(/x/g, "")
         let constrain = !Number.isNaN(Number(args[1])) ? Number(args[1]) : 20

@@ -16,7 +16,7 @@ export class Link {
         const onCooldown = this.cool.cmdCooldown(args[0], 30, linkCool)
         if (onCooldown && (msg.author!.id !== process.env.OWNER_ID)) return this.discord.reply(msg, onCooldown)
         const loading = await this.discord.send(msg, `**Fetching Link** ${this.discord.getEmoji("kisaragiCircle")}`) as Message
-        await this.cmd.runCommand(msg, args)
+        await this.cmd.runCommand(msg, args).catch(() => null)
         setTimeout(() => loading.delete(), 1000)
     }
 

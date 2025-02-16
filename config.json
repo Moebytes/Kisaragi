@@ -7,7 +7,7 @@
         "0xEC69FF"  
     ],
     "website": "https://kisaragi.moe",
-    "support": "",
+    "support": "https://discord.gg/sNhUu5JN6y",
     "invite": "https://discord.com/oauth2/authorize?client_id=CLIENTID&scope=bot&permissions=543279148279",
     "oauth2": "https://kisaragi-discord-bot.herokuapp.com/discord",
     "oauth2Testing": "http://localhost:5000/discord",

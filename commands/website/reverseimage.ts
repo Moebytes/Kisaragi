@@ -7,10 +7,12 @@ import {Embeds} from "../../structures/Embeds"
 import {Permission} from "../../structures/Permission"
 import {Functions} from "./../../structures/Functions"
 import {Kisaragi} from "./../../structures/Kisaragi"
+import fs from "fs"
 
 export default class ReverseImage extends Command {
     private readonly headers = {
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"
+        "referer": "https://www.google.com/",
+        "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:135.0) Gecko/20100101 Firefox/135.0"
     }
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
@@ -50,13 +52,15 @@ export default class ReverseImage extends Command {
 
     public revSearch = async (image: string) => {
         const data: any[] = []
-        const response = await axios.get(`https://images.google.com/searchbyimage?safe=off&sbisrc=tg&image_url=${image}`, {headers: this.headers}).then((r) => r.data)
+        const response = await axios.get(`https://lens.google.com/uploadbyurl?url=${encodeURI(image)}`, {headers: this.headers}).then((r) => r.data)
         const $ = cheerio.load(response)
-        $("#search > div > div > div > div > div").each((index, element) => {
+        fs.writeFileSync("data.txt", response)
+        $("#search > div > div").each((index, element) => {
             const url = $(element).find("a").attr("href")
             const desc = $(element).text()
             data.push({url, desc})
         })
+        console.log(data)
         const newArray: any[] = []
         for (let i = 3; i < data.length; i++) {
             const obj = {} as any

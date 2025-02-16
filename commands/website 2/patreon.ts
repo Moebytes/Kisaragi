@@ -21,8 +21,7 @@ export default class Patreon extends Command {
             aliases: [],
             cooldown: 10,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const creatorOption = new SlashCommandOption()
             .setType("string")
@@ -51,12 +50,12 @@ export default class Patreon extends Command {
             query = query.match(/(?<=\/)(?:.(?!\/))+$/)![0]
         }
         const response = await axios.get(`https://www.patreon.com/${query}`, {headers})
-        if (!response.data.match(/(?<="related": "https:\/\/www.patreon.com\/api\/campaigns\/)(.*?)(?=")/)) {
+        if (!response.data.match(/(?<=https:\/\/www.patreon.com\/api\/campaigns\/)(.*?)(?=")/)) {
             return this.invalidQuery(embeds.createEmbed()
             .setAuthor({name: "patreon", iconURL: "https://kisaragi.moe/assets/embed/patreon.png", url: "https://www.patreon.com/"})
             .setTitle(`**Patreon Search** ${discord.getEmoji("raphi")}`))
         }
-        const id = response.data.match(/(?<="related": "https:\/\/www.patreon.com\/api\/campaigns\/)(.*?)(?=")/)[0]
+        const id = response.data.match(/(?<=https:\/\/www.patreon.com\/api\/campaigns\/)(.*?)(?=")/)[0]
         const json = await axios.get(`https://www.patreon.com/api/campaigns/${id}`, {headers})
         const details = json.data.data.attributes
         const avatar = details.avatar_photo_url
@@ -65,7 +64,7 @@ export default class Patreon extends Command {
         const posts = details.creation_count
         const creating = details.creation_name
         const patrons = details.patron_count
-        const sum = (details.pledge_sum / 100.0).toFixed(2)
+        const sum = details.earnings_visibility	=== "private" ? "Private" : "$" + (details.pledge_sum / 100.0).toFixed(2)
         const description = Functions.cleanHTML(Functions.decodeEntities(details.summary)).replace(/\n+/, "\n")
         const url = details.url
         const fb = json.data?.included[0]?.attributes?.facebook
@@ -85,7 +84,7 @@ export default class Patreon extends Command {
             `${discord.getEmoji("star")}_Creation Date:_ **${created}**\n` +
             `${discord.getEmoji("star")}_Posts:_ **${posts}**\n` +
             `${discord.getEmoji("star")}_Patrons:_ **${patrons}**\n` +
-            `${discord.getEmoji("star")}_Monthly Earnings:_ **$${sum}**\n` +
+            `${discord.getEmoji("star")}_Monthly Earnings:_ **${sum}**\n` +
             `${discord.getEmoji("star")}_Youtube:_ ${yt ? yt : "None"}\n` +
             `${discord.getEmoji("star")}_Twitter:_ ${tw ? `https://www.twitter.com/${tw}` : "None"}\n` +
             `${discord.getEmoji("star")}_Twitch:_ ${tc ? tc : "None"}\n` +

@@ -1548,8 +1548,6 @@ export class Audio {
             await this.songPickerSC(query)
         })
         youtube.on("collect", async (reaction, user) => {
-            const perms = new Permission(discord, message)
-            if (discord.checkMuted(message)) if (!perms.checkNSFW()) return
             youtube.stop()
             await reaction.users.remove(user)
             await this.songPickerYT(query)

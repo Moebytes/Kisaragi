@@ -51,7 +51,6 @@ export default class Video2MP3 extends Command {
         const video = new Video(discord, message)
         const cmd = new CommandFunctions(discord, message)
         const perms = new Permission(discord, message)
-        if (discord.checkMuted(message)) if (!perms.checkNSFW()) return
         const regex = new RegExp(/.(mp4|avi|mov|mkv|flv|swf|wmv)/)
         let url: string | undefined
         if (args[1]) {

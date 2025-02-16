@@ -26,8 +26,7 @@ export default class TenorCommand extends Command {
             random: "none",
             cooldown: 5,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
             .setType("string")
@@ -45,7 +44,7 @@ export default class TenorCommand extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         const tenor = new Tenor.client({
-            Key: process.env.TENOR_API_KEY,
+            Key: process.env.GOOGLE_API_KEY,
             Filter: "off",
             Locale: "en_US",
             MediaFilter: "minimal",
@@ -75,7 +74,7 @@ export default class TenorCommand extends Command {
                 `${discord.getEmoji("star")}_Title:_ **${result[i].title}**\n` +
                 `${discord.getEmoji("star")}_Creation Date:_ **${Functions.formatDate(result[i].created)}**`
             )
-            .setImage(result[i].media[0].gif.url)
+            .setImage(result[i].media_formats.gif.url)
             tenorArray.push(tenorEmbed)
         }
 

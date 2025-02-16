@@ -23,8 +23,7 @@ export default class AppStore extends Command {
             random: "string",
             cooldown: 15,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
             .setType("string")
@@ -74,8 +73,8 @@ export default class AppStore extends Command {
                 `${discord.getEmoji("star")}_Score:_ **${app.score}**\n` +
                 `${discord.getEmoji("star")}_Reviews:_ **${app.reviews}**\n` +
                 `${discord.getEmoji("star")}_Developer Website:_ ${app.developerWebsite}\n` +
-                `${discord.getEmoji("star")}_Description:_ ${Functions.checkChar(app.description, 700, " ")}\n` +
-                `${discord.getEmoji("star")}_Release Notes:_ ${Functions.checkChar(app.releaseNotes, 300, " ")}`
+                `${discord.getEmoji("star")}_Description:_ ${Functions.checkChar(app.description || "None", 700, " ")}\n` +
+                `${discord.getEmoji("star")}_Release Notes:_ ${Functions.checkChar(app.releaseNotes || "None", 300, " ")}`
             )
             appArray.push(appEmbed)
         }

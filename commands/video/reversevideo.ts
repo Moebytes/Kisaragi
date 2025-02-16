@@ -52,7 +52,6 @@ export default class ReverseVideo extends Command {
         const audio = new Audio(discord, message)
         const cmd = new CommandFunctions(discord, message)
         const perms = new Permission(discord, message)
-        if (discord.checkMuted(message)) if (!perms.checkNSFW()) return
         const youtube = new Youtube(process.env.GOOGLE_API_KEY!)
         const regex = new RegExp(/.(mp4|avi|mov|mkv|flv|swf|wmv)/)
         let url: string | undefined

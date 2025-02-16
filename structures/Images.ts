@@ -431,7 +431,7 @@ export class Images {
             api_paste_code: content,
             api_paste_name: title,
             api_paste_private: privacy,
-            api_user_key: process.env.PASTEBIN_USER_KEY
+            api_user_key: ""
         }), {headers: this.headers}).then((r) => r.data)
         return link as string
     }
@@ -439,9 +439,10 @@ export class Images {
     /** Upload text to hastebin */
     public hastebinUpload = async (content: string) => {
         try {
-            const key = await axios.post(`https://hastebin.com/documents`, content, {headers: this.headers}).then((r) => r.data?.key)
-            return `https://hastebin.com/${key}`
-        } catch {
+            const key = await axios.post(`https://hastebin.skyra.pw/documents`, content, {headers: {...this.headers, "Content-Type": "text/plain"}, transformRequest: (raw) => raw}).then((r) => r.data?.key)
+            return `https://hastebin.skyra.pw/${key}`
+        } catch (e) {
+            console.log(e)
             return Promise.reject("Could not upload to hastebin")
         }
     }

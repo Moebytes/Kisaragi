@@ -62,7 +62,7 @@ export class Command {
       return this.options
   }
 
-  public run = async (args: string[]): Promise<void | Message> => {}
+  public run = async (args: string[]): Promise<void | Message | string> => {}
 
   public reply = (embeds: EmbedBuilder | EmbedBuilder[] | string, 
     files?: AttachmentBuilder | AttachmentBuilder[], opts?: MessageReplyOptions) => {

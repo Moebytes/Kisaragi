@@ -5,6 +5,7 @@ import {Embeds} from "../../structures/Embeds"
 import {Functions} from "../../structures/Functions"
 import {Kisaragi} from "../../structures/Kisaragi"
 import {Permission} from "../../structures/Permission"
+import playstore from "google-play-scraper"
 
 export default class GooglePlay extends Command {
     constructor(discord: Kisaragi, message: Message) {
@@ -22,8 +23,7 @@ export default class GooglePlay extends Command {
             random: "string",
             cooldown: 15,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
             .setType("string")
@@ -49,8 +49,6 @@ export default class GooglePlay extends Command {
             .setTitle(`**Google Play Search** ${discord.getEmoji("poiHug")}`))
         }
 
-        const playstore = require("google-play-scraper")
-
         const res = await playstore.search({term, num: 50, fullDetail: true})
         const playArray: EmbedBuilder[] = []
         for (let i = 0; i < res.length; i++) {
@@ -72,9 +70,9 @@ export default class GooglePlay extends Command {
                 `${discord.getEmoji("star")}_Reviews:_ **${app.reviews}**\n` +
                 `${discord.getEmoji("star")}_Price:_ **$${app.price}**\n` +
                 `${discord.getEmoji("star")}_Developer Website:_ ${app.developerWebsite}\n` +
-                `${discord.getEmoji("star")}_Description:_ ${Functions.checkChar(app.description ?? "None", 600, " ")}\n` +
-                `${discord.getEmoji("star")}_Recent Changes:_ ${Functions.checkChar(Functions.cleanHTML(app.recentChanges ?? "None"), 300, " ")}\n` +
-                `${discord.getEmoji("star")}_Comments:_ ${Functions.checkChar(app.comments?.join(" ") ?? "None", 100, " ")}`
+                `${discord.getEmoji("star")}_Description:_ ${Functions.checkChar(app.description || "None", 600, " ")}\n` +
+                `${discord.getEmoji("star")}_Recent Changes:_ ${Functions.checkChar(Functions.cleanHTML(app.recentChanges || "None"), 300, " ")}\n` +
+                `${discord.getEmoji("star")}_Comments:_ ${Functions.checkChar(app.comments?.join(" ") || "None", 100, " ")}`
             )
             playArray.push(playEmbed)
         }

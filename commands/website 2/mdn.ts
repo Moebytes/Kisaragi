@@ -23,8 +23,7 @@ export default class MDN extends Command {
             aliases: ["jsref"],
             cooldown: 5,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
             .setType("string")
@@ -69,23 +68,17 @@ export default class MDN extends Command {
         if (query.match(/developer.mozilla.org/)) {
             query =  query.match(/(?<=\/)(?:.(?!\/))+$/)![0].replace(/_/g, " ")
         }
-        const url = `https://mdn.pleb.xyz/search?local=en-US&q=${query}`
-        const result = await axios.get(url, {headers}).then((r) => r.data)
-        let similar = ""
-        for (let i = 0; i < result.Subpages.length; i++) {
-            similar += `[**${result.Subpages[i].Label}**](https://developer.mozilla.org/${result.Subpages[i].URL})\n`
-        }
+        const url = `https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/${query.trim()}/index.json`
+        const result = await axios.get(url, {headers}).then((r) => r.data?.doc)
         const mdnEmbed = embeds.createEmbed()
         mdnEmbed
-        .setTitle(`**${result.Title}** ${discord.getEmoji("gabStare")}`)
+        .setTitle(`**${result.title}** ${discord.getEmoji("gabStare")}`)
         .setAuthor({name:`mdn`, iconURL: "https://kisaragi.moe/assets/embed/mdn.png", url: "https://developer.mozilla.org/en-US/"})
         .setThumbnail(message.author!.displayAvatarURL({extension: "png"}))
-        .setURL(`https://developer.mozilla.org/${result.URL}`)
+        .setURL(`https://developer.mozilla.org/${result.mdn_url}`)
         .setDescription(
-        `${discord.getEmoji("star")}_Modified:_ ${Functions.formatDate(result.Modified)}\n` +
-        `${discord.getEmoji("star")}_Summary:_ ${Functions.cleanHTML(result.Summary)}\n` +
-        `${discord.getEmoji("star")}_Tags:_ ${this.mdnReplace(result.Tags.join(", "))}\n` +
-        `${discord.getEmoji("star")}_Similar:_ \n${Functions.checkChar(similar, 1000, "\n")}`
+        `${discord.getEmoji("star")}_Modified:_ ${Functions.formatDate(result.modified)}\n` +
+        `${discord.getEmoji("star")}_Summary:_ ${Functions.cleanHTML(result.summary)}\n`
         )
         return this.reply(mdnEmbed)
     }

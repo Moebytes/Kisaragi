@@ -69,7 +69,6 @@ export default class OsuCommand extends Command {
         const osu = new Osu(process.env.OSU_API_KEY!)
         const sql = new SQLQuery(message)
         const perms = new Permission(discord, message)
-        if (discord.checkMuted(message)) if (!perms.checkNSFW()) return
         const osuEmbed = embeds.createEmbed()
         const dbName = await sql.fetchColumn("misc", "osu name", "user id", message.author.id)
 

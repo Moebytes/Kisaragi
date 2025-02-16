@@ -95,7 +95,6 @@ export default class Danbooru extends Command {
             const img = images[i]
             if (img.rating !== "g" && img.rating !== "s") {
                 if (!perms.checkNSFW(true)) continue
-                if (discord.checkMuted(message)) continue
             }
             const danbooruEmbed = embeds.createEmbed()
             .setAuthor({name: "danbooru", iconURL: "https://kisaragi.moe/assets/embed/danbooru.png"})

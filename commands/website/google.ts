@@ -7,7 +7,7 @@ import {Embeds} from "./../../structures/Embeds"
 import {Functions} from "./../../structures/Functions"
 import {Kisaragi} from "./../../structures/Kisaragi"
 
-const google = require("google-it")
+const {search} = require("google-sr")
 
 export default class Google extends Command {
     constructor(discord: Kisaragi, message: Message) {
@@ -25,8 +25,7 @@ export default class Google extends Command {
             random: "string",
             cooldown: 10,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
             .setType("string")
@@ -58,15 +57,16 @@ export default class Google extends Command {
 
         const resultArray: string[] = []
 
-        const result = await google({query, limit: 50})
+        const result = await search({query})
+
         for (const i in result) {
             resultArray.push(`${discord.getEmoji("star")}_Title:_ **${result[i].title}**`)
             resultArray.push(`${discord.getEmoji("star")}_Link:_ ${result[i].link}`)
         }
         const googleEmbedArray: EmbedBuilder[] = []
-        let link: string
+        let link: string 
         try {
-            link = await commands.runCommand(message, ["screenshot", "return", `https://www.google.com/search?q=${query.trim().replace(/ /g, "+")}`]) as any
+            // link = await commands.runCommand(message, ["screenshot", "return", `https://www.google.com/search?q=${query.trim().replace(/ /g, "+")}`]) as any
         } catch {
             link = ""
         }
@@ -76,7 +76,7 @@ export default class Google extends Command {
             .setAuthor({name: "google", iconURL: "https://kisaragi.moe/assets/embed/google.png", url: "https://www.google.com/"})
             .setTitle(`**Google Search** ${discord.getEmoji("raphi")}`)
             .setThumbnail(message.author!.displayAvatarURL({extension: "png"}))
-            .setImage(link)
+            //.setImage(link || null)
             .setDescription(resultArray.slice(i, i+10).join("\n"))
             googleEmbedArray.push(googleEmbed)
         }

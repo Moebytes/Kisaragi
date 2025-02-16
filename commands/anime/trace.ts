@@ -50,7 +50,6 @@ export default class Trace extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         const perms = new Permission(discord, message)
-        if (discord.checkMuted(message)) if (!perms.checkNSFW()) return
         let url = Functions.combineArgs(args, 1)
         if (!url) url = await discord.fetchLastAttachment(message, false, /.(png|jpg)/) as string
         if (!url) return this.reply(`What image do you want to trace ${discord.getEmoji("kannaFacepalm")}`)

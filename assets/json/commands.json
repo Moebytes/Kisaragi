@@ -306,6 +306,15 @@
         "cooldown": 3
     },
     {
+        "command": "eval",
+        "category": "botdev",
+        "description": "Evaluates Javascript code.",
+        "help": "eval code - Evaluates the code",
+        "aliases": "none",
+        "examples": "=>code 1+1",
+        "cooldown": 3
+    },
+    {
         "command": "event",
         "category": "botdev",
         "description": "Triggers an event.",
@@ -402,6 +411,15 @@
         "help": "set activity, status - Set the activity and status",
         "aliases": "none",
         "examples": "=>set watching anime, dnd",
+        "cooldown": 3
+    },
+    {
+        "command": "sql",
+        "category": "botdev",
+        "description": "Runs an sql query on the database.",
+        "help": "sql query - Run sql query",
+        "aliases": "none",
+        "examples": "=>sql select * from guilds",
         "cooldown": 3
     },
     {
@@ -1377,6 +1395,15 @@
         "cooldown": 10
     },
     {
+        "command": "screenshot",
+        "category": "misc",
+        "description": "Posts a website screenshot.",
+        "help": "screenshot url - Posts the screenshot of the webpage\nscreenshot mobile url - Posts the screenshot of the mobile version of the site",
+        "aliases": "screencap",
+        "examples": "=>screenshot https://www.youtube.com/\n=>screenshot mobile https://www.youtube.com/",
+        "cooldown": 15
+    },
+    {
         "command": "snowflake",
         "category": "misc",
         "description": "Deconstructs or generates a discord snowflake.",
@@ -1440,6 +1467,15 @@
         "cooldown": 3
     },
     {
+        "command": "hastebin",
+        "category": "misc 2",
+        "description": "Uploads a message or text file to hastebin.",
+        "help": "hastebin text? - Uploads the text, or the last uploaded text file",
+        "aliases": "none",
+        "examples": "=>hastebin insert code",
+        "cooldown": 3
+    },
+    {
         "command": "hexadecimal",
         "category": "misc 2",
         "description": "Converts a number to and from hexadecimal.",
@@ -1449,12 +1485,30 @@
         "cooldown": 3
     },
     {
+        "command": "json",
+        "category": "misc 2",
+        "description": "Gets the JSON data of a message, embed, guild, role, channel, or emoji.",
+        "help": "_Note: If the message contains an embed, the JSON for the embed is posted._\njson id? - Gets the json data of the resource, or last posted message.\njson embed - Gets the json data of the last posted embed, specifically.",
+        "aliases": "none",
+        "examples": "=>json",
+        "cooldown": 3
+    },
+    {
         "command": "md5",
         "category": "misc 2",
         "description": "Hashes a message using the md5 algorithm.",
         "help": "md5 text - Hashes the text",
         "aliases": "none",
         "examples": "=>md5 secret password",
+        "cooldown": 3
+    },
+    {
+        "command": "pastebin",
+        "category": "misc 2",
+        "description": "Uploads a message or text file to pastebin.",
+        "help": "pastebin [title]? text? - Uploads the text, or the last uploaded text file\npastebin public [title]? text? - By default, the privacy is unlisted, but this makes it public",
+        "aliases": "none",
+        "examples": "=>pastebin [some code]",
         "cooldown": 3
     },
     {
@@ -1766,7 +1820,7 @@
     {
         "command": "play",
         "category": "music",
-        "description": "Plays any song from soundcloud, a link, or an attachment.",
+        "description": "Plays a song from soundcloud or an attachment.",
         "help": "_Note: You must be in a voice channel._\nplay - Plays the default songs.\nplay song - Searches for songs on soundcloud and plays the one that you pick.\nplay first song - Plays the first result automatically.\nplay reverse song - Starts playback in reverse mode.\nplay loop song - Starts playback in loop mode.",
         "aliases": "pl, stream",
         "examples": "=>play\n=>play reverse first synthion comet",
@@ -2232,6 +2286,15 @@
         "cooldown": 10
     },
     {
+        "command": "reddit",
+        "category": "reddit",
+        "description": "Searches posts on a reddit subreddit.",
+        "help": "reddit - Gets a random post\nreddit subreddit query? - Searches for posts in the subreddit or gets random ones\nreddit subreddit hot/new/top/rising/controversial - Gets hot, new, top, etc. posts in the board\nreddit user query - Searches for users\nreddit url - Gets the post from the url",
+        "aliases": "r",
+        "examples": "=>reddit\n=>reddit anime cute\n=>reddit animemes hot",
+        "cooldown": 10
+    },
+    {
         "command": "smugs",
         "category": "reddit",
         "description": "Smug anime girls.",
@@ -2475,6 +2538,15 @@
         "cooldown": 10
     },
     {
+        "command": "4chan",
+        "category": "website",
+        "description": "Searches for posts and images on 4chan.",
+        "help": "_Note: NSFW boards are restricted to nsfw channels._\n4chan images? - Default search is \"a anime\".\n4chan board query - Searches the specified board with the query.\n4chan images board query - Similar, but only sends all of the images.",
+        "aliases": "4, 4ch",
+        "examples": "=>4chan\n=>4chan a kawaii\n=>4chan images c cute",
+        "cooldown": 15
+    },
+    {
         "command": "bandcamp",
         "category": "website",
         "description": "Searches for artists, tracks, and albums on bandcamp.",
@@ -2500,6 +2572,42 @@
         "aliases": "gif",
         "examples": "=>giphy\n=>giphy anime",
         "cooldown": 5
+    },
+    {
+        "command": "google",
+        "category": "website",
+        "description": "Searches a search term on google.",
+        "help": "google query - Searches google for the query.",
+        "aliases": "g",
+        "examples": "=>google anime",
+        "cooldown": 10
+    },
+    {
+        "command": "images",
+        "category": "website",
+        "description": "Searches for images on google images.",
+        "help": "images query - Searches google images for the query.",
+        "aliases": "i, image, googleimages",
+        "examples": "=>images anime",
+        "cooldown": 10
+    },
+    {
+        "command": "mal",
+        "category": "website",
+        "description": "Searches for anime, characters, and users on my anime list.",
+        "help": "mal - Gets the top anime\nmal query - Searches for anime matching the query\nmal character query - Searches for characters with the query\nmal user query - Searches for users matching the query",
+        "aliases": "myanimelist",
+        "examples": "=>mal gabriel dropout\n=>mal satania",
+        "cooldown": 10
+    },
+    {
+        "command": "pinterest",
+        "category": "website",
+        "description": "Searches for images on pinterest.",
+        "help": "pinterest query - Searches pinterest for the query\npinterest user username - Searches for pins by the user\npinterest board username boardname - Searches for pins in a user's board",
+        "aliases": "pint",
+        "examples": "=>pinterest anime\n=>pinterest user name\n=>pinterest board name anime",
+        "cooldown": 15
     },
     {
         "command": "saucenao",
@@ -2529,6 +2637,24 @@
         "cooldown": 10
     },
     {
+        "command": "trello",
+        "category": "website",
+        "description": "Searches for trello boards and users.",
+        "help": "trello query - Searches for users with the query\ntrello url - Fetches the board from the url",
+        "aliases": "none",
+        "examples": "=>trello name\n=>trello https://trello.com/b/boardID",
+        "cooldown": 10
+    },
+    {
+        "command": "twitch",
+        "category": "website",
+        "description": "Searches for twitch streams and channels.",
+        "help": "twitch query - Searches for streams with the query\ntwitch channel query - Searches for a channel\ntwitch url - Gets the resource from the url",
+        "aliases": "tw",
+        "examples": "=>twitch osu\n=>twitch channel name",
+        "cooldown": 10
+    },
+    {
         "command": "wikipedia",
         "category": "website",
         "description": "Searches for wikipedia articles.",
@@ -2536,6 +2662,42 @@
         "aliases": "w, wiki",
         "examples": "=>wikipedia\n=>wikipedia anime",
         "cooldown": 10
+    },
+    {
+        "command": "appstore",
+        "category": "website 2",
+        "description": "Searches for apps on the iphone app store.",
+        "help": "appstore query - Searches the app store with the query.\nappstore url - Searches for the url",
+        "aliases": "app, istore",
+        "examples": "=>appstore geometry dash",
+        "cooldown": 15
+    },
+    {
+        "command": "crunchyroll",
+        "category": "website 2",
+        "description": "Searches for an anime on crunchyroll.",
+        "help": "crunchyroll url/query - Searches crunchyroll for the url/query.",
+        "aliases": "cr, crunchy",
+        "examples": "=>crunchyroll konosuba",
+        "cooldown": 10
+    },
+    {
+        "command": "github",
+        "category": "website 2",
+        "description": "Searches for github repositories and users.",
+        "help": "github query - Searches for repositories with the query\ngithub user query - Searches for users with the query",
+        "aliases": "gh",
+        "examples": "=>github anime\n=>github user github",
+        "cooldown": 30
+    },
+    {
+        "command": "googleplay",
+        "category": "website 2",
+        "description": "Searches for apps on the google play store.",
+        "help": "googleplay query - Searches google play with the query.",
+        "aliases": "gplay, playstore",
+        "examples": "=>googleplay discord",
+        "cooldown": 15
     },
     {
         "command": "imdb",
@@ -2547,6 +2709,15 @@
         "cooldown": 10
     },
     {
+        "command": "imgur",
+        "category": "website 2",
+        "description": "Searches for images on imgur.",
+        "help": "imgur query - Searches for images with the query",
+        "aliases": "img, image",
+        "examples": "=>imgur anime",
+        "cooldown": 5
+    },
+    {
         "command": "itunes",
         "category": "website 2",
         "description": "Searches the itunes store for tracks.",
@@ -2554,6 +2725,15 @@
         "aliases": "none",
         "examples": "=>itunes anime",
         "cooldown": 15
+    },
+    {
+        "command": "mdn",
+        "category": "website 2",
+        "description": "Searches the mdn docs.",
+        "help": "mdn query - Searches mdn for the query\nmdn url - Searches the url",
+        "aliases": "jsref",
+        "examples": "=>mdn array",
+        "cooldown": 5
     },
     {
         "command": "npm",
@@ -2565,6 +2745,24 @@
         "cooldown": 5
     },
     {
+        "command": "patreon",
+        "category": "website 2",
+        "description": "Searches for a patreon creator.",
+        "help": "patreon creator - Searches for the creator page of the creator.",
+        "aliases": "none",
+        "examples": "=>patreon creator",
+        "cooldown": 10
+    },
+    {
+        "command": "tenor",
+        "category": "website 2",
+        "description": "Searches for gifs on tenor.",
+        "help": "tenor - Posts a random gif\ntenor query - Searches for a gif with the query\ntenor url - Gets the gif from the url",
+        "aliases": "ten",
+        "examples": "=>tenor\n=>tenor anime",
+        "cooldown": 5
+    },
+    {
         "command": "urban",
         "category": "website 2",
         "description": "Searches for words on urban dictionary.",
@@ -2572,6 +2770,15 @@
         "aliases": "none",
         "examples": "=>urban\n=>urban anime",
         "cooldown": 5
+    },
+    {
+        "command": "wattpad",
+        "category": "website 2",
+        "description": "Searches for stories on wattpad.",
+        "help": "wattpad query - Searches for stories",
+        "aliases": "none",
+        "examples": "=>wattpad gabriel dropout",
+        "cooldown": 10
     },
     {
         "command": "xkcd",
@@ -2616,6 +2823,15 @@
         "help": "_Note: The invocation of this command is removed for privacy reasons._\ngravatar email - Gets the profile picture of the email",
         "aliases": "none",
         "examples": "=>gravatar someone@gmail.com",
+        "cooldown": 10
+    },
+    {
+        "command": "steam",
+        "category": "website 3",
+        "description": "Searches the steam store.",
+        "help": "steam query - Searches steam.",
+        "aliases": "none",
+        "examples": "=>steam anime",
         "cooldown": 10
     },
     {

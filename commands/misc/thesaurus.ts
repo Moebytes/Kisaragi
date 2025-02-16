@@ -40,7 +40,6 @@ export default class Thesaurus extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         const perms = new Permission(discord, message)
-        if (discord.checkMuted(message)) if (!perms.checkNSFW()) return
         const thesaurus = new CollegiateThesaurus(process.env.THESAURUS_API_KEY)
         let word = Functions.combineArgs(args, 1)
         if (!word) {

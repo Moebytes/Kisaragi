@@ -6,7 +6,7 @@ import emojiRegex from "emoji-regex"
 import fs from "fs"
 import path from "path"
 import stream from "stream"
-import {AppTokenAuthProvider} from "@twurple/auth"
+import {RefreshingAuthProvider} from "@twurple/auth"
 import {ApiClient} from "@twurple/api"
 import config from "../config.json"
 import {Kisaragi} from "./Kisaragi"
@@ -457,7 +457,8 @@ export class Functions {
 
     /** Polls the twitch api for stream notifications */
     public static pollTwitch = (discord: Kisaragi) => {
-        const authProvider = new AppTokenAuthProvider(process.env.TWITCH_CLIENT_ID!, process.env.TWITCH_CLIENT_SECRET!)
+        const authProvider = new RefreshingAuthProvider({clientId: process.env.TWITCH_CLIENT_ID!, clientSecret: process.env.TWITCH_CLIENT_SECRET!})
+        authProvider.addUser("196927459", {obtainmentTimestamp: 0, expiresIn: 0, refreshToken: process.env.TWITCH_REFRESH_TOKEN!, accessToken: process.env.TWITCH_ACCESS_TOKEN!})
         const twitch = new ApiClient({authProvider})
         const callAPI = async () => {
             const channels = await SQLQuery.selectColumn("twitch", "channel")

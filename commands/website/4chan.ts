@@ -1,4 +1,3 @@
-import axios from "axios"
 import {Message, EmbedBuilder} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
 import {Command} from "../../structures/Command"
@@ -6,8 +5,7 @@ import {Embeds} from "./../../structures/Embeds"
 import {Functions} from "./../../structures/Functions"
 import {Kisaragi} from "./../../structures/Kisaragi"
 import {Permission} from "./../../structures/Permission"
-
-const chan = require("4chanapi.js")
+import axios from "axios"
 
 const nsfwBoards = ["b", "r9k", "pol", "bant", "soc", "s4s", "s", "hc", "hm", "h",
                     "e", "u", "d", "y", "t", "hr", "gif", "aco", "r"]
@@ -32,8 +30,7 @@ export default class $4chan extends Command {
             aliases: ["4", "4ch"],
             cooldown: 15,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const query2Option = new SlashCommandOption()
             .setType("string")
@@ -85,6 +82,37 @@ export default class $4chan extends Command {
         return `${quote}\`\`\`yaml\n${comment}\`\`\``
     }
 
+    public getThreads = async (board: string, query: string) => {
+        query = query?.toLowerCase().trim() || ""
+        const catalog = await axios.get(`https://a.4cdn.org/${board}/catalog.json`).then((r) => r.data)
+        let threads = [] as any
+        for (const page of catalog) {
+            for (const thread of page.threads) {
+                thread.url = `https://a.4cdn.org/${board}/thread/${thread.no}.json`
+                if (query) {
+                    if (thread.com?.toLowerCase().includes(query) ||
+                        thread.sub?.toLowerCase().includes(query) ||
+                        threads.semantic_url?.toLowerCase().includes(query)) threads.push(thread)
+                } else {
+                    threads.push(thread)
+                }
+            }
+        }
+        return threads
+    }
+
+    public getMediaLinks = async (url: string) => {
+        let board = url.split("/")[3]
+        let thread = await axios.get(url).then((r) => r.data)
+        let links = [] as string[]
+        for (const post of thread.posts) {
+            if (post.ext) {
+                links.push(`https://i.4cdn.org/${board}/${post.tim}${post.ext}`)
+            }
+        }
+        return links
+    }
+
     public run = async (args: string[]) => {
         const discord = this.discord
         const message = this.message
@@ -109,12 +137,12 @@ export default class $4chan extends Command {
             if (this.nsfwBoards(board)) {
                 if (!perms.checkNSFW()) return
             }
-            const threads = await chan.threadsWithTopics(board, query.split(","))
+            const threads = await this.getThreads(board, query)
             const random = Math.floor(Math.random() * threads.length)
             if (!threads[random]) {
                 return this.invalidQuery(badChanEmbed, "Try searching for a different tag.")
             }
-            const results = await chan.threadMediaLinks(threads[random].url)
+            const results = await this.getMediaLinks(threads[random].url)
             const rawUrl = `https://boards.4channel.org/${board}/thread/${threads[random].url.match(/\d+/g)}`
             const url = rawUrl.replace(/4,/g, "")
             const imageArray: EmbedBuilder[] = []
@@ -175,7 +203,7 @@ export default class $4chan extends Command {
             if (!perms.checkNSFW()) return
         }
 
-        const threads = await chan.threadsWithTopics(board, query.split(",")).catch((e: Error) => e)
+        const threads = await this.getThreads(board, query)
         const random = Math.floor(Math.random() * threads.length)
         if (!threads[random]) {
             this.invalidQuery(badChanEmbed, "Try searching for a different tag.")

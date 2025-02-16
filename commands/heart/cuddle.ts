@@ -38,8 +38,6 @@ export default class Cuddle extends Command {
         const discord = this.discord
         const message = this.message
         const embeds = new Embeds(discord, message)
-        const perms = new Permission(discord, message)
-        if (discord.checkMuted(message)) if (!perms.checkNSFW()) return
         const neko = new nekoClient()
 
         let name = "someone"

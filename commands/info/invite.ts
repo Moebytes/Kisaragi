@@ -36,8 +36,8 @@ export default class Invite extends Command {
         .setTitle(`**Invite Links** ${discord.getEmoji("kannaHungry")}`)
         .setDescription(
             `Here is the bot invite link and support server invite link!\n` +
-            `[**Invite Link**](${config.invite.replace("CLIENTID", discord.user!.id)})\n`
-            //`[**Support Server**](${config.support})`
+            `[**Invite Link**](${config.invite.replace("CLIENTID", discord.user!.id)})\n` +
+            `[**Support Server**](${config.support})`
         )
         return this.reply(inviteEmbed)
     }

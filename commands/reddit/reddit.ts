@@ -9,7 +9,6 @@ import {Oauth2} from "./../../structures/Oauth2"
 import {Permission} from "./../../structures/Permission"
 
 export default class Reddit extends Command {
-    private readonly perms = new Permission(this.discord, this.message)
     private sub = null as any
     private postID = null as any
     private user = null as any
@@ -34,8 +33,7 @@ export default class Reddit extends Command {
             random: "none",
             cooldown: 10,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
             .setType("string")
@@ -56,7 +54,9 @@ export default class Reddit extends Command {
 
     public getSubmissions = async <T extends boolean | undefined = false>(reddit: snoowrap, postIDS: string[], imagesOnly?: boolean, descOnly?: T): Promise<T extends true ? string : EmbedBuilder[]> => {
         const discord = this.discord
-        const embeds = new Embeds(this.discord, this.message)
+        const message = this.message
+        const embeds = new Embeds(discord, message)
+        const perms = new Permission(discord, message)
         const redditArray: EmbedBuilder[] = []
         for (let i = 0; i < postIDS.length; i++) {
             if (!postIDS[i]) break
@@ -64,7 +64,7 @@ export default class Reddit extends Command {
             const post = await reddit.getSubmission(postIDS[i]).fetch() as snoowrap.Submission
             if (imagesOnly && post.selftext) continue
             if (post.over_18) {
-                if (!this.perms.checkNSFW(true)) continue
+                if (!perms.checkNSFW(true)) continue
             }
             const commentArray: string[] = []
             for (let j = 0; j < 3; j++) {
@@ -137,15 +137,16 @@ export default class Reddit extends Command {
                 .setTitle(`**Reddit User** ${discord.getEmoji("aquaUp")}`)
                 )
             }
+            let userQuery = query.trim().startsWith("u/") ? query.trim() : `u/${query.trim()}`
             // @ts-ignore
-            const user = await reddit.getUser(query.trim()).fetch()
+            const user = await reddit.getUser(userQuery).fetch()
             const redditEmbed = embeds.createEmbed()
             redditEmbed
             .setAuthor({name: "reddit", iconURL: "https://kisaragi.moe/assets/embed/reddit.png", url: "https://www.reddit.com/"})
             .setTitle(`**${user.name}** ${discord.getEmoji("aquaUp")}`)
             .setURL(`https://www.reddit.com${user.subreddit.display_name.url}`)
-            .setImage(user.subreddit.display_name.banner_img)
-            .setThumbnail(user.subreddit.display_name.icon_img)
+            .setImage(user.subreddit.display_name.banner_img || null)
+            .setThumbnail(user.subreddit.display_name.icon_img || null)
             .setDescription(
                 `${discord.getEmoji("star")}_Link Karma:_ **${user.link_karma}**\n` +
                 `${discord.getEmoji("star")}_Comment Karma:_ **${user.comment_karma}**\n` +
@@ -161,7 +162,7 @@ export default class Reddit extends Command {
         let subreddit = ""
         if (!args[1]) {
             // @ts-ignore
-            posts = [await reddit.getRandomSubmission()] as snoowrap.Listing<snoowrap.Submission>
+            posts = [await reddit.getHot()] as snoowrap.Listing<snoowrap.Submission>
         } else {
             subreddit = this.sub || args[1]
         }
@@ -184,7 +185,7 @@ export default class Reddit extends Command {
             } else {
                 try {
                     // @ts-ignore
-                    posts = await reddit.getSubreddit(subreddit).getRandomSubmission()
+                    posts = await reddit.getSubreddit(subreddit).getHot()
                 } catch {
                     return this.invalidQuery(embeds.createEmbed()
                     .setAuthor({name: "reddit", iconURL: "https://kisaragi.moe/assets/embed/reddit.png", url: "https://www.reddit.com/"})

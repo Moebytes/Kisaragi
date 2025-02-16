@@ -23,8 +23,7 @@ export default class GoogleImageCommand extends Command {
             random: "string",
             cooldown: 10,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
             .setType("string")
@@ -57,7 +56,7 @@ export default class GoogleImageCommand extends Command {
 
         const images = new GoogleImages(process.env.GOOGLE_IMAGES_ID!, process.env.GOOGLE_API_KEY!)
 
-        if (/hentai|porn|sex|nsfw/.test(query) || discord.checkMuted(message)) {
+        if (/hentai|porn|sex|nsfw/.test(query)) {
             if (!perms.checkNSFW()) return
         }
 

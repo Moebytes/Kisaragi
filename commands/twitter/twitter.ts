@@ -114,7 +114,6 @@ export default class TwitterCommand extends Command {
         const twitterArray: EmbedBuilder[] = []
         for (const i in tweets.statuses) {
             if (tweets.statuses[i]?.possibly_sensitive) {
-                if (discord.checkMuted(message)) return message.reply(`You can't search for nsfw tweets ${discord.getEmoji("sagiriBleh")}`)
                 if (!perms.checkNSFW(true)) continue
             }
             const twitterEmbed = embeds.createEmbed()

@@ -32,8 +32,7 @@ export default class Pinterest extends Command {
             random: "string",
             cooldown: 15,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const boardOption = new SlashCommandOption()
             .setType("string")
@@ -94,9 +93,6 @@ export default class Pinterest extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         const perms = new Permission(discord, message)
-        if (discord.checkMuted(message)) {
-            if (!perms.checkNSFW()) return
-        }
         const headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"}
         const images = new GoogleImages(process.env.PINTEREST_SEARCH_ID!, process.env.GOOGLE_API_KEY!)
         pinArray = []
@@ -207,6 +203,8 @@ export default class Pinterest extends Command {
         const res = await axios.get(randPin, {headers})
         const usernames = res.data.match(/(?<="username":")(.*?)(?=",")/g)
 
+        const exists = new Set<string>()
+
         for (let j = 0; j < usernames.length; j++) {
             if (pinArray.length > 500) break
             const user = usernames[j]
@@ -220,6 +218,8 @@ export default class Pinterest extends Command {
             const username = response.title
             for (let i = 0; i < response.items.length; i++) {
                 const pinUrl = response.items[i].url
+                if (exists.has(pinUrl)) continue
+                exists.add(pinUrl)
                 const pinTitle = response.items[i].title ? response.items[i].title : "None"
                 const pinImage = (response.items[i].content_html as string).match(/(?<=img src=")(.*?)(?=")/)![0]
                 const pinDate = response.items[i].date_published

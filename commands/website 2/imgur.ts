@@ -22,8 +22,7 @@ export default class Imgur extends Command {
             random: "string",
             cooldown: 5,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
             .setType("string")
@@ -112,9 +111,9 @@ export default class Imgur extends Command {
             return this.reply(imgurEmbed)
         } else {
             const imageArray: EmbedBuilder[] = []
-            for (let i = 0; i < image.images.length - 1; i++) {
+            for (let i = 0; i < image.images.length; i++) {
                 const imgurEmbed = embeds.createEmbed()
-                let extension
+                let extension = ""
                 switch (image.images[i].type.slice(-3)) {
                     case "mp4": extension = "gif"; break
                     case "peg": extension = "jpeg"; break

@@ -135,8 +135,6 @@ export default class Minesweeper extends Command {
         const discord = this.discord
         const message = this.message
         const embeds = new Embeds(discord, message)
-        const perms = new Permission(discord, message)
-        if (discord.checkMuted(message)) if (!perms.checkNSFW()) return
         if (!(message.channel as TextChannel).permissionsFor(message.guild?.members.me!)?.has("ManageMessages")) {
             return this.reply(`The bot needs the permission **Manage Messages** in order to use this command. ${this.discord.getEmoji("kannaFacepalm")}`)
         }

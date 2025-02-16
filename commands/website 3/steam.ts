@@ -24,8 +24,7 @@ export default class Steam extends Command {
             random: "none",
             cooldown: 10,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const queryOption = new SlashCommandOption()
             .setType("string")
@@ -68,9 +67,9 @@ export default class Steam extends Command {
                 `${discord.getEmoji("star")}_Mini Desc:_ ${details.short_description}\n` +
                 `${discord.getEmoji("star")}_Release Date:_ **${details.release_date.date ? details.release_date.date : "Coming Soon"}**\n` +
                 `${discord.getEmoji("star")}_Price:_ **${price}**\n` +
-                `${discord.getEmoji("star")}_Publishers:_ **${details.publishers.join(", ")}**\n` +
-                `${discord.getEmoji("star")}_Developers:_ **${details.developers.join(", ")}**\n` +
-                `${discord.getEmoji("star")}_Genres:_ **${details.genres.map((g: any) => g.description).join(", ")}**\n` +
+                `${discord.getEmoji("star")}_Publishers:_ **${details.publishers?.join(", ") || "Unknown"}**\n` +
+                `${discord.getEmoji("star")}_Developers:_ **${details.developers?.join(", ") || "Unknown"}**\n` +
+                `${discord.getEmoji("star")}_Genres:_ **${details.genres.map((g: any) => g.description)?.join(", ") || "None"}**\n` +
                 `${discord.getEmoji("star")}_Achievements:_ **${details.achievements?.total ?? 0}**\n` +
                 `${discord.getEmoji("star")}_Movie:_ ${details.movies?.[0]?.webm?.max ? `[**Link**](${details.movies[0].webm.max})` : "**None**"}\n` +
                 `${discord.getEmoji("star")}_Website:_ **${details.website ? details.website : "None"}**\n` +

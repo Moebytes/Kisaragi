@@ -27,10 +27,9 @@ export default class Github extends Command {
             `,
             aliases: ["gh"],
             random: "string",
-            cooldown: 10,
+            cooldown: 30,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const query2Option = new SlashCommandOption()
             .setType("string")
@@ -55,9 +54,7 @@ export default class Github extends Command {
         const embeds = new Embeds(discord, message)
         const perms = new Permission(discord, message)
         const headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"}
-        const github = new GitHub({
-            token: process.env.GITHUB_ACCESS_TOKEN
-        })
+        const github = new GitHub()
 
         if (args[1]?.match(/github.com/)) {
             const matches = args[1].replace("www.", "").replace("https://github.com", "").match(/(?<=\/)(.*?)(?=$|\/)/g)
@@ -113,10 +110,10 @@ export default class Github extends Command {
         })
         const result = json.data
         const githubArray: EmbedBuilder[] = []
-        for (let i = 0; i < 10; i++) {
-            const source = await axios.get(result[i].html_url, {headers})
+        for (let i = 0; i < Math.min(10, result.length); i++) {
+            // const source = await axios.get(result[i].html_url, {headers})
             const regex = /(?<=name="twitter:image:src" content=")(.*?)(?=" \/\>)/
-            const url = regex.exec(source.data)
+            // const image = regex.exec(source.data)
             const githubEmbed = embeds.createEmbed()
             githubEmbed
             .setAuthor({name: "github", iconURL: "https://kisaragi.moe/assets/embed/github.png", url: "https://github.com/"})
@@ -135,8 +132,8 @@ export default class Github extends Command {
                 `${discord.getEmoji("star")}_Updated:_ **${Functions.formatDate(result[i].updated_at)}**\n` +
                 `${discord.getEmoji("star")}_Description:_ ${result[i].description}\n`
             )
-            .setThumbnail(result[i].owner.avatar_url)
-            .setImage(url ? url[0] : "")
+            .setThumbnail(result[i].owner.avatar_url || null)
+            // .setImage(image?.[0] || null)
             githubArray.push(githubEmbed)
         }
         return embeds.createReactionEmbed(githubArray, false, true)

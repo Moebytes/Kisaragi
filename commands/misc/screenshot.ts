@@ -1,9 +1,10 @@
 import {Message, AttachmentBuilder} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
 import {Command} from "../../structures/Command"
-import {Embeds} from "./../../structures/Embeds"
-import {Functions} from "./../../structures/Functions"
-import {Kisaragi} from "./../../structures/Kisaragi"
+import {Embeds} from "../../structures/Embeds"
+import {Functions} from "../../structures/Functions"
+import {Kisaragi} from "../../structures/Kisaragi"
+import {Images} from "../../structures/Images"
 import {Permission} from "../../structures/Permission"
 import captureWebsite from "capture-website"
 import path from "path"
@@ -26,8 +27,7 @@ export default class Screenshot extends Command {
           aliases: ["screencap"],
           cooldown: 15,
           defer: true,
-          unlist: true,
-          subcommandEnabled: false
+          subcommandEnabled: true
         })
         const url2Option = new SlashCommandOption()
             .setType("string")
@@ -51,6 +51,7 @@ export default class Screenshot extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         const perms = new Permission(discord, message)
+        const images = new Images(discord, message)
         if (!perms.checkBotDev()) return
 
         let input = (args[1] === "return") ? Functions.combineArgs(args, 2) : Functions.combineArgs(args, 1)
@@ -62,11 +63,10 @@ export default class Screenshot extends Command {
         const website = (input.startsWith("http")) ? input.trim() : `https://${input.trim()}`
 
         const options = {
-          darkMode: true, delay: 1, launchOptions: {args: ['--no-sandbox', '--disable-setuid-sandbox']}, overwrite: true,
+          darkMode: true, delay: 1, overwrite: true,
           width: 1280, height: 720, userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
         } as any
         if (setMobile) options.emulateDevice = "iPhone XR"
-        //if (setFullPage) options.fullPage = true
 
         let dest = path.join(__dirname, `../../misc/images/dump/screenshot.png`)
         let i = 0
@@ -81,13 +81,19 @@ export default class Screenshot extends Command {
           console.log(err)
           return message.reply("Could not find this webpage!")
         }
-        const attachment = new AttachmentBuilder(fs.readFileSync(dest)) as any
+        const bytes = fs.readFileSync(dest)
+        const attachment = new AttachmentBuilder(bytes, {name: "image.png"}) as any
 
-        if (args[1] === "return") return attachment
+        if (args[1] === "return") {
+          const link = await images.upload(dest, true)
+          return link
+        }
         const screenEmbed = embeds.createEmbed()
         screenEmbed
         .setAuthor({name: "google chrome", iconURL: "https://kisaragi.moe/assets/embed/screenshot.png"})
         .setTitle(`**Website Screenshot** ${discord.getEmoji("kannaXD")}`)
+        .setImage(`attachment://image.png`)
         this.reply(screenEmbed, attachment)
+        fs.unlinkSync(dest)
   }
 }

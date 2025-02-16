@@ -23,8 +23,7 @@ export default class Pastebin extends Command {
             `,
             aliases: [],
             cooldown: 3,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const textOption = new SlashCommandOption()
             .setType("string")

@@ -5,7 +5,7 @@ import {Permission} from "../../structures/Permission"
 import {Embeds} from "./../../structures/Embeds"
 import {Functions} from "./../../structures/Functions"
 import {Kisaragi} from "./../../structures/Kisaragi"
-import Jikan from "jikan-node"
+import axios from "axios"
 
 export default class Mal extends Command {
     private anime = null as any
@@ -30,8 +30,7 @@ export default class Mal extends Command {
             random: "none",
             cooldown: 10,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const query2Option = new SlashCommandOption()
             .setType("string")
@@ -55,7 +54,6 @@ export default class Mal extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         const perms = new Permission(discord, message)
-        const mal = new Jikan()
 
         if (args[1]?.match(/myanimelist.net/)) {
             this.character = args[1].match(/myanimelist.net\/character/) && args[1].match(/(?<=\/)(?:.(?!\/))+$/) ? args[1].match(/(?<=\/)(?:.(?!\/))+$/)?.[0].replace(/_/g, " ") : null
@@ -71,25 +69,25 @@ export default class Mal extends Command {
                 .setTitle(`**My Anime List Character** ${discord.getEmoji("raphi")}`)
                 )
             }
-            const result = await mal.search("character", query.trim())
+            const result = await axios.get(`https://api.jikan.moe/v4/characters?q=${query.trim()}`).then((r) => r.data.data)
             const malArray: EmbedBuilder[] = []
-            for (let i = 0; i < result.results.length; i++) {
-                const char = result.results[i]
-                const detailed = await mal.findCharacter(char.mal_id)
-                const info = char.anime.join("") ? char.anime.map((n: any) => n.name) : char.manga.map((n: any) => n.name)
+            for (let i = 0; i < Math.min(10, result.length); i++) {
+                const char = result[i]
+                const detailed = await axios.get(`https://api.jikan.moe/v4/characters/${char.mal_id}/full`).then((r) => r.data.data)
+                const info = detailed.anime.length ? detailed.anime.map((n: any) => n.anime.title) : detailed.manga.map((n: any) => n.manga.title)
                 const malEmbed = embeds.createEmbed()
                 malEmbed
                 .setAuthor({name: "my anime list", iconURL: "https://kisaragi.moe/assets/embed/mal.png", url: "https://myanimelist.net/"})
                 .setTitle(`**My Anime List Character** ${discord.getEmoji("raphi")}`)
                 .setURL(char.url)
-                .setImage(char.image_url)
+                .setImage(char.images.jpg.image_url)
                 .setThumbnail("https://kisaragi.moe/assets/embed/mal.png")
                 .setDescription(
                     `${discord.getEmoji("star")}_Character:_ **${char.name}**\n` +
-                    `${discord.getEmoji("star")}_Kanji:_ **${detailed.name_kanji ? detailed.name_kanji : "None"}**\n` +
-                    `${discord.getEmoji("star")}_Alternate Names:_ **${char.alternate_names ? char.alternate_names.join(", ") : "None"}**\n` +
+                    `${discord.getEmoji("star")}_Kanji:_ **${char.name_kanji ? char.name_kanji : "None"}**\n` +
+                    `${discord.getEmoji("star")}_Nicknames:_ **${char.nicknames?.length ? char.nicknames.join(", ") : "None"}**\n` +
                     `${discord.getEmoji("star")}_Series:_ ${info.join(", ")}\n` +
-                    `${discord.getEmoji("star")}_Favorites:_ **${detailed.member_favorites}**\n` +
+                    `${discord.getEmoji("star")}_Favorites:_ **${char.favorites}**\n` +
                     `${discord.getEmoji("star")}_Description:_ ${detailed.about}\n`
                 )
                 malArray.push(malEmbed)
@@ -103,13 +101,15 @@ export default class Mal extends Command {
             .setAuthor({name: "my anime list", iconURL: "https://kisaragi.moe/assets/embed/mal.png", url: "https://myanimelist.net/"})
             .setTitle(`**My Anime List User** ${discord.getEmoji("raphi")}`)
             if (!user) return this.noQuery(malEmbed)
-            const result = await mal.findUser(user)
-            const anime = result.favorites.anime.map((a: any) => a.name)
-            const characters = result.favorites.characters.map((c: any) => c.name)
-            const cleanText = result.about.replace(/<\/?[^>]+(>|$)/g, "")
+            const result = await axios.get(`https://api.jikan.moe/v4/users/${user}/full`).then((r) => r.data.data)
+            const favorites = await axios.get(`https://api.jikan.moe/v4/users/${user}/favorites`).then((r) => r.data.data)
+            const about = await axios.get(`https://api.jikan.moe/v4/users/${user}/about`).then((r) => r.data.data[0]?.about)
+            const anime = favorites.anime.map((a: any) => a.title)
+            const characters = favorites.characters.map((c: any) => c.name)
+            const cleanText = about?.replace(/<\/?[^>]+(>|$)/g, "") || ""
             malEmbed
             .setURL(result.url)
-            .setImage(result.image_url)
+            .setImage(result.images.jpg.image_url)
             .setThumbnail("https://kisaragi.moe/assets/embed/mal.png")
             .setDescription(
                 `${discord.getEmoji("star")}_User:_ **${result.username}**\n` +
@@ -117,9 +117,9 @@ export default class Mal extends Command {
                 `${discord.getEmoji("star")}_Join Date:_ **${Functions.formatDate(result.joined)}**\n` +
                 `${discord.getEmoji("star")}_Birthday:_ **${Functions.formatDate(result.birthday)}**\n` +
                 `${discord.getEmoji("star")}_Location:_ **${result.location}**\n` +
-                `${discord.getEmoji("star")}_Days Watched:_ **${result.anime_stats.days_watched}**\n` +
-                `${discord.getEmoji("star")}_Episodes Watched:_ **${result.anime_stats.episodes_watched}**\n` +
-                `${discord.getEmoji("star")}_Entries:_ **${result.anime_stats.total_entries}**\n` +
+                `${discord.getEmoji("star")}_Days Watched:_ **${result.statistics.anime.days_watched}**\n` +
+                `${discord.getEmoji("star")}_Episodes Watched:_ **${result.statistics.anime.episodes_watched}**\n` +
+                `${discord.getEmoji("star")}_Entries:_ **${result.statistics.anime.total_entries}**\n` +
                 `${discord.getEmoji("star")}_Favorite Anime:_ ${Functions.checkChar(anime.join(", "), 100, " ")}\n` +
                 `${discord.getEmoji("star")}_Favorite Characters:_ ${Functions.checkChar(characters.join(", "), 100, " ")}\n` +
                 `${discord.getEmoji("star")}_Description:_ ${Functions.checkChar(cleanText, 1500, " ")}\n`
@@ -131,39 +131,34 @@ export default class Mal extends Command {
         let result: any
         let query = this.anime || Functions.combineArgs(args, 1)
         if (!query) {
-            const raw = await mal.findTop("anime")
-            result = raw.top
+            result = await axios.get(`https://api.jikan.moe/v4/top/anime`).then((r) => r.data.data)
         } else {
             if (query.match(/myanimelist.net/)) {
                 query = query.match(/(?<=\/)(?:.(?!\/))+$/)[0].replace(/_/g, " ")
             }
-            const raw = await mal.search("anime", query.trim())
-            result = raw.results
+            result = await axios.get(`https://api.jikan.moe/v4/anime?q=${query.trim()}`).then((r) => r.data.data)
         }
 
         const malArray: any = []
-        let max = result.length
-        if (max > 20) max = 20
-        for (let i = 0; i < max; i++) {
+        for (let i = 0; i < Math.min(10, result.length); i++) {
             const malEmbed = embeds.createEmbed()
             const anime = result[i]
-            const detailed = await mal.findAnime(anime.mal_id)
             malEmbed
             .setAuthor({name: "my anime list", iconURL: "https://kisaragi.moe/assets/embed/mal.png", url: "https://myanimelist.net/"})
             .setTitle(`**My Anime List Search** ${discord.getEmoji("raphi")}`)
             .setURL(anime.url)
-            .setImage(anime.image_url)
+            .setImage(anime.images.jpg.image_url)
             .setThumbnail("https://kisaragi.moe/assets/embed/mal.png")
             .setDescription(
                 `${discord.getEmoji("star")}_Anime:_ **${anime.title}**\n` +
                 `${discord.getEmoji("star")}_Episodes:_ **${anime.episodes}**\n` +
-                `${discord.getEmoji("star")}_Start Date:_ **${Functions.formatDate(anime.start_date)}**\n` +
-                `${discord.getEmoji("star")}_End Date:_ **${Functions.formatDate(anime.end_date)}**\n` +
+                `${discord.getEmoji("star")}_Start Date:_ **${Functions.formatDate(anime.aired.from)}**\n` +
+                `${discord.getEmoji("star")}_End Date:_ **${Functions.formatDate(anime.aired.to)}**\n` +
                 `${discord.getEmoji("star")}_Members:_ **${anime.members}**\n` +
                 `${discord.getEmoji("star")}_Score:_ **${anime.score}**\n` +
-                `${discord.getEmoji("star")}_Rank:_ **${detailed.rank}**\n` +
-                `${discord.getEmoji("star")}_Popularity:_ **${detailed.popularity}**\n` +
-                `${discord.getEmoji("star")}_Description:_ ${Functions.checkChar(detailed.synopsis, 1700, ".")}\n`
+                `${discord.getEmoji("star")}_Rank:_ **${anime.rank}**\n` +
+                `${discord.getEmoji("star")}_Popularity:_ **${anime.popularity}**\n` +
+                `${discord.getEmoji("star")}_Description:_ ${Functions.checkChar(anime.synopsis, 1700, ".")}\n`
             )
             malArray.push(malEmbed)
         }

@@ -34,7 +34,7 @@ export default class Chat extends Command {
         const embeds = new Embeds(discord, message)
         const sql = new SQLQuery(message)
 
-        if (discord.checkMuted(message)) return this.reply(`This server was blacklisted on the global`)
+        if (discord.checkMuted(message)) return this.reply(`Cannot enable on this server`)
 
         const channel = await sql.fetchColumn("guilds", "global chat")
         if (!channel) {
