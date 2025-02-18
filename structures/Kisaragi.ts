@@ -125,6 +125,7 @@ export class Kisaragi extends Client {
 
     /** Display avatar */ 
     public displayAvatar = (message: Message | ChatInputCommandInteraction) => {
+        if (!message) return this.user?.displayAvatarURL({size: 512})
         // @ts-ignore
         let member = message.member ? message.member : message.author
         if (!member.hasOwnProperty("displayAvatarURL")) {
