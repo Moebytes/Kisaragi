@@ -23,6 +23,7 @@ export default class ABLoop extends Command {
             aliases: [],
             guildOnly: true,
             cooldown: 10,
+            premium: true,
             subcommandEnabled: true
         })
         const endOption = new SlashCommandOption()
@@ -60,7 +61,7 @@ export default class ABLoop extends Command {
         discord.edit(queue[0].message!, embed)
         const rep = await this.reply("Enabled A-B looping!")
         await Functions.timeout(3000)
-        rep.delete().catch(() => null)
-        if (message instanceof Message) message.delete().catch(() => null)
+        Functions.deferDelete(rep, 0)
+        if (message instanceof Message) Functions.deferDelete(message, 0)
     }
 }

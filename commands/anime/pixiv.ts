@@ -62,9 +62,10 @@ export default class Pixiv extends Command {
         const pixivApi = new PixivApi(discord, message)
         const perms = new Permission(discord, message)
         if (!message.channel.isSendable()) return
+        if (!perms.checkNSFW()) return
 
         const loading = message.channel.lastMessage
-        if (message instanceof Message) loading?.delete()
+        if (message instanceof Message) Functions.deferDelete(loading, 0)
 
         const tags = Functions.combineArgs(args, 1)
 
@@ -74,6 +75,7 @@ export default class Pixiv extends Command {
 
         if (args[1]?.toLowerCase() === "r18") {
             if (!perms.checkNSFW()) return
+            if (!perms.checkBotDev()) return
             if (args[2] === "en") {
                 const r18Tags = Functions.combineArgs(args, 3)
                 return pixivApi.getPixivImage(r18Tags, true, true)

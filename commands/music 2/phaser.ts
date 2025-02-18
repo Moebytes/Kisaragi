@@ -24,6 +24,7 @@ export default class Phaser extends Command {
             aliases: [],
             guildOnly: true,
             cooldown: 20,
+            premium: true,
             subcommandEnabled: true
         })
         const speed2Option = new SlashCommandOption()
@@ -97,8 +98,8 @@ export default class Phaser extends Command {
             discord.edit(queue[0].message!, embed)
             const rep = await this.reply("Applied a phaser effect to the file!")
             await Functions.timeout(3000)
-        rep.delete().catch(() => null)
-        if (message instanceof Message) message.delete().catch(() => null)
+        Functions.deferDelete(rep, 0)
+        if (message instanceof Message) Functions.deferDelete(message, 0)
         }
     }
 }

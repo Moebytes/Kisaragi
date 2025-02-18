@@ -40,7 +40,7 @@ export default class Pause extends Command {
         audio.pause()
         const rep = await this.reply("Paused the song!")
         await Functions.timeout(3000)
-        rep.delete().catch(() => null)
-        if (message instanceof Message) message.delete().catch(() => null)
+        Functions.deferDelete(rep, 0)
+        if (message instanceof Message) Functions.deferDelete(message, 0)
     }
 }

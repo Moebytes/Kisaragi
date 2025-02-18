@@ -2,6 +2,7 @@ import {Message, PermissionsBitField, PermissionsString, Role, TextChannel, User
 import * as config from "../assets/json/blacklist.json"
 import {Kisaragi} from "./Kisaragi"
 import {SQLQuery} from "./SQLQuery"
+import { Functions } from "./Functions"
 
 export class Permission {
     private readonly sql: SQLQuery
@@ -10,12 +11,12 @@ export class Permission {
     }
 
     /** Check Mod */
-    public checkMod = async (ignore?: boolean) => {
+    public checkMod = async (noMsg?: boolean) => {
         if (this.message.author.id === process.env.OWNER_ID) return true
         if (this.message.author.id === this.discord.user!.id) return true
         const mod = await this.sql.fetchColumn("guilds", "mod role")
         if (!mod) {
-            if (ignore) return false
+            if (noMsg) return false
             this.discord.reply(this.message, "In order to use moderator commands, you must first " +
             "configure the server's moderator role using the **mod** command!")
             return false
@@ -25,7 +26,7 @@ export class Permission {
                 const admin = await this.sql.fetchColumn("guilds", "admin role")
                 const adminRole = this.message.member!.roles.cache.find((r: Role) => r.id === String(admin))
                 if (adminRole) return true
-                if (ignore) return false
+                if (noMsg) return false
                 this.discord.reply(this.message, "In order to use moderator commands, you must have " +
                 `the mod role which is currently set to <@&${mod}>!`)
                 return false
@@ -36,19 +37,19 @@ export class Permission {
     }
 
     /** Check Admin */
-    public checkAdmin = async (ignore?: boolean) => {
+    public checkAdmin = async (noMsg?: boolean) => {
         if (this.message.author.id === process.env.OWNER_ID) return true
         if (this.message.author.id === this.discord.user?.id) return true
         const admin = await this.sql.fetchColumn("guilds", "admin role")
         if (!admin) {
-            if (ignore) return false
+            if (noMsg) return false
             this.discord.reply(this.message, "In order to use administrator commands, you must first " +
             "configure the server's administrator role using the **mod** command!")
             return false
         } else {
             const adminRole = this.message.member!.roles.cache.find((r: Role) => r.id === String(admin))
             if (!adminRole) {
-                if (ignore) return false
+                if (noMsg) return false
                 this.discord.reply(this.message, "In order to use administrator commands, you must have " +
                 `the admin role which is currently set to <@&${admin}>!`)
                 return false
@@ -59,10 +60,11 @@ export class Permission {
     }
 
     /** Check Bot Dev */
-    public checkBotDev = () => {
+    public checkBotDev = (noMsg?: boolean) => {
         if (this.message.author.id === process.env.OWNER_ID) {
             return true
         } else {
+            if (noMsg) return false
             this.discord.reply(this.message, `Sorry, only the bot developer can use this command. ${this.discord.getEmoji("sagiriBleh")}`)
             return false
         }
@@ -109,7 +111,33 @@ export class Permission {
             return true
         } else {
             if (noMsg) return false
-            this.discord.reply(this.message, `You can only use this command in **NSFW channels**, pervert! ${this.discord.getEmoji("madokaLewd")}`)
+            this.discord.reply(this.message, `Because this command might output sensitive content, you may only use it in **age-restricted channels**! ${this.discord.getEmoji("madokaLewd")}`)
+            return false
+        }
+    }
+
+    /** Check Premium */
+    public checkPremium = (noMsg?: boolean) => {
+        const botDev = this.checkBotDev(true)
+        if (botDev) return true
+        if (false) {
+            return true
+        } else {
+            if (noMsg) return false
+            this.discord.reply(this.message, `To use this command, you must have a **premium subscription active**! ${this.discord.getEmoji("hoshinoBonk")}`)
+            return false
+        }
+    }
+
+    /** Check Premium Feature */
+    public checkPremiumFeature = async (noMsg?: boolean) => {
+        const result = this.checkPremium(true)
+        if (result) {
+            return true
+        } else {
+            if (noMsg) return false
+            const rep = await this.discord.send(this.message, `<@${this.message.author.id}> To use this feature, you must have a **premium subscription active**! ${this.discord.getEmoji("hoshinoBonk")}`)
+            await Functions.deferDelete(rep, 3000)
             return false
         }
     }

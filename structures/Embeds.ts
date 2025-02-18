@@ -149,7 +149,7 @@ export class Embeds {
                     const attachment = new AttachmentBuilder(dest, {name: `${cleanTitle}.zip`})
                     await this.discord.send(msg, `<@${user.id}>, downloaded **${downloads.length}** images from this embed.`, attachment)
                 }
-                if (rep) rep.delete()
+                if (rep) Functions.deferDelete(rep, 0)
                 Functions.removeDirectory(src)
                 fs.unlinkSync(dest)
             })
@@ -236,19 +236,18 @@ export class Embeds {
             async function getPageNumber(response: Message) {
                 if (Number.isNaN(Number(response.content)) || Number(response.content) > embeds.length) {
                     const rep = await response.reply("That page number is invalid.")
-                    await Functions.timeout(2000)
-                    await rep.delete().catch(() => null)
+                    await Functions.deferDelete(rep, 2000)
                 } else {
                     page = Number(response.content) - 1
                     const embed = await self.updateEmbed(embeds, page, user, msg)
                     if (embed) self.discord.edit(msg, embed)
                 }
-                await response.delete().catch(() => null)
+                await Functions.deferDelete(response, 0)
             }
             const numReply = await this.discord.send(msg, `<@${user.id}>, Enter the page number to jump to.`)
             await reaction.users.remove(user).catch(() => null)
             await this.createPrompt(getPageNumber)
-            await numReply.delete()
+            await Functions.deferDelete(numReply, 0)
         })
 
         let copyOn = false
@@ -258,7 +257,7 @@ export class Embeds {
             if (copyOn) return
             if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
-                setTimeout(() => rep.delete(), 3000)
+                Functions.deferDelete(rep, 3000)
                 return
             }
             const content = msg.embeds[0].description?.replace(/(<a:star)(.*?)(>)/g, "")
@@ -266,9 +265,8 @@ export class Embeds {
             const desc = await this.discord.send(msg, content)
             const rep = await this.discord.send(msg, `<@${user.id}>, copy the content in this embed (Deleting in **10** seconds).`)
             copyOn = true
-            await Functions.timeout(10000)
-            desc.delete()
-            rep.delete()
+            await Functions.deferDelete(desc, 10000)
+            await Functions.deferDelete(rep, 0)
             copyOn = false
         })
 
@@ -327,7 +325,7 @@ export class Embeds {
                     break
             case "numberSelect":
                     const rep3 = await this.discord.reply(msg, `The page selection function is disabled on old embeds. However, you can repost it.`)
-                    setTimeout(() => rep3.delete(), 3000)
+                    Functions.deferDelete(rep3, 3000)
                     break
             case "download":
                     const images: string[] = []
@@ -358,20 +356,19 @@ export class Embeds {
                         const attachment = new AttachmentBuilder(dest, {name: `${cleanTitle}.zip`})
                         await this.discord.send(msg, `<@${user.id}>, downloaded **${downloads.length}** images from this embed.`, attachment)
                     }
-                    if (rep) rep.delete()
+                    if (rep) Functions.deferDelete(rep, 3000)
                     Functions.removeDirectory(src)
                     break
             case "copy":
                     if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                         const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
-                        setTimeout(() => rep.delete(), 3000)
+                        Functions.deferDelete(rep, 3000)
                         return
                     }
                     const desc = await this.discord.send(msg, msg.embeds[0].description?.replace(/(<a:star)(.*?)(>)/g, "") ?? "")
                     const rep2 = await this.discord.send(msg, `<@${user.id}>, copy the content in this embed (Deleting in **10** seconds).`)
-                    await Functions.timeout(10000)
-                    desc.delete()
-                    rep2.delete()
+                    await Functions.deferDelete(desc, 10000)
+                    await Functions.deferDelete(rep2, 0)
                     break
             case "collapse":
                     for (let i = 0; i < embeds.length; i++) {
@@ -462,7 +459,7 @@ export class Embeds {
                     const attachment = new AttachmentBuilder(dest, {name: `${cleanTitle}.zip`})
                     await this.discord.send(msg, `<@${user.id}>, downloaded **${downloads.length}** images from this embed.`, attachment)
                 }
-                if (rep) rep.delete()
+                if (rep) Functions.deferDelete(rep, 0)
                 Functions.removeDirectory(src)
             })
         }
@@ -516,7 +513,7 @@ export class Embeds {
         numberSelect.on("collect", async (reaction: MessageReaction, user: User) => {
             await reaction.users.remove(user).catch(() => null)
             const rep3 = await this.discord.reply(msg, `The page selection function is disabled on old embeds. However, you can repost it.`)
-            setTimeout(() => rep3.delete(), 3000)
+            Functions.deferDelete(rep3, 3000)
         })
 
         let copyOn = false
@@ -526,7 +523,7 @@ export class Embeds {
             if (copyOn) return
             if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
-                setTimeout(() => rep.delete(), 3000)
+                Functions.deferDelete(rep, 3000)
                 return
             }
             const content = msg.embeds[0].description?.replace(/(<a:star)(.*?)(>)/g, "")
@@ -534,9 +531,8 @@ export class Embeds {
             const desc = await this.discord.send(msg, content)
             const rep = await this.discord.send(msg, `<@${user.id}>, copy the content in this embed (Deleting in **10** seconds).`)
             copyOn = true
-            await Functions.timeout(10000)
-            desc.delete()
-            rep.delete()
+            await Functions.deferDelete(desc, 10000)
+            await Functions.deferDelete(rep, 0)
             copyOn = false
         })
 
@@ -715,7 +711,7 @@ export class Embeds {
         right.on("collect", async (reaction: MessageReaction, user: User) => {
             if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to remove every reaction on this message. You can use \`help 2\` to send the second page in a new message. ${this.discord.getEmoji("kannaFacepalm")}`)
-                setTimeout(() => rep.delete(), 5000)
+                Functions.deferDelete(rep, 5000)
                 return
             }
             if (pageIndex === pages.length - 1) return reaction.users.remove(user)
@@ -728,7 +724,7 @@ export class Embeds {
         left.on("collect", async (reaction: MessageReaction, user: User) => {
             if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to remove every reaction on this message. You can use \`help\` to send the first page in a new message. ${this.discord.getEmoji("kannaFacepalm")}`)
-                setTimeout(() => rep.delete(), 5000)
+                Functions.deferDelete(rep, 5000)
                 return
             }
             if (pageIndex === 0) return reaction.users.remove(user)
@@ -908,7 +904,7 @@ export class Embeds {
         right.on("collect", async (reaction: MessageReaction, user: User) => {
             if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to remove every reaction on this message. You can use \`help 2\` to send the second page in a new message. ${this.discord.getEmoji("kannaFacepalm")}`)
-                setTimeout(() => rep.delete(), 5000)
+                Functions.deferDelete(rep, 5000)
                 return
             }
             if (pageIndex === pages.length - 1) return reaction.users.remove(user)
@@ -921,7 +917,7 @@ export class Embeds {
         left.on("collect", async (reaction: MessageReaction, user: User) => {
             if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to remove every reaction on this message. You can use \`help\` to send the first page in a new message. ${this.discord.getEmoji("kannaFacepalm")}`)
-                setTimeout(() => rep.delete())
+                Functions.deferDelete(rep, 0)
                 return
             }
             if (pageIndex === 0) return reaction.users.remove(user)
@@ -956,7 +952,7 @@ export class Embeds {
             collector.on("end", async (collector, reason) => {
                 if (reason === "time") {
                     const time = await this.discord.reply(this.message, `Ended the prompt because you took too long to answer.`)
-                    setTimeout(() => time.delete(), 600000)
+                    Functions.deferDelete(time, 600000)
                 }
                 resolve()
             })

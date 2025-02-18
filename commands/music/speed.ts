@@ -27,6 +27,7 @@ export default class Speed extends Command {
             aliases: ["timestretch", "tempo"],
             guildOnly: true,
             cooldown: 10,
+            premium: true,
             subcommandEnabled: true
         })
         const opt3 = new SlashCommandOption()
@@ -91,8 +92,8 @@ export default class Speed extends Command {
             discord.edit(queue[0].message!, embed)
             const rep = await this.reply(`Changed the speed by a factor of ${factor}!`)
             await Functions.timeout(3000)
-        rep.delete().catch(() => null)
-        if (message instanceof Message) message.delete().catch(() => null)
+        Functions.deferDelete(rep, 0)
+        if (message instanceof Message) Functions.deferDelete(message, 0)
         }
     }
 }

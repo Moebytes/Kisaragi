@@ -29,6 +29,7 @@ export default class Download extends Command {
             `,
             aliases: ["dl"],
             cooldown: 10,
+            premium: true,
             defer: true,
             subcommandEnabled: true
         })
@@ -117,7 +118,7 @@ export default class Download extends Command {
         let amount = 300
 
         const loading = message.channel.lastMessage
-        if (message instanceof Message) loading?.delete()
+        if (message instanceof Message) Functions.deferDelete(loading, 0)
         const rep = await this.reply(`**Searching the messages in this channel, please wait** ${discord.getEmoji("kisaragiCircle")}`)
 
         if (args[1] === "gif") {
@@ -144,9 +145,9 @@ export default class Download extends Command {
             attachments = result.attachments
             last = result.last!
         }
-        if (rep) rep.delete()
+        if (rep) Functions.deferDelete(rep, 0)
         const rep2 = await this.reply(`**Downloading the images, please wait** ${discord.getEmoji("kisaragiCircle")}`)
         await this.sendDownload(name, attachments, last)
-        if (rep2) rep2.delete()
+        if (rep2) Functions.deferDelete(rep2, 0)
     }
 }

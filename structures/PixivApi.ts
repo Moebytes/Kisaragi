@@ -128,7 +128,7 @@ export class PixivApi {
                 }
             }
         }
-        if (msg1) msg1.delete()
+        if (msg1) Functions.deferDelete(msg1, 0)
         const illusts = Functions.shuffleArray(json).filter((i) => i.illust_ai_type !== 2)
         if (!illusts[0]) return this.pixivErrorEmbed() as Promise<T extends true ? PixivIllust : Message>
         if (noEmbed) {
@@ -165,7 +165,7 @@ export class PixivApi {
             }
         }
 
-        msg2.delete()
+        Functions.deferDelete(msg2, 0)
         if (!pixivArray[0]) return this.pixivErrorEmbed() as Promise<T extends true ? PixivIllust : Message>
         if (pixivArray.length === 1) {
             return this.discord.reply(this.message, pixivArray[0]) as Promise<T extends true ? PixivIllust : Message>
@@ -199,7 +199,7 @@ export class PixivApi {
         if (!this.pixiv) this.pixiv = await Pixiv.refreshLogin(process.env.PIXIV_REFRESH_TOKEN!)
         const json = await this.pixiv.illust.ranking({mode})
         const illusts = this.pixiv.util.sort(json)
-        if (msg1) msg1.delete()
+        if (msg1) Functions.deferDelete(msg1, 0)
         if (!illusts[0]) return this.pixivErrorEmbed()
         const msg2 = await this.discord.send(this.message, `**Uploading pictures...** ${this.discord.getEmoji("kisaragiCircle")}`)
         const pixivArray: EmbedBuilder[] = []
@@ -221,7 +221,7 @@ export class PixivApi {
                 break
             }
         }
-        if (msg2) msg2.delete()
+        if (msg2) Functions.deferDelete(msg2, 0)
         if (!pixivArray[0]) return this.pixivErrorEmbed()
         if (pixivArray.length === 1) {
             this.discord.send(this.message, pixivArray[0])
@@ -238,7 +238,7 @@ export class PixivApi {
         if (!this.pixiv) this.pixiv = await Pixiv.refreshLogin(process.env.PIXIV_REFRESH_TOKEN!)
         const json = await this.pixiv.illust.ranking({mode})
         const illusts = this.pixiv.util.sort(json)
-        if (msg1) msg1.delete()
+        if (msg1) Functions.deferDelete(msg1, 0)
         if (!illusts[0]) return this.pixivErrorEmbed()
         const msg2 = await this.discord.send(this.message, `**Uploading pictures...** ${this.discord.getEmoji("kisaragiCircle")}`)
         const pixivArray: EmbedBuilder[] = []
@@ -260,7 +260,7 @@ export class PixivApi {
                 break
             }
         }
-        if (msg2) msg2.delete()
+        if (msg2) Functions.deferDelete(msg2, 0)
         if (!pixivArray[0]) return this.pixivErrorEmbed()
         if (pixivArray.length === 1) {
             this.discord.send(this.message, pixivArray[0])
@@ -285,7 +285,7 @@ export class PixivApi {
         } catch {
             return this.pixivErrorEmbed()
         }
-        if (msg1) msg1.delete()
+        if (msg1) Functions.deferDelete(msg1, 0)
         if (!files?.[0]) return this.pixivErrorEmbed()
         const msg2 = await this.discord.send(this.message, `**Creating a zip file...** ${this.discord.getEmoji("kisaragiCircle")}`)
         const name = tag.trim() ? tag.replace(/ +/g, "-") : "pixiv_dl_default"
@@ -300,7 +300,7 @@ export class PixivApi {
         .setAuthor({name: "pixiv", iconURL: "https://kisaragi.moe/assets/embed/pixiv.png", url: "https://www.pixiv.net/en/"})
         .setTitle(`**Pixiv Download** ${this.discord.getEmoji("chinoSmug")}`)
         .setDescription(`${this.discord.getEmoji("star")}Downloaded **${files.length}** images for the tag **${tag ? tag : "default"}**!`)
-        if (msg2) msg2.delete()
+        if (msg2) Functions.deferDelete(msg2, 0)
         await this.discord.send(this.message, downloadEmbed, [attachment, imgAttachment])
         Functions.removeDirectory(src)
     }

@@ -65,6 +65,7 @@ export default class Reddit extends Command {
             if (imagesOnly && post.selftext) continue
             if (post.over_18) {
                 if (!perms.checkNSFW(true)) continue
+                if (!perms.checkBotDev(true)) continue
             }
             const commentArray: string[] = []
             for (let j = 0; j < 3; j++) {
@@ -110,6 +111,7 @@ export default class Reddit extends Command {
         const embeds = new Embeds(discord, message)
         const perms = new Permission(discord, message)
         const oauth2 = new Oauth2(discord, message)
+        if (!perms.checkNSFW()) return
 
         const reddit = new snoowrap({
             userAgent: "kisaragi bot v1.0",

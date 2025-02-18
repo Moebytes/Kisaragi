@@ -32,7 +32,8 @@ export default class $nHentai extends Command {
             cooldown: 15,
             defer: true,
             nsfw: true,
-            unlist: true
+            unlist: true,
+            subcommandEnabled: false
         })
     }
 

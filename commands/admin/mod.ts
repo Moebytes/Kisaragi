@@ -55,7 +55,7 @@ export default class Mod extends Command {
         if (!message.channel.isSendable()) return
         if (!message.member?.permissions.has("Administrator") || message.author.id !== message.guild?.ownerId) return this.reply(`You must have the **Administrator** permission or be the owner of this guild in order to use this command. ${discord.getEmoji("sagiriBleh")}`)
         const loading = message.channel.lastMessage
-        if (message instanceof Message) loading?.delete()
+        if (message instanceof Message) Functions.deferDelete(loading, 0)
         const input = Functions.combineArgs(args, 1)
         if (input.trim()) {
             message.content = input.trim()

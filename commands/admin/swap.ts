@@ -57,8 +57,7 @@ export default class Swap extends Command {
             }
         }
 
-        await Functions.timeout(1000)
-        await wait.delete()
+        await Functions.deferDelete(wait, 1000)
         const swapEmbed = embeds.createEmbed()
         swapEmbed
         .setTitle(`**Role Swapping** ${discord.getEmoji("gabYes")}`)

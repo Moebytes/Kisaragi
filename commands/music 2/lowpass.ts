@@ -24,6 +24,7 @@ export default class Lowpass extends Command {
             aliases: ["lowcut"],
             guildOnly: true,
             cooldown: 20,
+            premium: true,
             subcommandEnabled: true
         })
         const width2Option = new SlashCommandOption()
@@ -90,8 +91,8 @@ export default class Lowpass extends Command {
             discord.edit(queue[0].message!, embed)
             const rep = await this.reply("Applied a lowpass filter to the file!")
             await Functions.timeout(3000)
-        rep.delete().catch(() => null)
-        if (message instanceof Message) message.delete().catch(() => null)
+        Functions.deferDelete(rep, 0)
+        if (message instanceof Message) Functions.deferDelete(message, 0)
         }
     }
 }

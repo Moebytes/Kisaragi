@@ -30,9 +30,9 @@ export default class Auto extends Command {
             guildOnly: true,
             aliases: [],
             cooldown: 10,
+            premium: true,
             defer: true,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const editOption = new SlashCommandOption()
             .setType("string")
@@ -67,7 +67,7 @@ export default class Auto extends Command {
         if (!message.channel.isSendable()) return
         if (!await perms.checkAdmin()) return
         const loading = message.channel.lastMessage
-        if (message instanceof Message) loading?.delete()
+        if (message instanceof Message) Functions.deferDelete(loading, 0)
         const input = Functions.combineArgs(args, 1)
         if (input.trim()) {
             message.content = input.trim()
@@ -191,10 +191,12 @@ export default class Auto extends Command {
                 const testFreqs = await sql.fetchColumn("guilds", "auto frequencies")
                 if (newMsg && testCmds && testChans && testFreqs) {
                         if (togs[num] === "inactive") {
-                            await sql.updateColumn("guilds", "auto toggles", "active")
+                            togs[num] = "active"
+                            await sql.updateColumn("guilds", "auto toggles", togs)
                             return discord.send(msg, responseEmbed.setDescription(`State of setting **${newMsg}** is now **active**!`))
                         } else {
-                            await sql.updateColumn("guilds", "auto toggles", "inactive")
+                            togs[num] = "inactive"
+                            await sql.updateColumn("guilds", "auto toggles", togs)
                             return discord.send(msg, responseEmbed.setDescription(`State of setting **${newMsg}** is now **inactive**!`))
                         }
                 } else {

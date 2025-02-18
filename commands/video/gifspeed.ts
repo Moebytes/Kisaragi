@@ -29,6 +29,7 @@ export default class GifSpeed extends Command {
             aliases: ["gspeed", "cgif", "constraingif", "compressgif"],
             cooldown: 20,
             defer: true,
+            premium: true,
             subcommandEnabled: true
         })
         const urlOption = new SlashCommandOption()
@@ -88,7 +89,7 @@ export default class GifSpeed extends Command {
         const msg = await this.reply(`**Encoding Gif. This might take awhile...** ${this.discord.getEmoji("kisaragiCircle")}`)
         const file = fs.createWriteStream(path.join(dir, `./animated.gif`))
         await images.encodeGif(files, dir, file)
-        msg.delete()
+        Functions.deferDelete(msg, 0)
         const attachment = new AttachmentBuilder(path.join(dir, `./animated.gif`), {name: "animated.gif"})
         return this.reply(`Constrained a **${frames.length}** frame gif down to **${files.length}** frames!`, attachment)
     }

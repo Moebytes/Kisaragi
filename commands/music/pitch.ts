@@ -25,6 +25,7 @@ export default class Pitch extends Command {
             aliases: ["pitchshift", "semitones"],
             guildOnly: true,
             cooldown: 10,
+            premium: true,
             subcommandEnabled: true
         })
         const opt2Option = new SlashCommandOption()
@@ -78,8 +79,8 @@ export default class Pitch extends Command {
             discord.edit(queue[0].message!, embed)
             const rep = await this.reply("Changed the pitch of the file!")
             await Functions.timeout(3000)
-        rep.delete().catch(() => null)
-        if (message instanceof Message) message.delete().catch(() => null)
+        Functions.deferDelete(rep, 0)
+        if (message instanceof Message) Functions.deferDelete(message, 0)
         }
     }
 }

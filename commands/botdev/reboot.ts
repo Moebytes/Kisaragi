@@ -5,6 +5,7 @@ import fs from "fs"
 import {Command} from "../../structures/Command"
 import {Embeds} from "../../structures/Embeds"
 import {Kisaragi} from "../../structures/Kisaragi"
+import {Functions} from "../../structures/Functions"
 import {Permission} from "../../structures/Permission"
 
 export default class Reboot extends Command {
@@ -52,7 +53,7 @@ export default class Reboot extends Command {
         }
 
         const loading = message.channel.lastMessage
-        if (message instanceof Message) await loading?.delete()
+        if (message instanceof Message) await Functions.deferDelete(loading, 0)
 
         const rebootEmbed = embeds.createEmbed()
         .setTitle(`**Reboot** ${discord.getEmoji("gabStare")}`)

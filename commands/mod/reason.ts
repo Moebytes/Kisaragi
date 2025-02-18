@@ -84,7 +84,7 @@ export default class Reason extends Command {
             await msg.edit({embeds: [embed]})
         }
         const rep = await this.reply(`Successfully edited this case! ${discord.getEmoji("aquaUp")}`)
-        setTimeout(() => rep.delete().catch(() => null), 3000)
-        message.delete().catch(() => null)
+        await Functions.deferDelete(rep, 3000)
+        Functions.deferDelete(message, 0)
     }
 }

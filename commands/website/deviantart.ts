@@ -71,7 +71,8 @@ export default class Deviantart extends Command {
         for (let i = 0; i < extendedResults.length; i++) {
             const deviation = extendedResults[i]
             if (deviation.is_mature) {
-                if (!perms.checkNSFW()) continue
+                if (!perms.checkNSFW(true)) continue
+                if (!perms.checkBotDev(true)) continue
             }
             if (!deviation.content) continue
             const deviantEmbed = embeds.createEmbed()
@@ -108,6 +109,7 @@ export default class Deviantart extends Command {
             const deviation = result[i]
             if (deviation.rating !== "nonadult") {
                 if (!perms.checkNSFW(true)) continue
+                if (!perms.checkBotDev(true)) continue
             }
             if (!deviation.content) continue
             const deviantEmbed = embeds.createEmbed()
@@ -149,7 +151,8 @@ export default class Deviantart extends Command {
         for (let i = 0; i < deviations.length; i++) {
             const deviation = deviations[i]
             if (deviation.rating !== "nonadult") {
-                if (!perms.checkNSFW()) continue
+                if (!perms.checkNSFW(true)) continue
+                if (!perms.checkBotDev(true)) continue
             }
             const deviantEmbed = embeds.createEmbed()
                 .setAuthor({name: "deviantart", iconURL: "https://kisaragi.moe/assets/embed/deviantart.png", url: "https://www.deviantart.com/"})
@@ -177,8 +180,10 @@ export default class Deviantart extends Command {
         const discord = this.discord
         const message = this.message
         const embeds = new Embeds(discord, message)
+        const perms = new Permission(discord, message)
         const deviantArt = await DeviantArt.login(process.env.DEVIANTART_CLIENT_ID!, process.env.DEVIANTART_CLIENT_SECRET!)
         if (!args[1]) args[1] = "popular"
+        if (!perms.checkNSFW()) return
 
         if (args[1].match(/deviantart.com/)) {
             const matches = args[1].replace("www.", "").replace("https://deviantart.com", "").match(/(?<=\/)(.*?)(?=$|\/)/g)

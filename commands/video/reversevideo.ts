@@ -29,6 +29,7 @@ export default class ReverseVideo extends Command {
             `,
             aliases: ["vreverse", "reversevid"],
             cooldown: 20,
+            premium: true,
             defer: true,
             subcommandEnabled: true
         })

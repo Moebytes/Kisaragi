@@ -24,8 +24,7 @@ export default class Holiday extends Command {
             aliases: [],
             random: "none",
             cooldown: 10,
-            unlist: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const dateOption = new SlashCommandOption()
             .setType("string")
@@ -43,10 +42,9 @@ export default class Holiday extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         const headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"}
-        const monthNames = ["January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-        ]
-        let inputMonth, inputDay
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        let inputMonth = 0
+        let inputDay = 0
         if (args[1]) {
             if (args[1].match(/daysoftheyear.com/)) {
                 const holidayName = Functions.toProperCase(args[1].replace("https://www.daysoftheyear.com/days/", "").replace(/\//g, "").replace(/-/g, " "))
@@ -54,7 +52,7 @@ export default class Holiday extends Command {
                 const imageRegex = /(?<=image" content=")(.*?)(?=(\s))/gm
                 const pg2Regex = /(?<=description" content=")(.*?)(?="(\s))/gm
                 const rawDescription = holidayData.data.match(pg2Regex)?.[0]
-                const description = rawDescription.replace(/&hellip;/g, "...").replace(/&#8217;/g, "'").replace(/&#8211;/g, "-").trim()
+                const description = Functions.decodeEntities(rawDescription).trim()
                 const image = holidayData.data.match(imageRegex)?.[0].replace(/"/g, "")
                 const holidayEmbed = embeds.createEmbed()
                 holidayEmbed
@@ -76,13 +74,13 @@ export default class Holiday extends Command {
             }
             if (!inputMonth) inputMonth = parseInt(args[1]?.[0], 10)
             if (!args[2]) {
-                inputDay = args[1].match(/\/\d+/g)
+                inputDay = args[1].match(/\/\d+/g) as any
                 if (inputDay?.[0]) inputDay  = parseInt(inputDay?.[0].replace(/\//g, ""), 10)
             } else {
                 inputDay = parseInt(args[2], 10)
             }
         }
-        const pg1Regex = /(?<=href="https:\/\/www.daysoftheyear.com\/days\/)(.*?)(?=\/"\>\<img)/gm
+        const pg1Regex = /(?<=href="https:\/\/www.daysoftheyear.com\/days\/)(.*?)(?=\/")/gm
         const pg2Regex = /(?<=description" content=")(.*?)(?="(\s))/gm
         const imageRegex = /(?<=image" content=")(.*?)(?=(\s))/gm
         const now = new Date(Date.now())
@@ -91,13 +89,13 @@ export default class Holiday extends Command {
         const year = now.getUTCFullYear()
         const url = `https://www.daysoftheyear.com/days/${year}/${month < 10 ? `0${month}` : month}/${day < 10 ? `0${day}` : day}/`
         const data = await axios.get(url, {headers})
-        const matchArray = data.data.match(pg1Regex)
-        const holidayName = Functions.toProperCase(matchArray?.[0].replace(/-/g, " ").replace(/\//g, ""))
+        const matchArray = data.data.match(pg1Regex).filter((a: string) => !a.includes("/"))
+        const holidayName = Functions.toProperCase(matchArray?.[0].replace(/-/g, " "))
         const date = `${monthNames[month - 1]} ${day}`
         const url2 = `https://www.daysoftheyear.com/days/${matchArray?.[0]}`
         const holidayData = await axios.get(url2, {headers})
         const rawDescription = holidayData.data.match(pg2Regex)?.[0]
-        const description = rawDescription.replace(/&hellip;/g, "...").replace(/&#8217;/g, "'").replace(/&#8211;/g, "-").trim()
+        const description = Functions.decodeEntities(rawDescription).trim()
         const image = holidayData.data.match(imageRegex)?.[0].replace(/"/g, "")
 
         const holidayEmbed = embeds.createEmbed()

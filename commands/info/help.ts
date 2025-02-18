@@ -155,7 +155,7 @@ export default class Help extends Command {
                         const command = commands[m]
                         if (command.category !== category) continue
                         if (command.options.unlist === true) continue
-                        if (discord.checkMuted(message)) if (command.options.nsfw === true) continue
+                        if (command.options.nsfw === true) continue
                         help += `\`${command.name}\` `
                         counter++
                     }
@@ -171,7 +171,7 @@ export default class Help extends Command {
             }
             embeds.createReactionEmbed(dmEmbeds, false, false, 1, message.author)
             let rep = await this.reply(`Sent you the commands list! Make sure you have direct messages enabled, globally and server wide. ${discord.getEmoji("karenSugoi")}`)
-            if (args[2] === "delete") setTimeout(() => rep.delete(), 3000)
+            if (args[2] === "delete") Functions.deferDelete(rep, 3000)
             return
         }
         let prefix = await SQLQuery.fetchPrefix(message)
@@ -184,8 +184,9 @@ export default class Help extends Command {
                 const command = commands[j]
                 if (command.category !== category) continue
                 if (command.options.unlist === true) continue
-                if (discord.checkMuted(message)) if (command.options.nsfw === true) continue
-                help += `${discord.getEmoji("star")}\`${command.name}\`` + ` -> _${command.options.description}_\n`
+                if (command.options.nsfw === true) continue
+                const starEmoji = command.options.premium ? "premiumstar" : "star"
+                help += `${discord.getEmoji(starEmoji)}\`${command.name}\`` + ` -> _${command.options.description}_\n`
             }
             if (args[1]?.startsWith("!")) {
                 let input = Functions.combineArgs(args, 1).replace("!", "").trim().toLowerCase()

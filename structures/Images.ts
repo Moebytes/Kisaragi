@@ -262,7 +262,7 @@ export class Images {
             }
             const file = fs.createWriteStream(path.join(dir, `./animated${random}.gif`))
             await this.encodeGif(attachmentArray, dir, file)
-            msg2.delete()
+            Functions.deferDelete(msg2, 0)
             const attachment = new AttachmentBuilder(path.join(dir, `./animated${random}.gif`), {name: "animated.gif"})
             return attachment
 

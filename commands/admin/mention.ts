@@ -44,7 +44,7 @@ export default class Mention extends Command {
         if (!await perms.checkAdmin()) return
         if (!message.channel.isSendable()) return
         const loading = message.channel.lastMessage
-        if (message instanceof Message) loading?.delete()
+        if (message instanceof Message) Functions.deferDelete(loading, 0)
         const mentionEmbed = embeds.createEmbed()
         const prefix = await SQLQuery.fetchPrefix(message)
 
@@ -63,6 +63,6 @@ export default class Mention extends Command {
             return this.reply("Could not mention this role, I need the **Manage Roles** permission.")
         }
 
-        if (message.content?.startsWith(prefix[0])) await message?.delete()
+        if (message.content?.startsWith(prefix[0])) await Functions.deferDelete(message, 0)
     }
 }

@@ -160,7 +160,7 @@ export default class Embed extends Command {
         const getContent = async (response: Message) => {
             content = response.content
             if (response.attachments.size) content = response.attachments.first()!.url
-            await response.delete()
+            await Functions.deferDelete(response, 0)
         }
 
         title.on("collect", async (reaction, user) => {
@@ -172,7 +172,7 @@ export default class Embed extends Command {
             this.setProcBlock()
             const rep = await this.send(`<@${user.id}>, Enter the title of this embed or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
-            rep.delete()
+            Functions.deferDelete(rep, 0)
             if (content.length > 256) {
                 const rep2 = await this.send(`<@${user.id}>, The title cannot exceed 256 characters.`)
                 Functions.deferDelete(rep2, 3000)
@@ -199,7 +199,7 @@ export default class Embed extends Command {
             this.setProcBlock()
             const rep = await this.send(`<@${user.id}>, Enter the description of this embed or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
-            rep.delete()
+            Functions.deferDelete(rep, 0)
             if (content.length > 2048) {
                 const rep2 = await this.send(`<@${user.id}>, The description cannot exceed 2048 characters.`)
                 Functions.deferDelete(rep2, 3000)
@@ -226,7 +226,7 @@ export default class Embed extends Command {
             this.setProcBlock()
             const rep = await this.send(`<@${user.id}>, Post an image for this embed (png, jpg, gif). Type \`me\` for your profile pic, and \`guild\` for the guild icon, or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
-            rep.delete()
+            Functions.deferDelete(rep, 0)
             if (content === "me") content = user.displayAvatarURL({extension: "png"})
             if (content === "guild") content = this.message.guild?.iconURL({extension: "png"}) ?? ""
             if (content?.trim() === "remove") {
@@ -259,7 +259,7 @@ export default class Embed extends Command {
             this.setProcBlock()
             const rep = await this.send(`<@${user.id}>, Post a thumbnail for this embed (png, jpg, gif). Type \`me\` for your profile pic, and \`guild\` for the guild icon, or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
-            rep.delete()
+            Functions.deferDelete(rep, 0)
             if (content === "me") content = user.displayAvatarURL({extension: "png"})
             if (content === "guild") content = this.message.guild?.iconURL({extension: "png"}) ?? ""
             if (content?.trim() === "remove") {
@@ -292,7 +292,7 @@ export default class Embed extends Command {
             this.setProcBlock()
             const rep = await this.send(`<@${user.id}>, Enter the author of this embed or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
-            rep.delete()
+            Functions.deferDelete(rep, 0)
             if (content.length > 256) {
                 const rep2 = await this.send(`<@${user.id}>, The author text cannot exceed 256 characters.`)
                 Functions.deferDelete(rep2, 3000)
@@ -319,7 +319,7 @@ export default class Embed extends Command {
             this.setProcBlock()
             const rep = await this.send(`<@${user.id}>, Post an author image for this embed (png, jpg, gif). Type \`me\` for your profile pic, and \`guild\` for the guild icon, or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
-            rep.delete()
+            Functions.deferDelete(rep, 0)
             if (content === "me") content = user.displayAvatarURL({extension: "png"})
             if (content === "guild") content = this.message.guild?.iconURL({extension: "png"}) ?? ""
             if (content?.trim() === "remove") {
@@ -348,7 +348,7 @@ export default class Embed extends Command {
             this.setProcBlock()
             const rep = await this.send(`<@${user.id}>, Enter the footer of this embed or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
-            rep.delete()
+            Functions.deferDelete(rep, 0)
             if (content.length > 2048) {
                 const rep2 = await this.send(`<@${user.id}>, The footer cannot exceed 2048 characters.`)
                 Functions.deferDelete(rep2, 3000)
@@ -375,7 +375,7 @@ export default class Embed extends Command {
             this.setProcBlock()
             const rep = await this.send(`<@${user.id}>, Post a footer image for this embed (png, jpg, gif). Type \`me\` for your profile pic, and \`guild\` for the guild icon, or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
-            rep.delete()
+            Functions.deferDelete(rep, 0)
             if (content === "me") content = user.displayAvatarURL({extension: "png"})
             if (content === "guild") content = this.message.guild?.iconURL({extension: "png"}) ?? ""
             if (content?.trim() === "remove") {
@@ -404,7 +404,7 @@ export default class Embed extends Command {
             this.setProcBlock()
             const rep = await this.send(`<@${user.id}>, Set the color of this embed (hex color) or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
-            rep.delete()
+            Functions.deferDelete(rep, 0)
             if (content?.trim() === "remove") {
                 embed.setColor(null)
             } else {
@@ -427,7 +427,7 @@ export default class Embed extends Command {
             this.setProcBlock()
             const rep = await this.send(`<@${user.id}>, Set the timestamp of this embed (type \`now\` for the time now) or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
-            rep.delete()
+            Functions.deferDelete(rep, 0)
             const date = content === "now" ? Date.now() : new Date(content)
             if (content?.trim() === "remove") {
                 embed.setTimestamp(null)
@@ -449,7 +449,7 @@ export default class Embed extends Command {
             this.setProcBlock()
             const rep = await this.send(`<@${user.id}>, Enter the url of this embed or \`remove\` to remove it.`)
             await embeds.createPrompt(getContent, true)
-            rep.delete()
+            Functions.deferDelete(rep, 0)
             if (content?.trim() === "remove") {
                 embed.setURL(null)
             } else {
@@ -488,7 +488,7 @@ export default class Embed extends Command {
                     return
                 }
             }
-            rep.delete()
+            Functions.deferDelete(rep, 0)
             this.edit(msg, embed, attachments)
             onInfo = false
             this.setProcBlock(true)
@@ -496,13 +496,13 @@ export default class Embed extends Command {
 
         done.on("collect", async (reaction, user) => {
             await reaction.users.remove(user).catch(() => null)
-            await msg.delete()
+            await Functions.deferDelete(msg, 0)
             await this.send(embed, attachments)
         })
 
         cancel.on("collect", async (reaction, user) => {
             await reaction.users.remove(user).catch(() => null)
-            await msg.delete()
+            await Functions.deferDelete(msg, 0)
             await this.send(`<@${user.id}>, Quit the embed creator! ${discord.getEmoji("aquaCry")}`)
         })
     }

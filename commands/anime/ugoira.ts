@@ -59,6 +59,7 @@ export default class Ugoira extends Command {
         const pixivApi = new PixivApi(discord, message)
         const perms = new Permission(discord, message)
         if (!message.channel.isSendable()) return
+        if (!perms.checkNSFW()) return
         const pixiv = await Pixiv.refreshLogin(process.env.PIXIV_REFRESH_TOKEN!)
         let input: string
         if (args[1] && (args[1].toLowerCase() === "r18" || args[1].toLowerCase() === "en" || args[1].toLowerCase() === "popular")) {
@@ -71,7 +72,7 @@ export default class Ugoira extends Command {
             input = Functions.combineArgs(args, 1)
         }
         const loading = message.channel.lastMessage
-        if (message instanceof Message) loading?.delete()
+        if (message instanceof Message) Functions.deferDelete(loading, 0)
         const msg1 = await this.reply(`**Fetching Ugoira** ${discord.getEmoji("kisaragiCircle")}`) as Message
         let pixivID = null as any
         if (input.match(/\d\d\d+/g)) {
@@ -79,6 +80,7 @@ export default class Ugoira extends Command {
         } else {
             if (args[1] && args[1].toLowerCase() === "r18") {
                 if (!perms.checkNSFW()) return
+                if (!perms.checkBotDev()) return
                 if (args[2] && args[2].toLowerCase() === "en") {
                     const image = await pixivApi.getPixivImage(input, true, true, true, true)
                     pixivID = image.id
@@ -165,11 +167,11 @@ export default class Ugoira extends Command {
                 } else if (response.content) {
                     factor = Number(response.content)
                 }
-                await response.delete()
+                await Functions.deferDelete(response, 0)
             }
             const rep = await this.send(`<@${user.id}>, Enter the speed change for this ugoira, eg \`2.0\`. Type \`reverse\` to also reverse the frames.`)
             await embeds.createPrompt(getSpeedChange)
-            rep.delete()
+            Functions.deferDelete(rep, 0)
             if (bad) return
             const folder = path.join(__dirname, "../../assets/images/gifs")
             if (!fs.existsSync(folder)) fs.mkdirSync(folder, {recursive: true})

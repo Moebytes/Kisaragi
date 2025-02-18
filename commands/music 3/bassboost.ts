@@ -22,6 +22,7 @@ export default class Bassboost extends Command {
             aliases: ["bass"],
             guildOnly: true,
             cooldown: 20,
+            premium: true,
             subcommandEnabled: true
         })
         this.subcommand = new SlashCommandSubcommand()
@@ -41,14 +42,14 @@ export default class Bassboost extends Command {
         const rep = await this.reply("_Applying a bass boost, please wait..._")
         const file = queue?.[0].file
         await audio.lowshelf(file, 10, 500, 100)
-        if (rep) rep.delete()
+        if (rep) Functions.deferDelete(rep, 0)
         const settings = audio.getSettings() as any
         settings.filters.push("lowshelf")
         const embed = await audio.updateNowPlaying()
         discord.edit(queue[0].message!, embed)
         const rep2 = await this.reply("Applied bass boosting!")
         await Functions.timeout(3000)
-        rep2.delete().catch(() => null)
-        if (message instanceof Message) message.delete().catch(() => null)
+        Functions.deferDelete(rep2, 0)
+        if (message instanceof Message) Functions.deferDelete(message, 0)
     }
 }

@@ -45,7 +45,7 @@ export default class Autoplay extends Command {
         const text = settings.autoplay === true ? "on" : "off"
         const rep = await this.reply(`Turned ${text} autoplay!`)
         await Functions.timeout(3000)
-        rep.delete().catch(() => null)
-        if (message instanceof Message) message.delete().catch(() => null)
+        Functions.deferDelete(rep, 0)
+        if (message instanceof Message) Functions.deferDelete(message, 0)
     }
 }

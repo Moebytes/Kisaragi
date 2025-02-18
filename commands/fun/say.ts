@@ -44,7 +44,7 @@ export default class Say extends Command {
 
         if (message instanceof Message) {
             await this.send(Functions.checkChar(rawText, 2000, "."), undefined, {allowedMentions: {parse: []}})
-            if (message.content?.startsWith(prefix)) await message.delete().catch(() => null)
+            if (message.content?.startsWith(prefix)) await Functions.deferDelete(message, 0)
         } else {
             await this.reply(Functions.checkChar(rawText, 2000, "."), undefined, {allowedMentions: {parse: []}})
         }

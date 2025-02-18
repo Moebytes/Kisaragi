@@ -29,6 +29,7 @@ export default class Video2MP3 extends Command {
             aliases: ["vid2mp3", "yt2mp3"],
             cooldown: 20,
             defer: true,
+            premium: true,
             unlist: true,
             subcommandEnabled: false
         })

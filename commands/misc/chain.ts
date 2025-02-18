@@ -23,6 +23,7 @@ export default class Chain extends Command {
             `,
             aliases: [],
             cooldown: 200,
+            premium: true,
             slashEnabled: true
         })
         const chainOption = new SlashCommandOption()
@@ -46,7 +47,7 @@ export default class Chain extends Command {
         if (!message.channel.isSendable()) return
 
         const loading = message.channel.lastMessage
-        if (message instanceof Message) loading?.delete()
+        if (message instanceof Message) Functions.deferDelete(loading, 0)
 
         const cmdArgs = args.join(" ").split("& ")
         if (cmdArgs.length > 5 && (message.author.id !== process.env.OWNER_ID)) return message.reply(`Chaining 5+ commands is restricted to the bot developer. ${discord.getEmoji("sagiriBleh")}`)

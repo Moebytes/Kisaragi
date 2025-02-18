@@ -2,6 +2,7 @@ import {Collection, Message} from "discord.js"
 import {CommandFunctions} from "./CommandFunctions"
 import {Cooldown} from "./Cooldown"
 import {Kisaragi} from "./Kisaragi.js"
+import {Functions} from "./Functions"
 const linkCool = new Collection() as Collection<string, Collection<string, number>>
 
 export class Link {
@@ -17,7 +18,7 @@ export class Link {
         if (onCooldown && (msg.author!.id !== process.env.OWNER_ID)) return this.discord.reply(msg, onCooldown)
         const loading = await this.discord.send(msg, `**Fetching Link** ${this.discord.getEmoji("kisaragiCircle")}`) as Message
         await this.cmd.runCommand(msg, args).catch(() => null)
-        setTimeout(() => loading.delete(), 1000)
+        Functions.deferDelete(loading, 1000)
     }
 
     public postLink = async () => {

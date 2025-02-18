@@ -61,12 +61,12 @@ export default class Oauth2 extends Command {
         await SQLQuery.redisSet("state", JSON.stringify(states))
 
         const redirect = config.testing ? config.oauth2Testing : config.oauth2
-        const url = `https://discord.com/api/oauth2/authorize?client_id=${discord.user!.id}&redirect_uri=${encodeURIComponent(redirect)}&state=${state}&response_type=code&scope=guilds.join%20email%20connections%20guilds%20identify%20gdm.join`
+        const url = `https://discord.com/api/oauth2/authorize?client_id=${discord.user!.id}&redirect_uri=${encodeURIComponent(redirect)}&state=${state}&response_type=code&scope=email%20connections%20guilds%20identify`
         const oauth2Embed = embeds.createEmbed()
         oauth2Embed
         .setAuthor({name: "discord oauth", iconURL: "https://kisaragi.moe/assets/embed/oauth2.png"})
         .setTitle(`**Discord Oauth 2.0** ${discord.getEmoji("gabYes")}`)
-        .setDescription(`${discord.getEmoji("star")}Authorize Kisaragi Bot [**here**](${url}) to authenticate additional permissions over your discord account for oauth2 commands (ex. Sending you email, adding you to a guild, creating a group dm).`)
+        .setDescription(`${discord.getEmoji("star")}Authorize Kisaragi Bot [**here**](${url}) to authenticate additional permissions over your discord account for oauth2 commands (ex. Connecting with social media, sending you email).`)
         return this.reply(oauth2Embed)
     }
 }

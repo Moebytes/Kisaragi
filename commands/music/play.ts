@@ -145,7 +145,7 @@ export default class Play extends Command {
         queue = audio.getQueue()
         const settings = audio.getSettings()
         if (setLoop) settings[0].looping = true
-        if (message instanceof Message) if (loading) await loading?.delete()
+        if (message instanceof Message) if (loading) await Functions.deferDelete(loading, 0)
         if (queue.length === 1 && !queue[0].playing) {
             const next = audio.next()!
             if (setReverse) {

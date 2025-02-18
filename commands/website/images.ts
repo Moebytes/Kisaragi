@@ -56,10 +56,6 @@ export default class GoogleImageCommand extends Command {
 
         const images = new GoogleImages(process.env.GOOGLE_IMAGES_ID!, process.env.GOOGLE_API_KEY!)
 
-        if (/hentai|porn|sex|nsfw/.test(query)) {
-            if (!perms.checkNSFW()) return
-        }
-
         const result = await images.search(query)
         const imagesArray: EmbedBuilder[] = []
         for (let i = 0; i < result.length; i++) {

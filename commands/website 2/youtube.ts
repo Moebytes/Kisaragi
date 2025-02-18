@@ -173,7 +173,7 @@ export default class Youtube extends Command {
                 }
                 if (ytEmbeds.length === 0) return this.invalidQuery(embeds.createEmbed())
                 embeds.createReactionEmbed(ytEmbeds, true, true)
-                setTimeout(() => msg.delete(), 1000)
+                Functions.deferDelete(msg, 1000)
                 return
             }
             await this.ytChannelEmbed(discord, embeds, youtube, channelLink)
@@ -199,7 +199,7 @@ export default class Youtube extends Command {
                 }
                 if (ytEmbeds.length === 0) return this.invalidQuery(embeds.createEmbed())
                 embeds.createReactionEmbed(ytEmbeds, true, true)
-                setTimeout(() => msg.delete(), 1000)
+                Functions.deferDelete(msg, 1000)
                 return
             }
             await this.ytPlaylistEmbed(discord, embeds, youtube, playLink)
@@ -224,7 +224,7 @@ export default class Youtube extends Command {
                 }
                 if (ytEmbeds.length === 0) return this.invalidQuery(embeds.createEmbed())
                 embeds.createReactionEmbed(ytEmbeds, true, true)
-                setTimeout(() => msg.delete(), 1000)
+                Functions.deferDelete(msg, 1000)
                 return
             }
         await this.ytVideoEmbed(discord, embeds, youtube, videoLink)

@@ -6,6 +6,9 @@ import path from "path"
 
 const noCmdCool = new Set()
 
+const autoTimeouts = new Map<string, NodeJS.Timeout>()
+const updateTimeouts = new Map<string, NodeJS.Timeout>()
+
 export class CommandFunctions {
     constructor(private readonly discord: Kisaragi, private readonly message: Message) {}
 
@@ -65,36 +68,46 @@ export class CommandFunctions {
         for (let i = 0; i < commands.length; i++) {
             if (!toggles?.[i] || toggles[i] === "inactive") continue
             const guildChannel = (this.message.guild?.channels.cache.find((c) => c.id === channels[i])) as TextChannel
-            if (!guildChannel) return
+            if (!guildChannel) continue
             const cmd = commands[i].split(" ")
             const timeout = Number(frequencies[i]) * 3600000
-            let rawTimesLeft = await sql.fetchColumn("guilds", "timeouts")
-            if (!rawTimesLeft) rawTimesLeft = []
-            let timeLeft = timeout
-            if (rawTimesLeft[i]) {
-                let remaining = Number(rawTimesLeft[i])
-                if (remaining <= 0) remaining = timeout
-                timeLeft = remaining
-            }
+            let rawTimesLeft = await sql.fetchColumn("guilds", "timeouts") || []
+            let timeLeft = rawTimesLeft[i] ? Math.max(Number(rawTimesLeft[i]), 0) : timeout
             const guildMsg = await guildChannel.messages.fetch({limit: 1}).then((m) => m.first())
+
+            const key = `${this.message.guild?.id}_${i}`
+
+            if (updateTimeouts.has(key)) clearTimeout(updateTimeouts.get(key))
+            if (autoTimeouts.has(key)) clearTimeout(autoTimeouts.get(key))
+
             const update = async () => {
-                let newTimeLeft = timeLeft - 60000
-                if (newTimeLeft <= 0) newTimeLeft = timeout
                 const toggles = await sql.fetchColumn("guilds", "auto toggles")
-                if (!toggles?.[i] || toggles?.[i] === "inactive" || newTimeLeft === timeout) return
-                rawTimesLeft[i] = newTimeLeft
+                if (!toggles?.[i] || toggles[i] === "inactive") {
+                    clearTimeout(updateTimeouts.get(key))
+                    return updateTimeouts.delete(key)
+                }
+                timeLeft = Math.max(timeLeft - 60000, 0)
+                rawTimesLeft[i] = timeLeft
                 await sql.updateColumn("guilds", "auto timeouts", rawTimesLeft)
-                setTimeout(update, 60000)
+                const timeoutId = setTimeout(update, 60000)
+                updateTimeouts.set(key, timeoutId)
             }
-            setTimeout(update, 60000)
+
             const autoRun = async () => {
-                if (!toggles?.[i] || toggles?.[i] === "inactive") return
+                const toggles = await sql.fetchColumn("guilds", "auto toggles")
+                if (!toggles?.[i] || toggles[i] === "inactive") {
+                    clearTimeout(autoTimeouts.get(key))
+                    return autoTimeouts.delete(key)
+                }
                 const msg = guildMsg ?? this.message
                 msg.author.id = this.discord.user!.id
                 await this.runCommand(msg, cmd, true)
-                setTimeout(autoRun, timeout)
+                const timeoutId = setTimeout(autoRun, timeout)
+                autoTimeouts.set(key, timeoutId)
             }
-            setTimeout(autoRun, timeLeft)
+
+            updateTimeouts.set(key, setTimeout(update, 60000))
+            autoTimeouts.set(key, setTimeout(autoRun, timeLeft))
         }
     }
 

@@ -22,6 +22,7 @@ export default class Volume extends Command {
             aliases: [],
             guildOnly: true,
             cooldown: 5,
+            premium: true,
             subcommandEnabled: true
         })
         const volumeOption = new SlashCommandOption()
@@ -49,7 +50,7 @@ export default class Volume extends Command {
         audio.volume(Number(args[1]))
         const rep = await this.reply("Changed the volume!")
         await Functions.timeout(3000)
-        rep.delete().catch(() => null)
-        if (message instanceof Message) message.delete().catch(() => null)
+        Functions.deferDelete(rep, 0)
+        if (message instanceof Message) Functions.deferDelete(message, 0)
     }
 }

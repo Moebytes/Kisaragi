@@ -44,6 +44,7 @@ export default class Google extends Command {
         const commands = new CommandFunctions(discord, message)
         const embeds = new Embeds(discord, message)
         const perms = new Permission(discord, message)
+        if (!perms.checkNSFW()) return
         let query = Functions.combineArgs(args, 1)
         if (!query) {
             return this.noQuery(embeds.createEmbed()

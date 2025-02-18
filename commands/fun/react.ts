@@ -2,6 +2,7 @@ import {GuildEmoji, ApplicationEmoji, Message, SlashCommandSubcommandBuilder} fr
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
 import {Command} from "../../structures/Command"
 import {Kisaragi} from "./../../structures/Kisaragi"
+import {Functions} from "../../structures/Functions"
 
 export default class React extends Command {
     constructor(discord: Kisaragi, message: Message) {
@@ -85,6 +86,6 @@ export default class React extends Command {
         if (!emoji) return this.reply(`Could not find this emoji ${discord.getEmoji("kannaFacepalm")}`)
 
         await lastMessage.react(emoji)
-        message.delete().catch(() => null)
+        Functions.deferDelete(message, 0)
     }
 }

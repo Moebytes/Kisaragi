@@ -1,6 +1,7 @@
 import {Message, EmbedBuilder, AttachmentBuilder} from "discord.js"
 import {Embeds} from "./Embeds"
 import {Kisaragi} from "./Kisaragi"
+import {Functions} from "./Functions"
 import {Permission} from "./Permission"
 import {SQLQuery} from "./SQLQuery"
 
@@ -22,7 +23,7 @@ export class Block {
                 if (!message.guild?.members.me?.permissions.has("ManageMessages")) return this.discord.send(this.message, "I need the **Manage Messages** permission in order to delete the message with the blocked word.")
                 const reply = await this.discord.reply(this.message, "Your post was removed because it contained a blocked word.")
                 await message.delete()
-                setTimeout(() => reply.delete(), 10000)
+                Functions.deferDelete(reply, 10000)
             }
         } else {
             for (let i = 0; i < words.length; i++) {
@@ -30,7 +31,7 @@ export class Block {
                     if (!message.guild?.members.me?.permissions.has("ManageMessages")) return this.discord.send(this.message, "I need the **Manage Messages** permission in order to delete the message with the blocked word.")
                     const reply = await this.discord.reply(this.message, "Your post was removed because it contained a blocked word.")
                     await message.delete()
-                    setTimeout(() => reply.delete(), 10000)
+                    Functions.deferDelete(reply, 10000)
                 }
             }
         }
@@ -59,7 +60,7 @@ export class Block {
             if (del) {
                 const reply = await this.discord.reply(this.message, "Your post was removed because it contained an invite to another server.")
                 await message.delete()
-                setTimeout(() => reply.delete(), 10000)
+                Functions.deferDelete(reply, 10000)
             }
         }
     }
@@ -106,9 +107,9 @@ export class Block {
         if (!gallery) return
         if (gallery.includes(message.channel.id)) {
             try {
-                const rep = await this.discord.reply(message, `This is a gallery channel, you can only post images here!`)
+                const reply = await this.discord.reply(message, `This is a gallery channel, you can only post images here!`)
                 await message.delete()
-                setTimeout(() => rep.delete(), 3000)
+                Functions.deferDelete(reply, 3000)
             } catch {
                 return this.discord.send(this.message, `I need the **Manage Messages** permission to delete text messages in gallery channels ${this.discord.getEmoji("kannaFacepalm")}`)
             }

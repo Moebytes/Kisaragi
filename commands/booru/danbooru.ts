@@ -31,7 +31,8 @@ export default class Danbooru extends Command {
             random: "none",
             cooldown: 20,
             defer: true,
-            subcommandEnabled: true
+            nsfw: true,
+            subcommandEnabled: false
         })
         const tagOption = new SlashCommandOption()
             .setType("string")
@@ -54,12 +55,14 @@ export default class Danbooru extends Command {
         const danbooruEmbed = embeds.createEmbed()
         .setAuthor({name: "danbooru", iconURL: "https://kisaragi.moe/assets/embed/danbooru.png"})
         .setTitle(`**Danbooru Search** ${discord.getEmoji("gabUghh")}`)
+        if (!perms.checkNSFW()) return
 
         let tags: string[] = []
         if (!args[1]) {
             tags = ["pantyhose", "rating:general or rating:sensitive"]
         } else if (args[1].toLowerCase() === "r18") {
             if (!perms.checkNSFW()) return
+            if (!perms.checkBotDev()) return
             tags = Functions.combineArgs(args, 2).split(",")
             if (!tags.join("")) tags = ["pantyhose"]
             tags.push("-rating:general")
@@ -95,6 +98,7 @@ export default class Danbooru extends Command {
             const img = images[i]
             if (img.rating !== "g" && img.rating !== "s") {
                 if (!perms.checkNSFW(true)) continue
+                if (!perms.checkBotDev(true)) continue
             }
             const danbooruEmbed = embeds.createEmbed()
             .setAuthor({name: "danbooru", iconURL: "https://kisaragi.moe/assets/embed/danbooru.png"})

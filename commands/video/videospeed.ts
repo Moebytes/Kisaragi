@@ -30,6 +30,7 @@ export default class VideoSpeed extends Command {
             aliases: ["vspeed"],
             cooldown: 20,
             defer: true,
+            premium: true,
             unlist: true,
             subcommandEnabled: false
         })

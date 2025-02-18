@@ -15,6 +15,7 @@ export class Kisaragi extends Client {
     public readonly commands: Collection<string, Command> = new Collection()
     public deferState = new Set<string>()
     public readonly cooldowns: Collection<string, Collection<string, number>> = new Collection()
+    public static ignoreDelete = new Set<string>()
     public static username = "Kisaragi"
     public static pfp = "https://cdn.discordapp.com/avatars/593838271650332672/78ec2f4a3d4ab82a40791cb522cf36f5.png?size=2048"
     public replyStatus = "rejected"
@@ -245,7 +246,7 @@ export class Kisaragi extends Client {
         const messages = await msg.channel.messages.fetch({limit: 10}).then((m) => m.map((m) => m))
         let i = 0
         while (messages[i].author.id !== this.user?.id) {
-            await messages[i].delete()
+            await Functions.deferDelete(messages[i], 0)
             i++
         }
     }

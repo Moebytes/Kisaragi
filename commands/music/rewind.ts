@@ -53,7 +53,7 @@ export default class Rewind extends Command {
         discord.edit(queue[0].message!, embed)
         const rep = await this.reply(`Rewinded the song!`)
         await Functions.timeout(3000)
-        rep.delete().catch(() => null)
-        if (message instanceof Message) message.delete().catch(() => null)
+        Functions.deferDelete(rep, 0)
+        if (message instanceof Message) Functions.deferDelete(message, 0)
     }
 }

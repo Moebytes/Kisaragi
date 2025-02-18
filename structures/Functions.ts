@@ -18,8 +18,15 @@ export class Functions {
     constructor(private readonly message: Message) {}
 
     // Defer delete
-    public static deferDelete = (response: Message, timeout: number) => {
-        setTimeout(() => response.delete(), timeout)
+    public static deferDelete = async (response: Message | null, timeout: number) => {
+        if (!response) return
+        return new Promise<void>((resolve) => {
+            setTimeout(async () => {
+                Kisaragi.ignoreDelete.add(response.id)
+                await response.delete().catch(() => null)
+                resolve()
+            }, timeout)
+        })
     }
 
     // Timeout

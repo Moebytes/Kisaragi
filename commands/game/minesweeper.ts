@@ -216,7 +216,7 @@ export default class Minesweeper extends Command {
                 if (Number.isNaN(row) || Number.isNaN(column) || row-1 > rows || column-1 > columns) {
                     const rep = await response.reply("The row or column is invalid.")
                     await Functions.timeout(2000)
-                    await rep.delete()
+                    await Functions.deferDelete(rep, 0)
                 } else {
                     row = row - 1
                     column = column -1
@@ -225,11 +225,11 @@ export default class Minesweeper extends Command {
                     const mineEmbed = self.createMineEmbed(board)
                     discord.edit(msg, mineEmbed)
                 }
-                await response.delete()
+                await Functions.deferDelete(response, 0)
             }
             const numReply = await discord.send(msg, `<@${user.id}>, Enter the row number followed by the column number.`)
             await embeds.createPrompt(getRowsColumns)
-            await numReply.delete()
+            await Functions.deferDelete(numReply, 0)
             const win = this.checkWinLose(board, user, row, column, mineCount)
             if (win) discord.send(msg, win)
         })
@@ -243,7 +243,7 @@ export default class Minesweeper extends Command {
                 if (Number.isNaN(row) || Number.isNaN(column) || row-1 > rows || column-1 > columns) {
                     const rep = await response.reply("The row or column is invalid.")
                     await Functions.timeout(2000)
-                    await rep.delete()
+                    await Functions.deferDelete(rep, 0)
                 } else {
                     row = row - 1
                     column = column - 1
@@ -252,11 +252,11 @@ export default class Minesweeper extends Command {
                     const mineEmbed = self.createMineEmbed(board)
                     discord.edit(msg, mineEmbed)
                 }
-                await response.delete()
+                await Functions.deferDelete(response, 0)
             }
             const numReply = await discord.send(msg, `<@${user.id}>, Enter the row number followed by the column number.`)
             await embeds.createPrompt(getRowsColumns)
-            await numReply.delete()
+            await Functions.deferDelete(numReply, 0)
         })
 
         reveal.on("collect", async (reaction: MessageReaction, user: User) => {

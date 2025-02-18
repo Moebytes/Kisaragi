@@ -39,7 +39,7 @@ export default class ChannelPinsUpdate {
         await webhook.send({embeds: [pinEmbed], avatarURL: this.discord.displayAvatar(pin), username: pin.member?.displayName})
         await pin.unpin()
         const pinMsg = await channel.messages.fetch({limit: 10}).then((m) => m.find((m) => m.type === MessageType.ChannelPinnedMessage))
-        if (pinMsg) await pinMsg.delete()
+        if (pinMsg) await Functions.deferDelete(pinMsg, 0)
     }
 
     public run = async (channel: TextBasedChannel, time: Date) => {

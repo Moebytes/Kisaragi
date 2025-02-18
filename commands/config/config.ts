@@ -49,7 +49,7 @@ export default class Config extends Command {
         if (!message.channel.isSendable()) return
         if (!await perms.checkAdmin()) return
         const loading = message.channel.lastMessage
-        if (message instanceof Message) loading?.delete()
+        if (message instanceof Message) Functions.deferDelete(loading, 0)
         const input = Functions.combineArgs(args, 1)
         if (input.trim()) {
             message.content = input.trim()

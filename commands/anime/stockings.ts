@@ -2,6 +2,7 @@ import {Message} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
 import {Command} from "../../structures/Command"
 import {Embeds} from "./../../structures/Embeds"
+import {Permission} from "../../structures/Permission"
 import {Kisaragi} from "./../../structures/Kisaragi"
 import {PixivApi} from "./../../structures/PixivApi"
 
@@ -32,7 +33,9 @@ export default class Stockings extends Command {
         const discord = this.discord
         const message = this.message
         const embeds = new Embeds(discord, message)
+        const perms = new Permission(discord, message)
         const pixiv = new PixivApi(discord, message)
+        if (!perms.checkNSFW()) return
 
         const pixivArray = await pixiv.animeEndpoint("stockings", 20)
         return embeds.createReactionEmbed(pixivArray, true, true)

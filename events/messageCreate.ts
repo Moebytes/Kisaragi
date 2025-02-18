@@ -94,7 +94,7 @@ export default class MessageCreate {
           if (haikuEmbed) {
             if (haikuCool.has(message.author.id) || haikuCool.has(message.guild?.id)) {
               const reply = await this.discord.send(message, `<@${message.author.id}>, You hit the rate limit for **haiku**! Please wait 3 seconds before trying again. ${this.discord.getEmoji("kannaHungry")}`)
-              setTimeout(() => reply.delete(), 3000)
+              Functions.deferDelete(reply, 3000)
               return
             }
             const id = message.guild?.id ?? message.author.id
@@ -128,11 +128,8 @@ export default class MessageCreate {
             if (!message.author!.bot) {
               if (responseTextCool.has(message.author.id) || responseTextCool.has(message.guild?.id)) {
                 const reply = await this.discord.send(message, `<@${message.author.id}>, You hit the rate limit for **${response}**! Wait 3 seconds before trying again. ${this.discord.getEmoji("kannaHungry")}`)
-                setTimeout(() => {
-                  reply.delete()
-                  message.delete().catch(() => null)
-                }, 3000)
-                return
+                await Functions.deferDelete(reply, 3000)
+                return Functions.deferDelete(message, 0)
               }
               const id = message.guild?.id ?? message.author.id
               responseTextCool.add(id)
@@ -153,11 +150,8 @@ export default class MessageCreate {
             if (!message.author!.bot) {
               if (responseImageCool.has(message.author.id) || responseImageCool.has(message.guild?.id)) {
                 const reply = await this.discord.send(message, `<@${message.author.id}>, You hit the rate limit for **${response}**! Please wait 10 seconds before trying again.`)
-                setTimeout(() => {
-                  reply.delete()
-                  message.delete().catch(() => null)
-                }, 3000)
-                return
+                await Functions.deferDelete(reply, 3000)
+                return Functions.deferDelete(message, 0)
               }
               const id = message.guild?.id ?? message.author.id
               responseImageCool.add(id)
@@ -188,8 +182,8 @@ export default class MessageCreate {
       const cmd = args[0].toLowerCase()
       const command = cmdFunctions.findCommand(cmd)
       if (!command) return cmdFunctions.noCommand(cmd)
-      if (command.options.nsfw && this.discord.checkMuted(message)) return
       if (command.options.unlist && !perms.checkBotDev()) return
+      if (command.options.premium && !perms.checkPremium()) return
       command.message = message
 
       if (command.options.guildOnly) {

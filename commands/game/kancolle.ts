@@ -49,6 +49,7 @@ export default class Kancolle extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         const perms = new Permission(discord, message)
+        if (!perms.checkNSFW()) return
         const headers = {
             "referer": "https://kancolle.fandom.com/",
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:135.0) Gecko/20100101 Firefox/135.0"

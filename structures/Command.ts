@@ -17,6 +17,7 @@ interface CommandOptions {
   unlist: boolean
   nsfw: boolean
   botdev: boolean
+  premium: boolean
   defer: boolean
   slashEnabled: boolean
   subcommandEnabled: boolean
@@ -45,6 +46,7 @@ export class Command {
       unlist = false,
       nsfw = false,
       botdev = false,
+      premium = false,
       defer = false,
       slashEnabled = false,
       subcommandEnabled = false
@@ -53,7 +55,7 @@ export class Command {
       this.category = ""
       this.path = ""
       this.options = {params, description, help, examples, enabled, guildOnly, aliases, cooldown, permission, 
-      botPermission, random, unlist, nsfw, botdev, defer, slashEnabled, subcommandEnabled}
+      botPermission, random, unlist, nsfw, botdev, premium, defer, slashEnabled, subcommandEnabled}
       this.slash = null as unknown as RESTPostAPIChatInputApplicationCommandsJSONBody
       this.subcommand = null as unknown as SlashCommandSubcommandBuilder
     }

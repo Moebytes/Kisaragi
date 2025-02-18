@@ -40,7 +40,7 @@ export default class Dice extends Command {
 
         const msg = await this.reply(`**Rolling the dice...** ${discord.getEmoji("diceRoll")}`)
 
-        if (message instanceof Message) loading?.delete()
+        if (message instanceof Message) Functions.deferDelete(loading, 0)
         await Functions.timeout(700)
         msg.edit(`**Rolled ${roll}!** ${discord.getEmoji(dices[roll-1])}`)
     }

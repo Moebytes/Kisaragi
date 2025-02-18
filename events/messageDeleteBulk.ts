@@ -15,6 +15,7 @@ export default class MessageDeleteBulk {
         const embeds = new Embeds(discord, message)
         if (message.author?.bot) return
         if (message.author.id === discord.user!.id) return
+        if (Kisaragi.ignoreDelete.has(message.id)) return
 
         const logDeleted = async (messages: (Message | PartialMessage)[]) => {
             const messageLog = await sql.fetchColumn("guilds", "message log")

@@ -64,11 +64,14 @@ export default class Safebooru extends Command {
         const safebooruEmbed = embeds.createEmbed()
         .setAuthor({name: "safebooru", iconURL: "https://kisaragi.moe/assets/embed/safebooru.png"})
         .setTitle(`**Safebooru Search** ${discord.getEmoji("gabUghh")}`)
+        if (!perms.checkNSFW()) return
 
         let tags: string[] = []
         if (!args[1]) {
             tags = ["pantyhose", "rating:safe"]
         } else if (args[1].toLowerCase() === "r18") {
+            if (!perms.checkNSFW()) return
+            if (!perms.checkBotDev()) return
             tags = Functions.combineArgs(args, 2).split(",")
             if (!tags.join("")) tags = ["pantyhose"]
             tags.push("-rating:safe")

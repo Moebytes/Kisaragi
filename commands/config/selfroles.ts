@@ -57,7 +57,7 @@ export default class Selfroles extends Command {
         const sql = new SQLQuery(message)
         if (!message.channel.isSendable()) return
         const loading = message.channel.lastMessage
-        if (message instanceof Message) loading?.delete()
+        if (message instanceof Message) Functions.deferDelete(loading, 0)
 
         // If not admin, only shows the role list.
         if (!await perms.checkAdmin(true) || args[1] === "list") {

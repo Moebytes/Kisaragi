@@ -39,6 +39,7 @@ export default class Animeblush extends Command {
         const perms = new Permission(discord, message)
         const redditCmd = new Reddit(discord, message)
         const oauth2 = new Oauth2(discord, message)
+        if (!perms.checkNSFW()) return
 
         const reddit = new snoowrap({
             userAgent: "kisaragi bot v1.0",
@@ -50,6 +51,10 @@ export default class Animeblush extends Command {
         const posts = await reddit.getSubreddit("animeblush").getHot()
         const postIDS: string[] = []
         for (let i = 0; i < posts.length; i++) {
+            if (posts[i].over_18) {
+                if (!perms.checkNSFW(true)) continue
+                if (!perms.checkBotDev(true)) continue
+            }
             if (posts[i]) {
                 postIDS.push(posts[i].id)
             }

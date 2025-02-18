@@ -30,7 +30,8 @@ export default class Gelbooru extends Command {
             random: "none",
             cooldown: 20,
             defer: true,
-            subcommandEnabled: true
+            nsfw: true,
+            subcommandEnabled: false
         })
         const tagOption = new SlashCommandOption()
             .setType("string")
@@ -53,12 +54,14 @@ export default class Gelbooru extends Command {
         const gelbooruEmbed = embeds.createEmbed()
         .setAuthor({name: "gelbooru", iconURL: "https://kisaragi.moe/assets/embed/gelbooru.png"})
         .setTitle(`**Gelbooru Search** ${discord.getEmoji("gabUghh")}`)
+        if (!perms.checkNSFW()) return
 
         let tags: string[] = []
         if (!args[1]) {
             tags = ["pantyhose", "rating:general", "rating:sensitive"]
         } else if (args[1].toLowerCase() === "r18") {
             if (!perms.checkNSFW()) return
+            if (!perms.checkBotDev()) return
             tags = Functions.combineArgs(args, 2).split(",")
             if (!tags.join("")) tags = ["pantyhose"]
             tags.push("-rating:general")
@@ -95,6 +98,7 @@ export default class Gelbooru extends Command {
             const img = images[i]
             if (img.rating !== "general" && img.rating !== "sensitive") {
                 if (!perms.checkNSFW(true)) continue
+                if (!perms.checkBotDev(true)) continue
             }
             const gelbooruEmbed = embeds.createEmbed()
             .setAuthor({name: "gelbooru", iconURL: "https://kisaragi.moe/assets/embed/gelbooru.png"})

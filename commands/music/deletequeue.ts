@@ -58,7 +58,7 @@ export default class DeleteQueue extends Command {
             rep = await this.reply(`Deleted **${end}** songs starting at position **${pos}**!`)
         }
         await Functions.timeout(3000)
-        rep.delete().catch(() => null)
-        if (message instanceof Message) message.delete().catch(() => null)
+        Functions.deferDelete(rep, 0)
+        if (message instanceof Message) Functions.deferDelete(message, 0)
     }
 }

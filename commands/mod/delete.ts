@@ -123,8 +123,8 @@ export default class Delete extends Command {
 
         if (message instanceof Message) {
             const loading = message.channel.lastMessage
-            await loading?.delete().catch(() => null)
-            await message.delete().catch(() => null)
+            await Functions.deferDelete(loading, 0)
+            await Functions.deferDelete(message, 0)
         } else {
             await this.reply("Deleting...")
             num += 1

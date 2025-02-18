@@ -54,8 +54,7 @@ export class Oauth2 {
             const refreshToken = await this.sql.fetchColumn("oauth2", "reddit refresh", "user id", this.message.author.id)
             if (!refreshToken) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, you must authenticate your reddit account with **redditoauth** in order to upvote this post.`)
-                await Functions.timeout(3000)
-                await rep.delete()
+                await Functions.deferDelete(rep, 3000)
                 return
             }
             reddit.refreshToken = refreshToken
@@ -67,7 +66,7 @@ export class Oauth2 {
             const newDesc = await this.redditCmd.getSubmissions(reddit, [postID], false, true)
             await this.discord.edit(msg, EmbedBuilder.from(msg.embeds[0]).setDescription(newDesc))
             const rep2 = await this.discord.send(msg, `<@${user.id}>, Upvoted this post! ${this.discord.getEmoji("aquaUp")}`)
-            setTimeout(() => rep2.delete(), 3000)
+            Functions.deferDelete(rep2, 3000)
         })
 
         downvote.on("collect", async (reaction, user) => {
@@ -75,8 +74,7 @@ export class Oauth2 {
             const refreshToken = await this.sql.fetchColumn("oauth2", "reddit refresh", "user id", this.message.author.id)
             if (!refreshToken) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, you must authenticate your reddit account with **redditoauth** in order to downvote this post.`)
-                await Functions.timeout(3000)
-                await rep.delete()
+                await Functions.deferDelete(rep, 3000)
                 return
             }
             reddit.refreshToken = refreshToken
@@ -88,7 +86,7 @@ export class Oauth2 {
             const newDesc = await this.redditCmd.getSubmissions(reddit, [postID], false, true)
             await this.discord.edit(msg, EmbedBuilder.from(msg.embeds[0]).setDescription(newDesc))
             const rep2 = await this.discord.send(msg, `<@${user.id}>, Downvoted this post! ${this.discord.getEmoji("sagiriBleh")}`)
-            setTimeout(() => rep2.delete(), 3000)
+            Functions.deferDelete(rep2, 3000)
         })
 
         comment.on("collect", async (reaction, user) => {
@@ -97,8 +95,7 @@ export class Oauth2 {
             const refreshToken = await this.sql.fetchColumn("oauth2", "reddit refresh", "user id", this.message.author.id)
             if (!refreshToken) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, you must authenticate your reddit account with **redditoauth** in order to comment on this post.`)
-                await Functions.timeout(3000)
-                await rep.delete()
+                await Functions.deferDelete(rep, 3000)
                 return
             }
             reddit.refreshToken = refreshToken
@@ -108,15 +105,14 @@ export class Oauth2 {
             let text = ""
             const getComment = (response: Message) => {
                 text = response.content.trim()
-                response.delete().catch(() => null)
+                Functions.deferDelete(response, 0)
             }
             const rep = await this.message.channel.send(`<@${user.id}>, Enter the comment that you want to leave on this post.`)
             await this.embeds.createPrompt(getComment)
-            rep.delete()
+            Functions.deferDelete(rep, 0)
             if (!text) {
                 const rep = await this.message.channel.send(`<@${user.id}>, You didn't provide a comment ${this.discord.getEmoji("kannaFacepalm")}`)
-                await Functions.timeout(3000)
-                await rep.delete()
+                await Functions.deferDelete(rep, 3000)
                 return
             }
             // @ts-ignore
@@ -124,7 +120,7 @@ export class Oauth2 {
             const newDesc = await this.redditCmd.getSubmissions(reddit, [postID], false, true)
             await this.discord.edit(msg, EmbedBuilder.from(msg.embeds[0]).setDescription(newDesc))
             const rep2 = await this.discord.send(msg, `<@${user.id}>, Commented on this post! ${this.discord.getEmoji("gabYes")}`)
-            setTimeout(() => rep2.delete(), 3000)
+            Functions.deferDelete(rep2, 3000)
         })
 
         save.on("collect", async (reaction, user) => {
@@ -132,8 +128,7 @@ export class Oauth2 {
             const refreshToken = await this.sql.fetchColumn("oauth2", "reddit refresh", "user id", this.message.author.id)
             if (!refreshToken) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, you must authenticate your reddit account with **redditoauth** in order to save this post.`)
-                await Functions.timeout(3000)
-                await rep.delete()
+                await Functions.deferDelete(rep, 3000)
                 return
             }
             reddit.refreshToken = refreshToken
@@ -150,7 +145,7 @@ export class Oauth2 {
                 await post.save()
                 rep2 = await this.discord.send(msg, `<@${user.id}>, Saved this post! ${this.discord.getEmoji("yes")}`)
             }
-            setTimeout(() => rep2.delete(), 3000)
+            Functions.deferDelete(rep2, 3000)
         })
 
         subscribe.on("collect", async (reaction, user) => {
@@ -158,8 +153,7 @@ export class Oauth2 {
             const refreshToken = await this.sql.fetchColumn("oauth2", "reddit refresh", "user id", this.message.author.id)
             if (!refreshToken) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, you must authenticate your reddit account with **redditoauth** in order to subscribe to this subreddit.`)
-                await Functions.timeout(3000)
-                await rep.delete()
+                await Functions.deferDelete(rep, 3000)
                 return
             }
             reddit.refreshToken = refreshToken
@@ -178,7 +172,7 @@ export class Oauth2 {
                 await sub.subscribe()
                 rep2 = await this.discord.send(msg, `<@${user.id}>, Subscribed to this subreddit! ${this.discord.getEmoji("aquaUp")}`)
             }
-            setTimeout(() => rep2.delete(), 3000)
+            Functions.deferDelete(rep2, 3000)
             const newDesc = await this.redditCmd.getSubmissions(reddit, [postID], false, true)
             await this.discord.edit(msg, EmbedBuilder.from(msg.embeds[0]).setDescription(newDesc))
         })
@@ -203,8 +197,7 @@ export class Oauth2 {
             const token = await this.sql.fetchColumn("oauth2", "twitter token", "user id", user.id)
             if (!token) {
                 const rep = await this.message.channel.send(`<@${user.id}>, you must authenticate your twitter account with **twitteroauth** in order to reply to this tweet.`)
-                await Functions.timeout(3000)
-                await rep.delete()
+                await Functions.deferDelete(rep, 3000)
                 return
             }
             const secret = await this.sql.fetchColumn("oauth2", "twitter secret", "user id", user.id)
@@ -219,7 +212,7 @@ export class Oauth2 {
             const getReply = async (response: Message) => {
                 const images = new Images(this.discord, this.message)
                 text = response.content.replace(/(http)(.*?)(?= |$)/g, "").trim()
-                response.delete().catch(() => null)
+                Functions.deferDelete(response, 0)
                 let links = response.content.trim().match(/(http)(.*?)(?= |$)/)
                 if (!links) links = await this.discord.fetchLastAttachment(response, false, /.(png|jpg|gif|mp4)/, 5, true) as any
                 if (links) {
@@ -242,7 +235,7 @@ export class Oauth2 {
             }
             const rep = await this.message.channel.send(`<@${user.id}>, Enter the reply that you want to leave on this tweet.`)
             await this.embeds.createPrompt(getReply)
-            rep.delete()
+            Functions.deferDelete(rep, 0)
             const id = msg.embeds[0].url?.match(/(?<=status\/)(.*?)(?=$| )/)?.[0] ?? ""
             const author = msg.embeds[0].description?.match(/(?<=Author:_ \*\*)(.*?)(?=\*\*)/gi)?.[0] ?? ""
             await twitter.post("statuses/update", {
@@ -252,7 +245,7 @@ export class Oauth2 {
                 auto_populate_reply_metadata: true
             })
             const rep2 = await this.discord.send(msg, `<@${user.id}>, Replied to this tweet! ${this.discord.getEmoji("gabYes")}`)
-            setTimeout(() => rep2.delete(), 3000)
+            Functions.deferDelete(rep2, 3000)
         })
 
         retweet.on("collect", async (reaction, user) => {
@@ -261,8 +254,7 @@ export class Oauth2 {
             const token = await this.sql.fetchColumn("oauth2", "twitter token", "user id", user.id)
             if (!token) {
                 const rep = await this.message.channel.send(`<@${user.id}>, you must authenticate your twitter account with **twitteroauth** in order to reply to this tweet.`)
-                await Functions.timeout(3000)
-                await rep.delete()
+                await Functions.deferDelete(rep, 3000)
                 return
             }
             const secret = await this.sql.fetchColumn("oauth2", "twitter secret", "user id", user.id)
@@ -283,7 +275,7 @@ export class Oauth2 {
                 rep = await this.discord.send(msg, `<@${user.id}>, Retweeted this tweet! ${this.discord.getEmoji("aquaUp")}`)
                 await twitter.post(`statuses/retweet/${id}`, {id})
             }
-            setTimeout(() => rep.delete(), 3000)
+            Functions.deferDelete(rep, 3000)
         })
 
         heart.on("collect", async (reaction, user) => {
@@ -292,8 +284,7 @@ export class Oauth2 {
             const token = await this.sql.fetchColumn("oauth2", "twitter token", "user id", user.id)
             if (!token) {
                 const rep = await this.message.channel.send(`<@${user.id}>, you must authenticate your twitter account with **twitteroauth** in order to reply to this tweet.`)
-                await Functions.timeout(3000)
-                await rep.delete()
+                await Functions.deferDelete(rep, 3000)
                 return
             }
             const secret = await this.sql.fetchColumn("oauth2", "twitter secret", "user id", user.id)
@@ -314,7 +305,7 @@ export class Oauth2 {
                 rep = await this.discord.send(msg, `<@${user.id}>, Liked this tweet! ${this.discord.getEmoji("gabYes")}`)
                 await twitter.post(`favorites/create`, {id})
             }
-            setTimeout(() => rep.delete(), 3000)
+            Functions.deferDelete(rep, 3000)
         })
     }
 }

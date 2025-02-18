@@ -2,6 +2,7 @@ import {GuildMember, Message, Role, EmbedBuilder, AttachmentBuilder} from "disco
 import Sagiri from "sagiri"
 import {Embeds} from "./Embeds"
 import {Kisaragi} from "./Kisaragi"
+import {Functions} from "./Functions"
 import {SQLQuery} from "./SQLQuery"
 import {animedetect} from "animedetect"
 
@@ -33,7 +34,7 @@ export class Detector {
                 if (!result) {
                     const reply = await this.discord.reply(this.message, "You can only post anime pictures!")
                     await this.message.delete()
-                    setTimeout(() => reply.delete(), 10000)
+                    Functions.deferDelete(reply, 10000)
                 }
             }
         }

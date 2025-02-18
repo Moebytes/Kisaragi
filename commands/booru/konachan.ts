@@ -31,7 +31,8 @@ export default class Konachan extends Command {
             random: "none",
             cooldown: 20,
             defer: true,
-            subcommandEnabled: true
+            nsfw: true,
+            subcommandEnabled: false
         })
         const tagOption = new SlashCommandOption()
             .setType("string")
@@ -54,12 +55,14 @@ export default class Konachan extends Command {
         const konachanEmbed = embeds.createEmbed()
         .setTitle(`**Konachan Search** ${discord.getEmoji("gabUghh")}`)
         .setAuthor({name: "konachan", iconURL: "https://kisaragi.moe/assets/embed/konachan.png"})
+        if (!perms.checkNSFW()) return
 
         let tags: string[] = []
         if (!args[1]) {
             tags = ["pantyhose", "rating:safe"]
         } else if (args[1].toLowerCase() === "r18") {
             if (!perms.checkNSFW()) return
+            if (!perms.checkBotDev()) return
             tags = Functions.combineArgs(args, 2).split(",")
             if (!tags) tags = ["pantyhose"]
             tags.push("-rating:safe")
@@ -96,6 +99,7 @@ export default class Konachan extends Command {
             const img = images[i]
             if (img.rating !== "s") {
                 if (!perms.checkNSFW(true)) continue
+                if (!perms.checkBotDev(true)) continue
             }
             const konachanEmbed = embeds.createEmbed()
             .setTitle(`**Konachan Search** ${discord.getEmoji("gabUghh")}`)

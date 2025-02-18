@@ -22,6 +22,7 @@ export default class Nightcore extends Command {
             aliases: [],
             guildOnly: true,
             cooldown: 10,
+            premium: true,
             subcommandEnabled: true
         })
         this.subcommand = new SlashCommandSubcommand()
@@ -41,12 +42,12 @@ export default class Nightcore extends Command {
         const file = queue?.[0].file
         const rep = await this.reply("_Applying a nightcore effect, please wait..._")
         await audio.speed(file, 1.3, true)
-        if (rep) rep.delete()
+        if (rep) Functions.deferDelete(rep, 0)
         const embed = await audio.updateNowPlaying()
         discord.edit(queue[0].message!, embed)
         const rep2 = await this.reply(`Applied a nightcore effect!`)
         await Functions.timeout(3000)
-        rep2.delete().catch(() => null)
-        if (message instanceof Message) message.delete().catch(() => null)
+        Functions.deferDelete(rep2, 0)
+        if (message instanceof Message) Functions.deferDelete(message, 0)
     }
 }

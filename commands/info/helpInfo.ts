@@ -43,18 +43,19 @@ export default class HelpInfo extends Command {
             helpInfoEmbed
             .setImage(`attachment://${path.basename(img.attachment as string)}`)
         }
+        const starEmoji = command.options.premium ? "premiumstar" : "star"
         helpInfoEmbed
         .setTitle(`**Command Help** ${discord.getEmoji("gabYes")}`)
         .setAuthor({name: "help", iconURL: "https://kisaragi.moe/assets/embed/help.png"})
         .setThumbnail(message.author!.displayAvatarURL({extension: "png"}))
         .setDescription(Functions.multiTrim(`
-            ${discord.getEmoji("star")}_Name:_ **${name}**
-            ${discord.getEmoji("star")}_Category:_ **${category}**
-            ${discord.getEmoji("star")}_Description:_ ${command.options.description}
-            ${discord.getEmoji("star")}_Aliases:_ ${aliases}
-            ${discord.getEmoji("star")}_Cooldown:_ **${command.options.cooldown}**
-            ${discord.getEmoji("star")}_Help:_ \n${Functions.multiTrim(command.options.help)}
-            ${discord.getEmoji("star")}_Examples:_ \n${Functions.multiTrim(command.options.examples)}
+            ${discord.getEmoji(starEmoji)}_Name:_ **${name}**
+            ${discord.getEmoji(starEmoji)}_Category:_ **${category}**
+            ${discord.getEmoji(starEmoji)}_Description:_ ${command.options.description}
+            ${discord.getEmoji(starEmoji)}_Aliases:_ ${aliases}
+            ${discord.getEmoji(starEmoji)}_Cooldown:_ **${command.options.cooldown}**
+            ${discord.getEmoji(starEmoji)}_Help:_ \n${Functions.multiTrim(command.options.help)}
+            ${discord.getEmoji(starEmoji)}_Examples:_ \n${Functions.multiTrim(command.options.examples)}
         `))
         await this.reply(helpInfoEmbed, attachments)
     }

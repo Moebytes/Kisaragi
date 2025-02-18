@@ -24,6 +24,7 @@ export default class Equalizer extends Command {
             guildOnly: true,
             cooldown: 20,
             defer: true,
+            premium: true,
             subcommandEnabled: true
         })
         this.subcommand = new SlashCommandSubcommand()
@@ -41,12 +42,12 @@ export default class Equalizer extends Command {
         if (!audio.checkMusicPlaying()) return
         if (!message.channel.isSendable()) return
         const loading = message.channel.lastMessage
-        if (message instanceof Message) loading?.delete()
+        if (message instanceof Message) Functions.deferDelete(loading, 0)
         const msg = await audio.equalizerMenu()
-        msg.delete()
+        Functions.deferDelete(msg, 0)
         const queue = audio.getQueue()
         const embed = await audio.updateNowPlaying()
         discord.edit(queue[0].message!, embed)
-        if (message instanceof Message) message.delete().catch(() => null)
+        if (message instanceof Message) Functions.deferDelete(message, 0)
     }
 }

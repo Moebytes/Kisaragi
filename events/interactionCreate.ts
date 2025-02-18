@@ -1,6 +1,7 @@
 import {BaseInteraction, InteractionReplyOptions, MessageFlags} from "discord.js"
 import {Kisaragi} from "../structures/Kisaragi"
 import {CommandFunctions} from "../structures/CommandFunctions"
+import {Permission} from "../structures/Permission"
 import {Cooldown} from "../structures/Cooldown"
 
 export default class InteractionCreate {
@@ -9,7 +10,23 @@ export default class InteractionCreate {
     public run = async (interaction: BaseInteraction) => {
         const discord = this.discord
         if (!interaction.isChatInputCommand()) return
+
+        // We override some properties to run message command based code with minimal changes
+        // @ts-expect-error
+        interaction.author = interaction.user
+
+        // @ts-expect-error
+        interaction.reply = ((originalReply) => {
+            return async function (options: InteractionReplyOptions) {
+                if (typeof options === "string") options = {content: options}
+                let flags = !interaction.guild ? MessageFlags.Ephemeral : undefined
+                await originalReply.call(this, {withResponse: true, flags, ...options})
+                return interaction.fetchReply()
+            }
+        })(interaction.reply)
+
         const cmd = new CommandFunctions(discord, interaction as any)
+        const perms = new Permission(discord, interaction as any)
 
         const subcommand = interaction.options.getSubcommand(false)
         let slashCommand = interaction.commandName
@@ -24,19 +41,7 @@ export default class InteractionCreate {
 
         if (command) {
             if (!command.slash) return
-            // We override some properties to run message command based code with minimal changes
-            // @ts-expect-error
-            interaction.author = interaction.user
-
-            // @ts-expect-error
-            interaction.reply = ((originalReply) => {
-                return async function (options: InteractionReplyOptions) {
-                    if (typeof options === "string") options = {content: options}
-                    let flags = !interaction.guild ? MessageFlags.Ephemeral : undefined
-                    await originalReply.call(this, {withResponse: true, flags, ...options})
-                    return interaction.fetchReply()
-                }
-            })(interaction.reply)
+            if (command.options.premium && !perms.checkPremium()) return
 
             const cooldown = new Cooldown(discord, interaction as any)
             const onCooldown = cooldown.cmdCooldown(subcommand ? subcommand : slashCommand, command.options.cooldown)
