@@ -63,7 +63,7 @@ export default class Screenshot extends Command {
         const website = (input.startsWith("http")) ? input.trim() : `https://${input.trim()}`
 
         const options = {
-          darkMode: true, delay: 1, overwrite: true,
+          darkMode: true, delay: 1, overwrite: true, launchOptions: {args: ["--no-sandbox", "--disabled-setupid-sandbox"]},
           width: 1280, height: 720, userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
         } as any
         if (setMobile) options.emulateDevice = "iPhone XR"
