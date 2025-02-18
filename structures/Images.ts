@@ -4,8 +4,6 @@ import {DMChannel, GuildMember, Message, AttachmentBuilder, GuildTextBasedChanne
 import fs from "fs"
 import gifFrames from "gif-frames"
 import sizeOf from "image-size"
-import imagemin from "imagemin"
-import imageminGifsicle from "imagemin-gifsicle"
 import path from "path"
 import querystring from "querystring"
 import request from "request"
@@ -17,7 +15,6 @@ import {Catbox, Litterbox} from "node-catbox"
 import {Functions} from "./Functions"
 import {Kisaragi} from "./Kisaragi.js"
 
-const compressImages = require("compress-images")
 const getPixels = require("get-pixels")
 const GifEncoder = require("gif-encoder")
 const imageDataURI = require("image-data-uri")
@@ -28,15 +25,6 @@ export class Images {
     // let blacklist = require("../blacklist.json");
     private readonly headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"}
     constructor(private readonly discord: Kisaragi, private readonly message: Message) {}
-
-    /** Compresses a gif. */
-    public compressGif = async (input: string[]) => {
-        const file = await imagemin(input,
-        {destination: path.join(__dirname, "../assets/misc/images/gifs"),
-         plugins: [imageminGifsicle({interlaced: false, optimizationLevel: 2, colors: 512})]
-        })
-        return file
-    }
 
     /** Encodes a new gif. */
     public encodeGif = async (images: string[], folder: string, file: string | stream.Writable) => {
@@ -65,23 +53,6 @@ export class Images {
             })
         }
         addToGif(images)
-        })
-    }
-
-    /** Compresses images and gifs. */
-    public compressImages = (src: string, dest: string) => {
-        return new Promise<void>((resolve) => {
-            const imgInput = src
-            const imgOutput = dest
-            compressImages(imgInput, imgOutput, {compress_force: true, statistic: false, autoupdate: true}, false,
-            {jpg: {engine: "mozjpeg", command: ["-quality", "10"]}},
-            {png: {engine: "pngquant", command: ["--quality=20-50"]}},
-            {svg: {engine: "svgo", command: "--multipass"}},
-            {gif: {engine: "gifsicle", command: ["--colors", "64", "--use-col=web"]}}, function(error: Error, completed: boolean) {
-                if (completed === true) {
-                    resolve()
-                }
-            })
         })
     }
 
