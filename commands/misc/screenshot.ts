@@ -65,7 +65,7 @@ export default class Screenshot extends Command {
         const options = {
           darkMode: true, delay: 1, overwrite: true, width: 1280, height: 720, userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36"
         } as any
-        if (process.platform === "linux") options.launchOptions = {executablePath: "/usr/bin/chromium-browser"}
+        if (process.platform === "linux") options.launchOptions = {headless: true, executablePath: "/usr/bin/chromium-browser", args: ["--no-sandbox", "--disable-setuid-sandbox"]}
         if (setMobile) options.emulateDevice = "iPhone XR"
 
         let dest = path.join(__dirname, `../../misc/images/dump/screenshot.png`)
