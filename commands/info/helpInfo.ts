@@ -43,7 +43,7 @@ export default class HelpInfo extends Command {
             helpInfoEmbed
             .setImage(`attachment://${path.basename(img.attachment as string)}`)
         }
-        const starEmoji = command.options.premium ? "premiumstar" : "star"
+        const starEmoji = "star" //command.options.premium ? "premiumstar" : "star"
         helpInfoEmbed
         .setTitle(`**Command Help** ${discord.getEmoji("gabYes")}`)
         .setAuthor({name: "help", iconURL: "https://kisaragi.moe/assets/embed/help.png"})

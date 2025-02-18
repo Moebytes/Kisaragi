@@ -432,6 +432,15 @@
         "cooldown": 3
     },
     {
+        "command": "auto",
+        "category": "config",
+        "description": "Configures settings for auto commands.",
+        "help": "auto - Shows the auto settings prompt.\nauto cmd? #channel? num? - Sets the command, channel, and frequency (in hours).\nauto toggle setting - Turns a setting on or off.\nauto edit setting cmd? #channel? num? - Edits an existing setting.\nauto delete setting - Deletes a setting.\nauto reset - Resets all settings.",
+        "aliases": "none",
+        "examples": "=>auto holiday #holidays 24\n=>auto edit 1 #newchannel 12\n=>auto delete 1",
+        "cooldown": 10
+    },
+    {
         "command": "config",
         "category": "config",
         "description": "Configures bot settings like embed colors.",
@@ -1365,6 +1374,15 @@
         "help": "_Note:_ Gifs are excluded by default, but you can include them by adding \"gif\".\nThe number must be between 1 and 1000, default is 300.\ndownload num? - Downloads the number of images in the text channel\ndownload gif num? - Includes gifs\ndownload id num? - Starts downloading from the message id\ndownload id gif num? - Includes gifs",
         "aliases": "dl",
         "examples": "=>download 100\n=>download gif\n=>download gif 100",
+        "cooldown": 10
+    },
+    {
+        "command": "holiday",
+        "category": "misc",
+        "description": "Searches for daily holidays.",
+        "help": "holiday - Gets today's holiday.\nholiday date - Gets the holiday for the date",
+        "aliases": "none",
+        "examples": "=>holiday\n=>holiday January 20\n=>holiday 7/3",
         "cooldown": 10
     },
     {
@@ -2823,6 +2841,15 @@
         "help": "_Note: The invocation of this command is removed for privacy reasons._\ngravatar email - Gets the profile picture of the email",
         "aliases": "none",
         "examples": "=>gravatar someone@gmail.com",
+        "cooldown": 10
+    },
+    {
+        "command": "stackexchange",
+        "category": "website 3",
+        "description": "Searches for questions on a stack exchange site, use alias `stackoverflow` for stack overflow.",
+        "help": "_Note: You must use the stackoverflow alias in order to search on stackoverflow._\nstackoverflow query - Gets questions and answers from stack overflow\nstackexchange site query - Gets questions and answers from the stack exchange site",
+        "aliases": "stack, stackoverflow",
+        "examples": "=>stackoverflow typescript\n=>stackexchange anime slice of life",
         "cooldown": 10
     },
     {

@@ -185,7 +185,7 @@ export default class Help extends Command {
                 if (command.category !== category) continue
                 if (command.options.unlist === true) continue
                 if (command.options.nsfw === true) continue
-                const starEmoji = command.options.premium ? "premiumstar" : "star"
+                const starEmoji = "star" //command.options.premium ? "premiumstar" : "star"
                 help += `${discord.getEmoji(starEmoji)}\`${command.name}\`` + ` -> _${command.options.description}_\n`
             }
             if (args[1]?.startsWith("!")) {

@@ -118,6 +118,7 @@ export class Permission {
 
     /** Check Premium */
     public checkPremium = (noMsg?: boolean) => {
+        return true
         const botDev = this.checkBotDev(true)
         if (botDev) return true
         if (false) {
