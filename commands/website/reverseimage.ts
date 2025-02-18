@@ -7,7 +7,6 @@ import {Embeds} from "../../structures/Embeds"
 import {Permission} from "../../structures/Permission"
 import {Functions} from "./../../structures/Functions"
 import {Kisaragi} from "./../../structures/Kisaragi"
-import fs from "fs"
 
 export default class ReverseImage extends Command {
     private readonly headers = {
@@ -54,7 +53,6 @@ export default class ReverseImage extends Command {
         const data: any[] = []
         const response = await axios.get(`https://lens.google.com/uploadbyurl?url=${encodeURI(image)}`, {headers: this.headers}).then((r) => r.data)
         const $ = cheerio.load(response)
-        fs.writeFileSync("data.txt", response)
         $("#search > div > div").each((index, element) => {
             const url = $(element).find("a").attr("href")
             const desc = $(element).text()
