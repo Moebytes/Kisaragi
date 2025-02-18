@@ -120,7 +120,7 @@
     "sharp": "^0.33.5",
     "snoowrap": "^1.23.0",
     "sodium-native": "^4.3.1",
-    "soundcloud.ts": "^0.6.2",
+    "soundcloud.ts": "^0.6.3",
     "stackexchange": "^2.0.0",
     "svg-captcha": "^1.4.0",
     "svg2img": "^1.0.0-beta.2",

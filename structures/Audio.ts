@@ -1218,15 +1218,17 @@ export class Audio {
     public download = async (song: string, query?: string) => {
         let file = ""
         if (song?.match(/youtube.com|youtu.be/)) {
-            file = await this.youtube.util.downloadMP3(song, path.join(__dirname, `../assets/misc/tracks`))
+            const title = await this.youtube.util.getTitle(song)
+            file = await this.youtube.util.downloadMP3(song, path.join(__dirname, `../assets/misc/tracks/${this.message.guild?.id}-${title}.mp3`))
         } else if (song?.match(/soundcloud.com/)) {
-            file = await this.soundcloud.util.downloadTrack(song, path.join(__dirname, `../assets/misc/tracks`))
+            const track = await this.soundcloud.tracks.get(song)
+            file = await this.soundcloud.util.downloadTrack(track, path.join(__dirname, `../assets/misc/tracks/${this.message.guild?.id}-${track.title}.mp3`))
         } else {
             let name = song.split("#").shift()?.split("?").shift()?.split("/").pop()
             name = name?.match(/.(mp3|wav|ogg|webm)/) ? name : name + ".mp3"
             if (name === ".mp3") name = "noname.mp3"
             const data = await axios.get(song, {responseType: "arraybuffer", headers: this.headers}).then((r) => r.data)
-            const dest = path.join(__dirname, `../assets/misc/tracks/${name}`)
+            const dest = path.join(__dirname, `../assets/misc/tracks/${this.message.guild?.id} ${name}`)
             if (!fs.existsSync(path.dirname(dest))) fs.mkdirSync(path.dirname(dest), {recursive: true})
             fs.writeFileSync(dest, Buffer.from(data, "binary"))
             file = dest
