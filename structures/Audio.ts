@@ -12,6 +12,52 @@ import {Functions} from "./Functions"
 import {Kisaragi} from "./Kisaragi"
 import {Permission} from "./Permission"
 import {Video} from "./Video"
+import prism from "prism-media"
+
+const createAudioResourceAndSeek = (input: string, options?: {seekTo?: number, inlineVolume?: boolean, metadata?: string, silencePaddingFrames?: number}) => {
+    if (!options) options = {}
+    let ffmpegArguments = ["-analyzeduration", "0", "-loglevel", "0", "-f", "s16le", "-ar", "48000", "-ac", "2"]
+    
+    if (options.seekTo) {
+        ffmpegArguments = ["-ss", String(options.seekTo), ...ffmpegArguments]
+    }
+
+    const edgeArbitraryToRaw = {
+        type: "ffmpeg pcm with seek",
+        to: null,
+        cost: 2,
+        transformer: (input: string) =>
+            new prism.FFmpeg({
+                args: ["-i", input, ...ffmpegArguments],
+            })
+    } as any
+
+    const volumeTransformer = {
+        type: "volume transformer",
+        to: null,
+        cost: 0.5,
+        transformer: () => new prism.VolumeTransformer({type: "s16le"}),
+    } as any
+
+    const edgeRawToOpus = {
+        type: "opus encoder",
+        to: null,
+        cost: 1.5,
+        transformer: () => new prism.opus.Encoder({rate: 48000, channels: 2, frameSize: 960})
+    } as any
+
+    const transformerPipeline = [edgeArbitraryToRaw]
+    if (options.inlineVolume) transformerPipeline.push(volumeTransformer)
+    transformerPipeline.push(edgeRawToOpus)
+    const streams = transformerPipeline.map((edge) => edge.transformer(input))
+
+    return new AudioResource(
+        transformerPipeline,
+        streams,
+        options.metadata ?? null,
+        options.silencePaddingFrames ?? 5,
+    )
+}
 
 const numMap = {
     1: [0, 3, 6, 9, 12, 15],
@@ -623,7 +669,7 @@ export class Audio {
         const connection = getVoiceConnection(this.message.guild!.id)
         if (connection?.state.status !== VoiceConnectionStatus.Ready) return offset
         const player = connection?.state.subscription?.player
-        if (player?.state.status !== AudioPlayerStatus.Playing) return offset
+        if (!player || player?.state.status === AudioPlayerStatus.Idle) return offset
         let time = Math.floor(player.state.resource.playbackDuration / 1000.0)
         if (Number.isNaN(time)) return offset
         return time + offset
@@ -836,12 +882,19 @@ export class Audio {
 
     public volume = async (num: number) => {
         if (num < 0 || num > 2) return this.discord.send(this.message, "The volume must be between 0 and 2.")
-        /*const connection = getVoiceConnection(this.message.guild!.id)
+        const settings = this.getSettings()
+        if (num) settings.volume = num
+        const queue = this.getQueue()
+        const filepath = queue[0].file
+        this.play(filepath, this.time())
+        /*
+        const connection = getVoiceConnection(this.message.guild!.id)
         if (connection?.state.status !== VoiceConnectionStatus.Ready) return
         const player = connection.state.subscription?.player
         if (player?.state.status !== AudioPlayerStatus.Playing) return 
         const resource = player.state.resource
         resource.volume!.setVolumeLogarithmic(num)*/
+        /*
         const queue = this.getQueue()
         const filepath = queue[0].file
         const filename = path.basename(filepath.replace("-vol", "")).slice(0, -4)
@@ -854,7 +907,7 @@ export class Audio {
         }
         const settings = this.getSettings()
         if (num) settings.volume = num
-        return this.play(mp3File, this.time())
+        return this.play(mp3File, this.time())*/
     }
 
     public nowPlaying = async () => {
@@ -1289,7 +1342,8 @@ export class Audio {
         }
     }
 
-    public play = async (file: string, start: number = 0) => {
+    public play = async (file: string, start = 0) => {
+        const settings = this.getSettings()
         const connection = getVoiceConnection(this.message.guild!.id)
         if (!connection) return
         if (connection.state.status !== VoiceConnectionStatus.Ready) return
@@ -1301,17 +1355,8 @@ export class Audio {
             player.on("stateChange", async (oldState, newState) => this.playerFinished(newState, player, file))
         }
 
-        let stream: AudioResource
-        if (Number(start) === 0) {
-            stream = createAudioResource(file)
-        } else {
-            const queue = this.getQueue()
-            const seeked = await this.fx.seek(file, start)
-            if (queue[0]) queue[0].file = seeked
-            stream = createAudioResource(seeked)
-            const settings = this.getSettings()
-            settings.seekOffset = start
-        }
+        let stream = createAudioResourceAndSeek(file, {seekTo: start, inlineVolume: true})
+        stream.volume?.setVolumeLogarithmic(settings.volume)
         player.play(stream)
         if (player.state.status === AudioPlayerStatus.Paused) player.unpause()
         const queue = this.getQueue()
@@ -1323,7 +1368,6 @@ export class Audio {
         let amount = num ? num : 1
         const queue = this.getQueue()
         const settings = this.getSettings()
-        settings.looping = false
         settings.ablooping = false
         if (amount > queue.length) amount = queue.length
         this.deleteCurrent()
@@ -1401,7 +1445,6 @@ export class Audio {
         settings.filterParams = {}
         settings.effectParams = {}
         settings.reverse = false
-        settings.looping = false
         settings.ablooping = false
         this.deleteCurrent(true)
         this.setProcBlock(true)
