@@ -10,6 +10,7 @@ import request from "request"
 import stream from "stream"
 import Twitter from "twitter"
 import unzip from "unzipper"
+import fileType from "magic-bytes.js"
 import config from "../config.json"
 import {Catbox, Litterbox} from "node-catbox"
 import {Functions} from "./Functions"
@@ -68,20 +69,10 @@ export class Images {
 
     /** Download any binary data (gif, video, etc.) */
     public download = async (url: string, dest: string) => {
-        const bin = await axios.get(url, {responseType: "arraybuffer", headers: this.headers}).then((r) => r.data)
-        fs.writeFileSync((dest), Buffer.from(bin, "binary"))
-        return dest
-    }
-
-    /** Download image */
-    public downloadImage = async (url: string, dest: string) => {
-        if (!dest.endsWith(".jpg") || !dest.endsWith(".png")) return this.download(url, dest)
-        const writeStream = fs.createWriteStream(dest)
-        await axios.get(url, {responseType: "stream", headers: this.headers}).then((r) => r.data.pipe(writeStream))
-        await new Promise<void>((resolve, reject) => {
-            writeStream.on("finish", resolve)
-            writeStream.on("error", reject)
-        })
+        const arrayBuffer = await axios.get(url, {responseType: "arraybuffer", headers: this.headers}).then((r) => r.data)
+        const extension = fileType(arrayBuffer)?.[0]?.extension?.replace("jpeg", "jpg")
+        if (extension) dest = `${path.dirname(dest)}/${path.basename(dest, path.extname(dest))}.${extension}`
+        fs.writeFileSync((dest), Buffer.from(arrayBuffer, "binary"))
         return dest
     }
 
@@ -93,7 +84,7 @@ export class Images {
             name = name.length > 15 ? name.slice(0, 15) : name
             if (!/.(png|jpg|gif)/.test(name)) name += ".png"
             try {
-                const d = await this.downloadImage(images[i], dest + name)
+                const d = await this.download(images[i], dest + name)
                 destArray.push(d)
             } catch (e) {
                 // console.log(e)
@@ -357,7 +348,7 @@ export class Images {
 
     /** Upload attachment to Twitter */
     public uploadTwitterMedia = async (twitter: Twitter, link: string) => {
-        const src = await this.downloadImage(link, path.join(__dirname, `../assets/misc/dump/${link.slice(-10)}`))
+        const src = await this.download(link, path.join(__dirname, `../assets/misc/dump/${link.slice(-10)}`))
         let mime = "image/jpeg"
         if (/.png/.test(src)) {
             mime = "image/png"

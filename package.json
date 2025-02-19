@@ -83,6 +83,7 @@
     "lenny": "^2.0.2",
     "libnpmsearch": "^9.0.0",
     "m3u8-parser": "^7.2.0",
+    "magic-bytes.js": "^1.10.0",
     "mathjs": "^14.2.1",
     "md5": "^2.3.0",
     "moment": "^2.30.1",
