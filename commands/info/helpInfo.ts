@@ -6,6 +6,7 @@ import {Kisaragi} from "../../structures/Kisaragi"
 import {CommandFunctions} from "./../../structures/CommandFunctions"
 import {Embeds} from "./../../structures/Embeds"
 import {Functions} from "./../../structures/Functions"
+import axios from "axios"
 
 export default class HelpInfo extends Command {
     constructor(discord: Kisaragi, message: Message) {
@@ -27,26 +28,16 @@ export default class HelpInfo extends Command {
         const category = command.category
         const name = command.name
         const aliases = command.options.aliases.join("") ? `**${command.options.aliases.join(", ")}**` : "_None_"
-        let image = ""
-        if (fs.existsSync(path.join(__dirname, `../../../assets/help/${category}/${name}.png`))) {
-            image = path.join(__dirname, `../../../assets/help/${category}/${name}.png`)
-        } else if (fs.existsSync(path.join(__dirname, `../../../assets/help/${category}/${name}.gif`))) {
-            image = path.join(__dirname, `../../../assets/help/${category}/${name}.gif`)
-        } else if (fs.existsSync(path.join(__dirname, `../../../assets/help/${category}/${name}.jpg`))) {
-            image = path.join(__dirname, `../../../assets/help/${category}/${name}.jpg`)
-        }
-        const helpInfoEmbed = embeds.createEmbed()
-        let attachments = [] as AttachmentBuilder[]
-        if (image) {
-            const img = new AttachmentBuilder(image)
-            attachments.push(img)
-            helpInfoEmbed
-            .setImage(`attachment://${path.basename(img.attachment as string)}`)
-        }
+        const gifImages = ["giphy", "tenor"]
+        let ext = "png"
+        if (gifImages.includes(name)) ext = "gif"
+        let image = `https://kisaragi.moe/assets/help/${category}/${name}.${ext}`
+        if (name === "distortion") image = `https://kisaragi.moe/assets/help/${category}/dis+ortion.png`
         const starEmoji = "star" //command.options.premium ? "premiumstar" : "star"
-        helpInfoEmbed
+        const helpInfoEmbed = embeds.createEmbed()
         .setTitle(`**Command Help** ${discord.getEmoji("gabYes")}`)
         .setAuthor({name: "help", iconURL: "https://kisaragi.moe/assets/embed/help.png"})
+        .setImage(image)
         .setThumbnail(message.author!.displayAvatarURL({extension: "png"}))
         .setDescription(Functions.multiTrim(`
             ${discord.getEmoji(starEmoji)}_Name:_ **${name}**
@@ -57,6 +48,6 @@ export default class HelpInfo extends Command {
             ${discord.getEmoji(starEmoji)}_Help:_ \n${Functions.multiTrim(command.options.help)}
             ${discord.getEmoji(starEmoji)}_Examples:_ \n${Functions.multiTrim(command.options.examples)}
         `))
-        await this.reply(helpInfoEmbed, attachments)
+        await this.reply(helpInfoEmbed)
     }
 }
