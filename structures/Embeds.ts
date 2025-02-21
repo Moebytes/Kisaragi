@@ -1,5 +1,6 @@
-import {Collection, Emoji, GuildEmoji, Message, AttachmentBuilder, MessageCollector, EmbedBuilder, 
-APIEmbedThumbnail, MessageReaction, ReactionEmoji, TextChannel, User, ChatInputCommandInteraction} from "discord.js"
+import {Collection, Emoji, GuildEmoji, Message, AttachmentBuilder, MessageCollector, EmbedBuilder, ChannelType,
+APIEmbedThumbnail, MessageReaction, ReactionEmoji, TextChannel, User, ChatInputCommandInteraction, ButtonBuilder,
+ActionRowBuilder, ButtonStyle, ButtonInteraction, ComponentType, APIActionRowComponent, APIButtonComponent} from "discord.js"
 import {CommandFunctions} from "./CommandFunctions"
 import {Functions} from "./Functions"
 import {Images} from "./Images"
@@ -62,7 +63,13 @@ export class Embeds {
     }
 
     /** Create Reaction Embed */
-    public createReactionEmbed = async (embeds: EmbedBuilder[], collapseOn?: boolean, download?: boolean, startPage?: number, dm?: User) => {
+    public createReactionEmbed = async (embeds: EmbedBuilder[], collapseOn?: boolean, downloadOn?: boolean, startPage?: number, dm?: User) => {
+        if (this.message instanceof ChatInputCommandInteraction) {
+            const interaction = this.message as ChatInputCommandInteraction
+            if (!interaction.inCachedGuild() && interaction.channel?.type !== ChannelType.DM) {
+                return this.createButtonEmbed(embeds, collapseOn, downloadOn, startPage, dm)
+            }
+        }
         let page = 0
         if (startPage) page = startPage - 1
         const insertEmbeds = embeds
@@ -79,89 +86,18 @@ export class Embeds {
             msg = await this.discord.reply(this.message, embeds[page]) as Message
         }
         for (let i = 0; i < reactions.length; i++) await msg.react(reactions[i] as ReactionEmoji)
-
-        if (collapseOn) {
-            const description: string[] = []
-            const thumbnail: APIEmbedThumbnail[] = []
-            let collapsed = false
-            for (let i = 0; i < embeds.length; i++) {
-                description.push(embeds[i].data.description!)
-                thumbnail.push((embeds[i].data.thumbnail!))
-            }
-            await msg.react(this.discord.getEmoji("collapse"))
-            const collapseCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("collapse").id && user.bot === false
-            const collapse = msg.createReactionCollector({filter: collapseCheck})
-
-            collapse.on("collect", async (reaction: MessageReaction, user: User) => {
-                if (!collapsed) {
-                    for (let i = 0; i < embeds.length; i++) {
-                        embeds[i].setDescription(null)
-                        embeds[i].setThumbnail(null)
-                    }
-                    collapsed = true
-                } else {
-                    for (let i = 0; i < embeds.length; i++) {
-                        embeds[i].setDescription(description[i])
-                        embeds[i].setThumbnail(thumbnail[i]?.url ?? null)
-                    }
-                    collapsed = false
-                }
-                const embed = await this.updateEmbed(embeds, page, user)
-                if (embed) this.discord.edit(msg, embed)
-                await reaction.users.remove(user).catch(() => null)
-            })
-        }
-
-        if (download) {
-            const downloadCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("download").id && user.bot === false
-            const download = msg.createReactionCollector({filter: downloadCheck})
-            let downloaded = false
-
-            download.on("collect", async (reaction: MessageReaction, user: User) => {
-                await reaction.users.remove(user).catch(() => null)
-                if (downloaded) return
-                downloaded = true
-                const images: string[] = []
-                for (let i = 0; i < embeds.length; i++) {
-                    if (embeds[i].data.image?.url) {
-                        images.push(embeds[i].data.image?.url!)
-                    }
-                }
-                const rep = await this.discord.send(msg, `<@${user.id}>, **Downloading the images, please wait** ${this.discord.getEmoji("kisaragiCircle")}`)
-                const rand = Math.floor(Math.random()*10000)
-                const src = path.join(__dirname, `../assets/misc/images/dump/${rand}/`)
-                const dest = path.join(__dirname, `../assets/misc/images/dump/${rand}.zip`)
-                if (!fs.existsSync(src)) fs.mkdirSync(src, {recursive: true})
-                await this.images.downloadImages(images, src)
-                const downloads = fs.readdirSync(src).map((m) => src + m)
-                await Functions.createZip(downloads, dest)
-                const stats = fs.statSync(dest)
-                if (stats.size > Functions.getMBBytes(10)) {
-                    const link = await this.images.upload(dest)
-                    const downloadEmbed = this.createEmbed()
-                    downloadEmbed
-                    .setAuthor({name: "download", iconURL: this.discord.checkMuted(reaction.message) ? "" : "https://cdn.discordapp.com/emojis/685894156647661579.gif"})
-                    .setTitle(`**Image Download** ${this.discord.getEmoji("chinoSmug")}`)
-                    .setDescription(`${this.discord.getEmoji("star")}Downloaded **${downloads.length}** images from this embed. This file is too large for attachments, download it [**here**](${link})`)
-                    await this.discord.send(msg, downloadEmbed)
-                } else {
-                    const cleanTitle = embeds[0].data.title?.trim().replace(/<?(a)?:?(\w{2,32}):(\d{17,19})>?/, "").trim() || "None"
-                    const attachment = new AttachmentBuilder(dest, {name: `${cleanTitle}.zip`})
-                    await this.discord.send(msg, `<@${user.id}>, downloaded **${downloads.length}** images from this embed.`, attachment)
-                }
-                if (rep) Functions.deferDelete(rep, 0)
-                Functions.removeDirectory(src)
-                fs.unlinkSync(dest)
-            })
-        }
         if (!dm) await msg.react(this.discord.getEmoji("numberSelect"))
-        if (download) await msg.react(this.discord.getEmoji("download"))
+        if (collapseOn) await msg.react(this.discord.getEmoji("collapse"))
+        if (downloadOn) await msg.react(this.discord.getEmoji("download"))
         await msg.react(this.discord.getEmoji("copy"))
+
         const forwardCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("right").id && user.bot === false
         const backwardCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("left").id && user.bot === false
         const tripleForwardCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("tripleRight").id && user.bot === false
         const tripleBackwardCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("tripleLeft").id && user.bot === false
         const numberSelectCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("numberSelect").id && user.bot === false
+        const collapseCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("collapse").id && user.bot === false
+        const downloadCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("download").id && user.bot === false
         const copyCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("copy").id && user.bot === false
 
         const forward = msg.createReactionCollector({filter: forwardCheck})
@@ -169,6 +105,8 @@ export class Embeds {
         const tripleForward = msg.createReactionCollector({filter: tripleForwardCheck})
         const tripleBackward = msg.createReactionCollector({filter: tripleBackwardCheck})
         const numberSelect = msg.createReactionCollector({filter: numberSelectCheck})
+        const collapse = msg.createReactionCollector({filter: collapseCheck})
+        const download = msg.createReactionCollector({filter: downloadCheck})
         const copy = msg.createReactionCollector({filter: copyCheck})
 
         try {
@@ -176,7 +114,7 @@ export class Embeds {
             await this.sql.updateColumn("collectors", "embeds", insertEmbeds, "message", msg.id)
             await this.sql.updateColumn("collectors", "collapse", collapseOn, "message", msg.id)
             await this.sql.updateColumn("collectors", "page", page, "message", msg.id)
-            await this.sql.updateColumn("collectors", "download", download, "message", msg.id)
+            await this.sql.updateColumn("collectors", "download", downloadOn, "message", msg.id)
             await this.sql.updateColumn("collectors", "timestamp", new Date().toISOString(), "message", msg.id)
         } catch {}
 
@@ -229,8 +167,7 @@ export class Embeds {
         numberSelect.on("collect", async (reaction: MessageReaction, user: User) => {
             if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
-                Functions.deferDelete(rep, 3000)
-                return
+                return Functions.deferDelete(rep, 3000)
             }
             const self = this
             async function getPageNumber(response: Message) {
@@ -250,6 +187,70 @@ export class Embeds {
             await Functions.deferDelete(numReply, 0)
         })
 
+        const description: string[] = []
+        const thumbnail: APIEmbedThumbnail[] = []
+        let collapsed = false
+        for (let i = 0; i < embeds.length; i++) {
+            description.push(embeds[i].data.description!)
+            thumbnail.push((embeds[i].data.thumbnail!))
+        }
+        collapse.on("collect", async (reaction: MessageReaction, user: User) => {
+            if (!collapsed) {
+                for (let i = 0; i < embeds.length; i++) {
+                    embeds[i].setDescription(null)
+                    embeds[i].setThumbnail(null)
+                }
+                collapsed = true
+            } else {
+                for (let i = 0; i < embeds.length; i++) {
+                    embeds[i].setDescription(description[i])
+                    embeds[i].setThumbnail(thumbnail[i]?.url ?? null)
+                }
+                collapsed = false
+            }
+            const embed = await this.updateEmbed(embeds, page, user)
+            if (embed) this.discord.edit(msg, embed)
+            await reaction.users.remove(user).catch(() => null)
+        })
+
+        let downloaded = false
+        download.on("collect", async (reaction: MessageReaction, user: User) => {
+            await reaction.users.remove(user).catch(() => null)
+            if (downloaded) return
+            downloaded = true
+            const images: string[] = []
+            for (let i = 0; i < embeds.length; i++) {
+                if (embeds[i].data.image?.url) {
+                    images.push(embeds[i].data.image?.url!)
+                }
+            }
+            const rep = await this.discord.send(msg, `<@${user.id}>, **Downloading the images, please wait** ${this.discord.getEmoji("kisaragiCircle")}`)
+            const rand = Math.floor(Math.random()*10000)
+            const src = path.join(__dirname, `../assets/misc/images/dump/${rand}/`)
+            const dest = path.join(__dirname, `../assets/misc/images/dump/${rand}.zip`)
+            if (!fs.existsSync(src)) fs.mkdirSync(src, {recursive: true})
+            await this.images.downloadImages(images, src)
+            const downloads = fs.readdirSync(src).map((m) => src + m)
+            await Functions.createZip(downloads, dest)
+            const stats = fs.statSync(dest)
+            if (stats.size > Functions.getMBBytes(10)) {
+                const link = await this.images.upload(dest)
+                const downloadEmbed = this.createEmbed()
+                downloadEmbed
+                .setAuthor({name: "download", iconURL: "https://cdn.discordapp.com/emojis/685894156647661579.gif"})
+                .setTitle(`**Image Download** ${this.discord.getEmoji("chinoSmug")}`)
+                .setDescription(`${this.discord.getEmoji("star")}Downloaded **${downloads.length}** images from this embed. This file is too large for attachments, download it [**here**](${link})`)
+                await this.discord.send(msg, downloadEmbed)
+            } else {
+                const cleanTitle = embeds[0].data.title?.trim().replace(/<?(a)?:?(\w{2,32}):(\d{17,19})>?/, "").trim() || "None"
+                const attachment = new AttachmentBuilder(dest, {name: `${cleanTitle}.zip`})
+                await this.discord.send(msg, `<@${user.id}>, downloaded **${downloads.length}** images from this embed.`, attachment)
+            }
+            if (rep) Functions.deferDelete(rep, 0)
+            Functions.removeDirectory(src)
+            fs.unlinkSync(dest)
+        })
+
         let copyOn = false
         copy.on("collect", async (reaction: MessageReaction, user: User) => {
             const id = msg.guild ? msg.guild.id : user.id
@@ -257,8 +258,7 @@ export class Embeds {
             if (copyOn) return
             if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
-                Functions.deferDelete(rep, 3000)
-                return
+                return Functions.deferDelete(rep, 3000)
             }
             const content = msg.embeds[0].description?.replace(/(<a:star)(.*?)(>)/g, "")
             if (!content) return
@@ -269,21 +269,20 @@ export class Embeds {
             await Functions.deferDelete(rep, 0)
             copyOn = false
         })
-
         return msg
     }
 
     // Re-trigger Existing Reaction Embed
-    public editReactionCollector = async (msg: Message, emoji: string, user: User, embeds: EmbedBuilder[], collapseOn?: boolean, download?: boolean, startPage?: number) => {
+    public editReactionCollector = async (msg: Message, emoji: string, user: User, embeds: EmbedBuilder[], collapseOn: boolean, downloadOn: boolean, startPage?: number) => {
         let page = 0
         if (startPage) page = startPage
         await this.updateEmbed(embeds, page, this.message.author!, msg)
         const description: string[] = []
         const thumbnail: APIEmbedThumbnail[] = []
         for (let i = 0; i < embeds.length; i++) {
-                description.push(embeds[i].data.description!)
-                thumbnail.push(embeds[i].data.thumbnail!)
-            }
+            description.push(embeds[i].data.description!)
+            thumbnail.push(embeds[i].data.thumbnail!)
+        }
         await msg.reactions.cache.find((r) => r.emoji.name === emoji)?.users.remove(user).catch(() => null)
         switch (emoji) {
             case "right":
@@ -324,7 +323,7 @@ export class Embeds {
                     this.discord.edit(msg, embeds[page])
                     break
             case "numberSelect":
-                    const rep3 = await this.discord.reply(msg, `The page selection function is disabled on old embeds. However, you can repost it.`)
+                    const rep3 = await this.discord.reply(msg, `<@${user.id}>, The page selection function is disabled on old embeds. However, you can repost it.`)
                     Functions.deferDelete(rep3, 3000)
                     break
             case "download":
@@ -371,21 +370,31 @@ export class Embeds {
                     await Functions.deferDelete(rep2, 0)
                     break
             case "collapse":
-                    for (let i = 0; i < embeds.length; i++) {
-                        embeds[i].setDescription(description[i])
-                        embeds[i].setThumbnail(thumbnail[i]?.url ?? null)
+                    if (embeds[0].data.description) {
+                        for (let i = 0; i < embeds.length; i++) {
+                            embeds[i].setDescription(null)
+                            embeds[i].setThumbnail(null)
+                        }
+                    } else {
+                        for (let i = 0; i < embeds.length; i++) {
+                            embeds[i].setDescription(description[i])
+                            embeds[i].setThumbnail(thumbnail[i]?.url ?? null)
+                        }
                     }
                     this.discord.edit(msg, embeds[page])
                     break
             default:
         }
 
-        await msg.react(this.discord.getEmoji("repost"))
+        const found = msg.reactions.cache.find((r) => r.emoji.name === "repost")
+        if (!found) await msg.react(this.discord.getEmoji("repost"))
         const forwardCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("right").id && user.bot === false
         const backwardCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("left").id && user.bot === false
         const tripleForwardCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("tripleRight").id && user.bot === false
         const tripleBackwardCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("tripleLeft").id && user.bot === false
         const numberSelectCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("numberSelect").id && user.bot === false
+        const collapseCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("collapse").id && user.bot === false
+        const downloadCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("download").id && user.bot === false
         const copyCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("copy").id && user.bot === false
         const repostCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("repost").id && user.bot === false
 
@@ -394,75 +403,10 @@ export class Embeds {
         const tripleForward = msg.createReactionCollector({filter: tripleForwardCheck})
         const tripleBackward = msg.createReactionCollector({filter: tripleBackwardCheck})
         const numberSelect = msg.createReactionCollector({filter: numberSelectCheck})
-        const repost = msg.createReactionCollector({filter: repostCheck})
+        const collapse = msg.createReactionCollector({filter: collapseCheck})
+        const download = msg.createReactionCollector({filter: downloadCheck})
         const copy = msg.createReactionCollector({filter: copyCheck})
-
-        if (collapseOn) {
-            const collapseCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("collapse").id && user.bot === false
-            const collapse = msg.createReactionCollector({filter: collapseCheck})
-            let collapsed = false
-
-            collapse.on("collect", async (reaction: MessageReaction, user: User) => {
-                if (!collapsed) {
-                    for (let i = 0; i < embeds.length; i++) {
-                        embeds[i].setDescription(null)
-                        embeds[i].setThumbnail(null)
-                    }
-                    collapsed = true
-                } else {
-                    for (let i = 0; i < embeds.length; i++) {
-                        embeds[i].setDescription(description[i])
-                        embeds[i].setThumbnail(thumbnail[i]?.url ?? null)
-                    }
-                    collapsed = false
-                }
-                const embed = await this.updateEmbed(embeds, page, user)
-                if (embed) this.discord.edit(msg, embed)
-                await reaction.users.remove(user).catch(() => null)
-            })
-        }
-
-        if (download) {
-            const downloadCheck = (reaction: MessageReaction, user: User) => reaction.emoji.id === this.discord.getEmoji("download").id && user.bot === false
-            const download = msg.createReactionCollector({filter: downloadCheck})
-            let downloaded = false
-
-            download.on("collect", async (reaction: MessageReaction, user: User) => {
-                await reaction.users.remove(user).catch(() => null)
-                if (downloaded) return
-                downloaded = true
-                const images: string[] = []
-                for (let i = 0; i < embeds.length; i++) {
-                    if (embeds[i].data.image?.url) {
-                        images.push(embeds[i].data.image?.url!)
-                    }
-                }
-                const rep = await this.discord.send(msg, `<@${user.id}>, **Downloading the images, please wait** ${this.discord.getEmoji("kisaragiCircle")}`)
-                const rand = Math.floor(Math.random()*10000)
-                const src = path.join(__dirname, `../assets/misc/images/dump/${rand}/`)
-                const dest = path.join(__dirname, `../assets/misc/images/dump/${rand}.zip`)
-                if (!fs.existsSync(src)) fs.mkdirSync(src, {recursive: true})
-                await this.images.downloadImages(images, src)
-                const downloads = fs.readdirSync(src).map((m) => src + m)
-                await Functions.createZip(downloads, dest)
-                const stats = fs.statSync(dest)
-                if (stats.size > Functions.getMBBytes(10)) {
-                    const link = await this.images.upload(dest)
-                    const downloadEmbed = this.createEmbed()
-                    downloadEmbed
-                    .setAuthor({name: "download", iconURL: this.discord.checkMuted(reaction.message) ? "" : "https://cdn.discordapp.com/emojis/685894156647661579.gif"})
-                    .setTitle(`**Image Download** ${this.discord.getEmoji("chinoSmug")}`)
-                    .setDescription(`${this.discord.getEmoji("star")}Downloaded **${downloads.length}** images from this embed. This file is too large for attachments, download it [**here**](${link})`)
-                    await this.discord.send(msg, downloadEmbed)
-                } else {
-                    const cleanTitle = embeds[0].data.title?.trim().replace(/<?(a)?:?(\w{2,32}):(\d{17,19})>?/, "").trim() || "None"
-                    const attachment = new AttachmentBuilder(dest, {name: `${cleanTitle}.zip`})
-                    await this.discord.send(msg, `<@${user.id}>, downloaded **${downloads.length}** images from this embed.`, attachment)
-                }
-                if (rep) Functions.deferDelete(rep, 0)
-                Functions.removeDirectory(src)
-            })
-        }
+        const repost = msg.createReactionCollector({filter: repostCheck})
 
         backward.on("collect", async (reaction: MessageReaction, user: User) => {
             if (page === 0) {
@@ -512,8 +456,65 @@ export class Embeds {
 
         numberSelect.on("collect", async (reaction: MessageReaction, user: User) => {
             await reaction.users.remove(user).catch(() => null)
-            const rep3 = await this.discord.reply(msg, `The page selection function is disabled on old embeds. However, you can repost it.`)
+            const rep3 = await this.discord.reply(msg, `<@${user.id}>, The page selection function is disabled on old embeds. However, you can repost it.`)
             Functions.deferDelete(rep3, 3000)
+        })
+
+        let collapsed = false
+        collapse.on("collect", async (reaction: MessageReaction, user: User) => {
+            if (!collapsed) {
+                for (let i = 0; i < embeds.length; i++) {
+                    embeds[i].setDescription(null)
+                    embeds[i].setThumbnail(null)
+                }
+                collapsed = true
+            } else {
+                for (let i = 0; i < embeds.length; i++) {
+                    embeds[i].setDescription(description[i])
+                    embeds[i].setThumbnail(thumbnail[i]?.url ?? null)
+                }
+                collapsed = false
+            }
+            const embed = await this.updateEmbed(embeds, page, user)
+            if (embed) this.discord.edit(msg, embed)
+            await reaction.users.remove(user).catch(() => null)
+        })
+
+        let downloaded = false
+        download.on("collect", async (reaction: MessageReaction, user: User) => {
+            await reaction.users.remove(user).catch(() => null)
+            if (downloaded) return
+            downloaded = true
+            const images: string[] = []
+            for (let i = 0; i < embeds.length; i++) {
+                if (embeds[i].data.image?.url) {
+                    images.push(embeds[i].data.image?.url!)
+                }
+            }
+            const rep = await this.discord.send(msg, `<@${user.id}>, **Downloading the images, please wait** ${this.discord.getEmoji("kisaragiCircle")}`)
+            const rand = Math.floor(Math.random()*10000)
+            const src = path.join(__dirname, `../assets/misc/images/dump/${rand}/`)
+            const dest = path.join(__dirname, `../assets/misc/images/dump/${rand}.zip`)
+            if (!fs.existsSync(src)) fs.mkdirSync(src, {recursive: true})
+            await this.images.downloadImages(images, src)
+            const downloads = fs.readdirSync(src).map((m) => src + m)
+            await Functions.createZip(downloads, dest)
+            const stats = fs.statSync(dest)
+            if (stats.size > Functions.getMBBytes(10)) {
+                const link = await this.images.upload(dest)
+                const downloadEmbed = this.createEmbed()
+                downloadEmbed
+                .setAuthor({name: "download", iconURL: this.discord.checkMuted(reaction.message) ? "" : "https://cdn.discordapp.com/emojis/685894156647661579.gif"})
+                .setTitle(`**Image Download** ${this.discord.getEmoji("chinoSmug")}`)
+                .setDescription(`${this.discord.getEmoji("star")}Downloaded **${downloads.length}** images from this embed. This file is too large for attachments, download it [**here**](${link})`)
+                await this.discord.send(msg, downloadEmbed)
+            } else {
+                const cleanTitle = embeds[0].data.title?.trim().replace(/<?(a)?:?(\w{2,32}):(\d{17,19})>?/, "").trim() || "None"
+                const attachment = new AttachmentBuilder(dest, {name: `${cleanTitle}.zip`})
+                await this.discord.send(msg, `<@${user.id}>, downloaded **${downloads.length}** images from this embed.`, attachment)
+            }
+            if (rep) Functions.deferDelete(rep, 0)
+            Functions.removeDirectory(src)
         })
 
         let copyOn = false
@@ -538,8 +539,540 @@ export class Embeds {
 
         repost.on("collect", async (reaction: MessageReaction, user: User) => {
             await this.discord.send(this.message, `<@${user.id}>, I reposted this embed.`)
-            await this.createReactionEmbed(embeds, true, true)
+            await this.createReactionEmbed(embeds, collapseOn, downloadOn)
             await reaction.users.remove(user).catch(() => null)
+        })
+    }
+
+
+
+    /** Create Button Embed */
+    public createButtonEmbed = async (embeds: EmbedBuilder[], collapseOn?: boolean, downloadOn?: boolean, startPage?: number, dm?: User) => {
+        let page = 0
+        if (startPage) page = startPage - 1
+        const insertEmbeds = embeds
+        await this.updateEmbed(embeds, page, this.message.author!)
+        const rightButton = new ButtonBuilder()
+            .setCustomId("right")
+            .setEmoji(this.discord.getEmoji("right").id)
+            .setStyle(ButtonStyle.Secondary)
+
+        const leftButton = new ButtonBuilder()
+            .setCustomId("left")
+            .setEmoji(this.discord.getEmoji("left").id)
+            .setStyle(ButtonStyle.Secondary)
+
+        const tripleRightButton = new ButtonBuilder()
+            .setCustomId("tripleRight")
+            .setEmoji(this.discord.getEmoji("tripleRight").id)
+            .setStyle(ButtonStyle.Secondary)
+
+        const tripleLeftButton = new ButtonBuilder()
+            .setCustomId("tripleLeft")
+            .setEmoji(this.discord.getEmoji("tripleLeft").id)
+            .setStyle(ButtonStyle.Secondary)
+
+        const numberSelectButton = new ButtonBuilder()
+            .setCustomId("numberSelect")
+            .setEmoji(this.discord.getEmoji("numberSelect").id)
+            .setStyle(ButtonStyle.Secondary)
+
+        const collapseButton = new ButtonBuilder()
+            .setCustomId("collapse")
+            .setEmoji(this.discord.getEmoji("collapse").id)
+            .setStyle(ButtonStyle.Secondary)
+        
+        const downloadButton = new ButtonBuilder()
+            .setCustomId("download")
+            .setEmoji(this.discord.getEmoji("download").id)
+            .setStyle(ButtonStyle.Secondary)
+
+        const copyButton = new ButtonBuilder()
+            .setCustomId("copy")
+            .setEmoji(this.discord.getEmoji("copy").id)
+            .setStyle(ButtonStyle.Secondary)
+
+        const buttonRow = new ActionRowBuilder<ButtonBuilder>()
+        const buttonRow2 = new ActionRowBuilder<ButtonBuilder>()
+        buttonRow.addComponents(rightButton, leftButton, tripleRightButton, tripleLeftButton)
+        if (!dm) buttonRow.addComponents(numberSelectButton)
+        if (collapseOn) buttonRow2.addComponents(collapseButton)
+        if (downloadOn) buttonRow2.addComponents(downloadButton)
+        buttonRow2.addComponents(copyButton)
+
+        let components = [buttonRow, buttonRow2]
+
+        let msg: Message
+        if (dm) {
+            try {
+                msg = await dm.send({embeds: [embeds[page]], components}) as any
+            } catch {
+                return this.message
+            }
+        } else {
+            msg = await this.discord.reply(this.message, embeds[page], undefined, {components}) as Message
+        }
+        this.discord.activeEmbeds.add(msg.id)
+
+        const forwardCheck = (i: ButtonInteraction) => i.customId === "right" && i.user.bot === false
+        const backwardCheck = (i: ButtonInteraction) => i.customId === "left" && i.user.bot === false
+        const tripleForwardCheck = (i: ButtonInteraction) => i.customId === "tripleRight" && i.user.bot === false
+        const tripleBackwardCheck = (i: ButtonInteraction) => i.customId === "tripleLeft" && i.user.bot === false
+        const numberSelectCheck = (i: ButtonInteraction) => i.customId === "numberSelect" && i.user.bot === false
+        const collapseCheck = (i: ButtonInteraction) => i.customId === "collapse" && i.user.bot === false
+        const downloadCheck = (i: ButtonInteraction) => i.customId === "download" && i.user.bot === false
+        const copyCheck = (i: ButtonInteraction) => i.customId === "copy" && i.user.bot === false
+
+        const forward = msg.createMessageComponentCollector<ComponentType.Button>({filter: forwardCheck})
+        const backward = msg.createMessageComponentCollector<ComponentType.Button>({filter: backwardCheck})
+        const tripleForward = msg.createMessageComponentCollector<ComponentType.Button>({filter: tripleForwardCheck})
+        const tripleBackward = msg.createMessageComponentCollector<ComponentType.Button>({filter: tripleBackwardCheck})
+        const numberSelect = msg.createMessageComponentCollector<ComponentType.Button>({filter: numberSelectCheck})
+        const collapse = msg.createMessageComponentCollector<ComponentType.Button>({filter: collapseCheck})
+        const download = msg.createMessageComponentCollector<ComponentType.Button>({filter: downloadCheck})
+        const copy = msg.createMessageComponentCollector<ComponentType.Button>({filter: copyCheck})
+
+        try {
+            await SQLQuery.insertInto("collectors", "message", msg.id)
+            await this.sql.updateColumn("collectors", "embeds", insertEmbeds, "message", msg.id)
+            await this.sql.updateColumn("collectors", "collapse", collapseOn, "message", msg.id)
+            await this.sql.updateColumn("collectors", "page", page, "message", msg.id)
+            await this.sql.updateColumn("collectors", "download", downloadOn, "message", msg.id)
+            await this.sql.updateColumn("collectors", "timestamp", new Date().toISOString(), "message", msg.id)
+        } catch {}
+
+        backward.on("collect", async (interaction: ButtonInteraction) => {
+            if (page === 0) {
+                page = embeds.length - 1
+            } else {
+                page--
+            }
+            const user = interaction.user
+            const embed = await this.updateEmbed(embeds, page, user, msg)
+            if (embed) this.discord.edit(interaction, embed, undefined, {components})
+        })
+
+        forward.on("collect", async (interaction: ButtonInteraction) => {
+            if (page === embeds.length - 1) {
+                page = 0
+            } else {
+                page++
+            }
+            const user = interaction.user
+            const embed = await this.updateEmbed(embeds, page, user, msg)
+            if (embed) this.discord.edit(interaction, embed, undefined, {components})
+        })
+
+        tripleBackward.on("collect", async (interaction: ButtonInteraction) => {
+            if (page === 0) {
+                page = (embeds.length - 1) - Math.floor(embeds.length/5)
+            } else {
+                page -= Math.floor(embeds.length/5)
+            }
+            if (page < 0) page += embeds.length
+            const user = interaction.user
+            const embed = await this.updateEmbed(embeds, page, user, msg)
+            if (embed) this.discord.edit(interaction, embed, undefined, {components})
+        })
+
+        tripleForward.on("collect", async (interaction: ButtonInteraction) => {
+            if (page === embeds.length - 1) {
+                page = 0 + Math.floor(embeds.length/5)
+            } else {
+                page += Math.floor(embeds.length/5)
+            }
+            if (page > embeds.length - 1) page -= embeds.length
+            const user = interaction.user
+            const embed = await this.updateEmbed(embeds, page, user, msg)
+            if (embed) this.discord.edit(interaction, embed, undefined, {components})
+        })
+
+        numberSelect.on("collect", async (interaction: ButtonInteraction) => {
+            const user = interaction.user
+            if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+                const rep = await this.discord.reply(interaction, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
+                return Functions.deferDelete(rep, 3000)
+            }
+            const self = this
+            async function getPageNumber(response: Message) {
+                if (Number.isNaN(Number(response.content)) || Number(response.content) > embeds.length) {
+                    const rep = await response.reply("That page number is invalid.")
+                    await Functions.deferDelete(rep, 2000)
+                } else {
+                    page = Number(response.content) - 1
+                    const embed = await self.updateEmbed(embeds, page, user, msg)
+                    if (embed) self.discord.edit(msg, embed, undefined, {components})
+                }
+                await Functions.deferDelete(response, 0)
+            }
+            const numReply = await this.discord.reply(interaction, `<@${user.id}>, Enter the page number to jump to.`)
+            await this.createPrompt(getPageNumber)
+            await Functions.deferDelete(numReply, 0)
+        })
+
+        const description: string[] = []
+        const thumbnail: APIEmbedThumbnail[] = []
+        let collapsed = false
+        for (let i = 0; i < embeds.length; i++) {
+            description.push(embeds[i].data.description!)
+            thumbnail.push((embeds[i].data.thumbnail!))
+        }
+        collapse.on("collect", async (interaction: ButtonInteraction) => {
+            if (!collapsed) {
+                for (let i = 0; i < embeds.length; i++) {
+                    embeds[i].setDescription(null)
+                    embeds[i].setThumbnail(null)
+                }
+                collapsed = true
+            } else {
+                for (let i = 0; i < embeds.length; i++) {
+                    embeds[i].setDescription(description[i])
+                    embeds[i].setThumbnail(thumbnail[i]?.url ?? null)
+                }
+                collapsed = false
+            }
+            const user = interaction.user
+            const embed = await this.updateEmbed(embeds, page, user)
+            if (embed) this.discord.edit(interaction, embed, undefined, {components})
+        })
+
+        let downloaded = false
+        download.on("collect", async (interaction: ButtonInteraction) => {
+            const user = interaction.user
+            if (downloaded) return
+            downloaded = true
+            const images: string[] = []
+            for (let i = 0; i < embeds.length; i++) {
+                if (embeds[i].data.image?.url) {
+                    images.push(embeds[i].data.image?.url!)
+                }
+            }
+            const rep = await this.discord.reply(interaction, `<@${user.id}>, **Downloading the images, please wait** ${this.discord.getEmoji("kisaragiCircle")}`)
+            const rand = Math.floor(Math.random()*10000)
+            const src = path.join(__dirname, `../assets/misc/images/dump/${rand}/`)
+            const dest = path.join(__dirname, `../assets/misc/images/dump/${rand}.zip`)
+            if (!fs.existsSync(src)) fs.mkdirSync(src, {recursive: true})
+            await this.images.downloadImages(images, src)
+            const downloads = fs.readdirSync(src).map((m) => src + m)
+            await Functions.createZip(downloads, dest)
+            const stats = fs.statSync(dest)
+            if (stats.size > Functions.getMBBytes(10)) {
+                const link = await this.images.upload(dest)
+                const downloadEmbed = this.createEmbed()
+                downloadEmbed
+                .setAuthor({name: "download", iconURL: "https://cdn.discordapp.com/emojis/685894156647661579.gif"})
+                .setTitle(`**Image Download** ${this.discord.getEmoji("chinoSmug")}`)
+                .setDescription(`${this.discord.getEmoji("star")}Downloaded **${downloads.length}** images from this embed. This file is too large for attachments, download it [**here**](${link})`)
+                await this.discord.send(msg, downloadEmbed)
+            } else {
+                const cleanTitle = embeds[0].data.title?.trim().replace(/<?(a)?:?(\w{2,32}):(\d{17,19})>?/, "").trim() || "None"
+                const attachment = new AttachmentBuilder(dest, {name: `${cleanTitle}.zip`})
+                await this.discord.send(msg, `<@${user.id}>, downloaded **${downloads.length}** images from this embed.`, attachment)
+            }
+            if (rep) Functions.deferDelete(rep, 0)
+            Functions.removeDirectory(src)
+            fs.unlinkSync(dest)
+        })
+
+        let copyOn = false
+        copy.on("collect", async (interaction: ButtonInteraction) => {
+            if (copyOn) return
+            const user = interaction.user
+            if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+                const rep = await this.discord.reply(interaction, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
+                return Functions.deferDelete(rep, 3000)
+            }
+            const content = msg.embeds[0].description?.replace(/(<a:star)(.*?)(>)/g, "")
+            if (!content) return
+            const desc = await this.discord.reply(interaction, content)
+            const rep = await this.discord.send(msg, `<@${user.id}>, copy the content in this embed (Deleting in **10** seconds).`)
+            copyOn = true
+            await Functions.deferDelete(desc, 10000)
+            await Functions.deferDelete(rep, 0)
+            copyOn = false
+        })
+        return msg
+    }
+
+
+    // Re-trigger Existing Button Embed
+    public editButtonCollector = async (interaction: ButtonInteraction, embeds: EmbedBuilder[], collapseOn: boolean, downloadOn: boolean, startPage?: number) => {
+        let page = 0
+        if (startPage) page = startPage
+        await this.updateEmbed(embeds, page, this.message.author, interaction.message)
+        const description: string[] = []
+        const thumbnail: APIEmbedThumbnail[] = []
+        for (let i = 0; i < embeds.length; i++) {
+            description.push(embeds[i].data.description!)
+            thumbnail.push(embeds[i].data.thumbnail!)
+        }
+        const user = interaction.user
+        const msg = interaction.message
+        const components = interaction.message.components.map((c) => ActionRowBuilder.from<ButtonBuilder>(c as APIActionRowComponent<APIButtonComponent>))
+
+        const repostButton = new ButtonBuilder()
+            .setCustomId("repost")
+            .setEmoji(this.discord.getEmoji("repost").id)
+            .setStyle(ButtonStyle.Secondary)
+
+        const lastRow = components[components.length - 1]
+        const found = interaction.message.components.find((row) => 
+            row.components.some((component) => component.customId === "repost")
+        )
+        if (!found) lastRow.addComponents(repostButton)
+
+        switch (interaction.customId) {
+            case "right":
+                    if (page === embeds.length - 1) {
+                        page = 0
+                    } else {
+                        page++
+                    }
+                    await this.updateEmbed(embeds, page, this.message.author, msg)
+                    this.discord.edit(interaction, embeds[page], undefined, {components})
+                    break
+            case "left":
+                    if (page === 0) {
+                        page = embeds.length - 1
+                    } else {
+                        page--
+                    }
+                    await this.updateEmbed(embeds, page, this.message.author, msg)
+                    this.discord.edit(interaction, embeds[page], undefined, {components})
+                    break
+            case "tripleRight":
+                    if (page === embeds.length - 1) {
+                        page = 0
+                    } else {
+                        page++
+                    }
+                    await this.updateEmbed(embeds, page, this.message.author, msg)
+                    this.discord.edit(interaction, embeds[page], undefined, {components})
+                    break
+            case "tripleLeft":
+                    if (page === 0) {
+                        page = (embeds.length - 1) - Math.floor(embeds.length/5)
+                    } else {
+                        page -= Math.floor(embeds.length/5)
+                    }
+                    if (page < 0) page *= -1
+                    await this.updateEmbed(embeds, page, this.message.author, msg)
+                    this.discord.edit(interaction, embeds[page], undefined, {components})
+                    break
+            case "numberSelect":
+                    const rep3 = await this.discord.reply(interaction, `<@${user.id}>, The page selection function is disabled on old embeds. However, you can repost it.`)
+                    Functions.deferDelete(rep3, 3000)
+                    break
+            case "download":
+                    const images: string[] = []
+                    for (let i = 0; i < embeds.length; i++) {
+                        if (embeds[i].data.image?.url) {
+                            images.push(embeds[i].data.image?.url!)
+                        }
+                    }
+                    const rep = await this.discord.reply(interaction, `<@${user.id}>, **Downloading the images, please wait** ${this.discord.getEmoji("kisaragiCircle")}`)
+                    const rand = Math.floor(Math.random()*10000)
+                    const src = path.join(__dirname, `../assets/misc/images/dump/${rand}/`)
+                    const dest = path.join(__dirname, `../assets/misc/images/dump/${rand}.zip`)
+                    if (!fs.existsSync(src)) fs.mkdirSync(src, {recursive: true})
+                    await this.images.downloadImages(images, src)
+                    const downloads = fs.readdirSync(src).map((m) => src + m)
+                    await Functions.createZip(downloads, dest)
+                    const stats = fs.statSync(dest)
+                    if (stats.size > Functions.getMBBytes(10)) {
+                        const link = await this.images.upload(dest)
+                        const downloadEmbed = this.createEmbed()
+                        downloadEmbed
+                        .setAuthor({name: "download", iconURL: "https://cdn.discordapp.com/emojis/685894156647661579.gif"})
+                        .setTitle(`**Image Download** ${this.discord.getEmoji("chinoSmug")}`)
+                        .setDescription(`${this.discord.getEmoji("star")}Downloaded **${downloads.length}** images from this embed. This file is too large for attachments, download it [**here**](${link})`)
+                        await this.discord.send(msg, downloadEmbed)
+                    } else {
+                        const cleanTitle = embeds[0].data.title?.trim().replace(/<?(a)?:?(\w{2,32}):(\d{17,19})>?/, "").trim() || "None"
+                        const attachment = new AttachmentBuilder(dest, {name: `${cleanTitle}.zip`})
+                        await this.discord.send(msg, `<@${user.id}>, downloaded **${downloads.length}** images from this embed.`, attachment)
+                    }
+                    if (rep) Functions.deferDelete(rep, 3000)
+                    Functions.removeDirectory(src)
+                    break
+            case "copy":
+                    if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+                        const rep = await this.discord.reply(interaction, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
+                        Functions.deferDelete(rep, 3000)
+                        return
+                    }
+                    const desc = await this.discord.reply(interaction, msg.embeds[0].description?.replace(/(<a:star)(.*?)(>)/g, "") ?? "")
+                    const rep2 = await this.discord.send(msg, `<@${user.id}>, copy the content in this embed (Deleting in **10** seconds).`)
+                    await Functions.deferDelete(desc, 10000)
+                    await Functions.deferDelete(rep2, 0)
+                    break
+            case "collapse":
+                    if (embeds[0].data.description) {
+                        for (let i = 0; i < embeds.length; i++) {
+                            embeds[i].setDescription(null)
+                            embeds[i].setThumbnail(null)
+                        }
+                    } else {
+                        for (let i = 0; i < embeds.length; i++) {
+                            embeds[i].setDescription(description[i])
+                            embeds[i].setThumbnail(thumbnail[i]?.url ?? null)
+                        }
+                    }
+                    this.discord.edit(interaction, embeds[page], undefined, {components})
+                    break
+            default:
+        }
+
+        const forwardCheck = (i: ButtonInteraction) => i.customId === "right" && i.user.bot === false
+        const backwardCheck = (i: ButtonInteraction) => i.customId === "left" && i.user.bot === false
+        const tripleForwardCheck = (i: ButtonInteraction) => i.customId === "tripleRight" && i.user.bot === false
+        const tripleBackwardCheck = (i: ButtonInteraction) => i.customId === "tripleLeft" && i.user.bot === false
+        const numberSelectCheck = (i: ButtonInteraction) => i.customId === "numberSelect" && i.user.bot === false
+        const collapseCheck = (i: ButtonInteraction) => i.customId === "collapse" && i.user.bot === false
+        const downloadCheck = (i: ButtonInteraction) => i.customId === "download" && i.user.bot === false
+        const copyCheck = (i: ButtonInteraction) => i.customId === "copy" && i.user.bot === false
+        const repostCheck = (i: ButtonInteraction) => i.customId === "repost" && i.user.bot === false
+
+        const forward = msg.createMessageComponentCollector<ComponentType.Button>({filter: forwardCheck})
+        const backward = msg.createMessageComponentCollector<ComponentType.Button>({filter: backwardCheck})
+        const tripleForward = msg.createMessageComponentCollector<ComponentType.Button>({filter: tripleForwardCheck})
+        const tripleBackward = msg.createMessageComponentCollector<ComponentType.Button>({filter: tripleBackwardCheck})
+        const numberSelect = msg.createMessageComponentCollector<ComponentType.Button>({filter: numberSelectCheck})
+        const collapse = msg.createMessageComponentCollector<ComponentType.Button>({filter: collapseCheck})
+        const download = msg.createMessageComponentCollector<ComponentType.Button>({filter: downloadCheck})
+        const copy = msg.createMessageComponentCollector<ComponentType.Button>({filter: copyCheck})
+        const repost = msg.createMessageComponentCollector<ComponentType.Button>({filter: repostCheck})
+
+        backward.on("collect", async (interaction: ButtonInteraction) => {
+            if (page === 0) {
+                page = embeds.length - 1
+            } else {
+                page--
+            }
+            const user = interaction.user
+            const embed = await this.updateEmbed(embeds, page, user, msg)
+            if (embed) this.discord.edit(interaction, embed, undefined, {components})
+        })
+
+        forward.on("collect", async (interaction: ButtonInteraction) => {
+            if (page === embeds.length - 1) {
+                page = 0
+            } else {
+                page++
+            }
+            const user = interaction.user
+            const embed = await this.updateEmbed(embeds, page, user, msg)
+            if (embed) this.discord.edit(interaction, embed, undefined, {components})
+        })
+
+        tripleBackward.on("collect", async (interaction: ButtonInteraction) => {
+            if (page === 0) {
+                page = (embeds.length - 1) - Math.floor(embeds.length/5)
+            } else {
+                page -= Math.floor(embeds.length/5)
+            }
+            if (page < 0) page += embeds.length
+            const user = interaction.user
+            const embed = await this.updateEmbed(embeds, page, user, msg)
+            if (embed) this.discord.edit(interaction, embed, undefined, {components})
+        })
+
+        tripleForward.on("collect", async (interaction: ButtonInteraction) => {
+            if (page === embeds.length - 1) {
+                page = 0 + Math.floor(embeds.length/5)
+            } else {
+                page += Math.floor(embeds.length/5)
+            }
+            if (page > embeds.length - 1) page -= embeds.length
+            const user = interaction.user
+            const embed = await this.updateEmbed(embeds, page, user, msg)
+            if (embed) this.discord.edit(interaction, embed, undefined, {components})
+        })
+
+        numberSelect.on("collect", async (interaction: ButtonInteraction) => {
+            const rep3 = await this.discord.reply(interaction, `<@${user.id}>, The page selection function is disabled on old embeds. However, you can repost it.`)
+            Functions.deferDelete(rep3, 3000)
+        })
+
+        let collapsed = false
+        collapse.on("collect", async (interaction: ButtonInteraction) => {
+            if (!collapsed) {
+                for (let i = 0; i < embeds.length; i++) {
+                    embeds[i].setDescription(null)
+                    embeds[i].setThumbnail(null)
+                }
+                collapsed = true
+            } else {
+                for (let i = 0; i < embeds.length; i++) {
+                    embeds[i].setDescription(description[i])
+                    embeds[i].setThumbnail(thumbnail[i]?.url ?? null)
+                }
+                collapsed = false
+            }
+            const user = interaction.user
+            const embed = await this.updateEmbed(embeds, page, user)
+            if (embed) this.discord.edit(interaction, embed, undefined, {components})
+        })
+
+        let downloaded = false
+        download.on("collect", async (interaction: ButtonInteraction) => {
+            const user = interaction.user
+            if (downloaded) return
+            downloaded = true
+            const images: string[] = []
+            for (let i = 0; i < embeds.length; i++) {
+                if (embeds[i].data.image?.url) {
+                    images.push(embeds[i].data.image?.url!)
+                }
+            }
+            const rep = await this.discord.reply(interaction, `<@${user.id}>, **Downloading the images, please wait** ${this.discord.getEmoji("kisaragiCircle")}`)
+            const rand = Math.floor(Math.random()*10000)
+            const src = path.join(__dirname, `../assets/misc/images/dump/${rand}/`)
+            const dest = path.join(__dirname, `../assets/misc/images/dump/${rand}.zip`)
+            if (!fs.existsSync(src)) fs.mkdirSync(src, {recursive: true})
+            await this.images.downloadImages(images, src)
+            const downloads = fs.readdirSync(src).map((m) => src + m)
+            await Functions.createZip(downloads, dest)
+            const stats = fs.statSync(dest)
+            if (stats.size > Functions.getMBBytes(10)) {
+                const link = await this.images.upload(dest)
+                const downloadEmbed = this.createEmbed()
+                downloadEmbed
+                .setAuthor({name: "download", iconURL: "https://cdn.discordapp.com/emojis/685894156647661579.gif"})
+                .setTitle(`**Image Download** ${this.discord.getEmoji("chinoSmug")}`)
+                .setDescription(`${this.discord.getEmoji("star")}Downloaded **${downloads.length}** images from this embed. This file is too large for attachments, download it [**here**](${link})`)
+                await this.discord.send(msg, downloadEmbed)
+            } else {
+                const cleanTitle = embeds[0].data.title?.trim().replace(/<?(a)?:?(\w{2,32}):(\d{17,19})>?/, "").trim() || "None"
+                const attachment = new AttachmentBuilder(dest, {name: `${cleanTitle}.zip`})
+                await this.discord.send(msg, `<@${user.id}>, downloaded **${downloads.length}** images from this embed.`, attachment)
+            }
+            if (rep) Functions.deferDelete(rep, 0)
+            Functions.removeDirectory(src)
+            fs.unlinkSync(dest)
+        })
+
+        let copyOn = false
+        copy.on("collect", async (interaction: ButtonInteraction) => {
+            if (copyOn) return
+            const user = interaction.user
+            if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+                const rep = await this.discord.reply(interaction, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
+                return Functions.deferDelete(rep, 3000)
+            }
+            const content = msg.embeds[0].description?.replace(/(<a:star)(.*?)(>)/g, "")
+            if (!content) return
+            const desc = await this.discord.reply(interaction, content)
+            const rep = await this.discord.send(msg, `<@${user.id}>, copy the content in this embed (Deleting in **10** seconds).`)
+            copyOn = true
+            await Functions.deferDelete(desc, 10000)
+            await Functions.deferDelete(rep, 0)
+            copyOn = false
+        })
+
+        repost.on("collect", async (interaction: ButtonInteraction) => {
+            await this.discord.send(msg, `<@${user.id}>, I reposted this embed.`)
+            await this.createButtonEmbed(embeds, collapseOn, downloadOn)
         })
     }
 

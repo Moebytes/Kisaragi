@@ -51,7 +51,7 @@
     "chalk": "^5.4.1",
     "cheerio": "^1.0.0",
     "deviantart.ts": "^0.2.9",
-    "discord.js": "^14.17.3",
+    "discord.js": "^14.18.0",
     "discord.js-minesweeper": "^1.1.0",
     "dotenv": "^16.4.7",
     "emoji-regex": "^10.4.0",

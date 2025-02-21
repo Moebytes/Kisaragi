@@ -152,7 +152,7 @@ export class SQLQuery {
   }
 
   /** Fetch column */
-  public fetchColumn = async (table: string, column: string, key?: string | boolean, value?: string | boolean, update?: boolean): Promise<any> => {
+  public fetchColumn = async (table: string, column: string, key?: string | boolean, value?: string | boolean): Promise<any> => {
     const query: QueryArrayConfig = key ? {
       text: `SELECT "${column}" FROM "${table}" WHERE "${key}" = $1`,
       rowMode: "array",

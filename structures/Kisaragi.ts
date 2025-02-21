@@ -1,7 +1,8 @@
 import axios from "axios"
 import {MessagePayload, ChannelType, Client, ClientOptions, Guild, Collection, GuildBasedChannel, MessageFlags,
 ApplicationEmoji, GuildEmoji, Message, MessageTarget, Role, TextChannel, User, PartialMessage, AttachmentBuilder,
-EmbedBuilder, GuildMember, ChatInputCommandInteraction, MessageReplyOptions, SendableChannels, ContextMenuCommandInteraction} from "discord.js"
+EmbedBuilder, GuildMember, ChatInputCommandInteraction, MessageReplyOptions, SendableChannels, ContextMenuCommandInteraction, 
+ButtonInteraction, InteractionReplyOptions} from "discord.js"
 import querystring from "querystring"
 import muted from "../assets/json/muted.json"
 import {Command} from "../structures/Command"
@@ -13,8 +14,9 @@ import {SQLQuery} from "./SQLQuery"
 export class Kisaragi extends Client {
     public readonly categories = new Set<string>()
     public readonly commands: Collection<string, Command> = new Collection()
-    public deferState = new Set<string>()
     public readonly cooldowns: Collection<string, Collection<string, number>> = new Collection()
+    public readonly deferState = new Set<string>()
+    public readonly activeEmbeds = new Set<string>()
     public static ignoreDelete = new Set<string>()
     public static username = "Kisaragi"
     public static pfp = "https://cdn.discordapp.com/avatars/593838271650332672/78ec2f4a3d4ab82a40791cb522cf36f5.png?size=2048"
@@ -36,9 +38,20 @@ export class Kisaragi extends Client {
     }
 
     /** Reply or follow up depending on defer state */
-    public reply = (input: Message | ChatInputCommandInteraction | ContextMenuCommandInteraction, 
+    public reply = async (input: Message | ChatInputCommandInteraction | ContextMenuCommandInteraction | ButtonInteraction, 
     embeds: EmbedBuilder | EmbedBuilder[] | string, files?: AttachmentBuilder | AttachmentBuilder[], 
     opts?: MessageReplyOptions) => {
+        if (!(input instanceof Message)) {
+            // patch interaction reply to support string and return a message
+            // @ts-expect-error
+            input.reply = ((originalReply) => {
+                return async function (options: InteractionReplyOptions) {
+                    if (typeof options === "string") options = {content: options}
+                    await originalReply.call(this, {withResponse: true,  ...options})
+                    return input.fetchReply()
+                }
+            })(input.reply)
+        }
         let options = {...opts} as any
         if (Array.isArray(embeds)) {
             options.embeds = embeds
@@ -57,6 +70,7 @@ export class Kisaragi extends Client {
             }
         }
         if (!this.deferState.has(input.id)) this.deferState.add(input.id)
+        // @ts-expect-error
         return input.reply(options) as Promise<Message<true>>
     }
 
@@ -73,9 +87,9 @@ export class Kisaragi extends Client {
     }
     
     /** Send message to a channel */
-    public send = (input: Message, embeds: EmbedBuilder | EmbedBuilder[] | string, 
+    public send = (input: Message | ChatInputCommandInteraction | ContextMenuCommandInteraction, embeds: EmbedBuilder | EmbedBuilder[] | string, 
         files?: AttachmentBuilder | AttachmentBuilder[], opts?: MessageReplyOptions) => {
-        if (!input.channel.isSendable()) return Promise.resolve(input)
+        if (!input.channel?.isSendable()) return Promise.resolve(input as Message)
         if (!input.channel) return this.reply(input, embeds, files, opts)
         return this.channelSend(input.channel, embeds, files, opts)
     }
@@ -111,7 +125,7 @@ export class Kisaragi extends Client {
     }
 
     /** Edit message */
-    public edit = (msg: Message, embeds: EmbedBuilder | EmbedBuilder[] | string, 
+    public edit = (msg: Message | ButtonInteraction, embeds: EmbedBuilder | EmbedBuilder[] | string, 
         files?: AttachmentBuilder | AttachmentBuilder[], opts?: MessageReplyOptions) => {
         let options = {...opts} as any
         if (Array.isArray(embeds)) {
@@ -122,7 +136,11 @@ export class Kisaragi extends Client {
           options.content = embeds
         }
         if (files) options.files = Array.isArray(files) ? files : [files]
-        return msg.edit(options)
+        if (msg instanceof Message) {
+            return msg.edit(options)
+        } else {
+            return msg.update(options)
+        }
     }
 
     /** Display avatar */ 
@@ -301,9 +319,8 @@ export class Kisaragi extends Client {
 
     /** Stops responding if the user is blacklisted. */
     public blacklistStop = async (msg: Message) => {
-        const sql = new SQLQuery(msg)
         const blacklists = await SQLQuery.selectColumn("blacklist", "user id")
-        const found = blacklists.find((u) => String(u) === msg.author.id)
+        const found = blacklists.find((u: string) => String(u) === msg.author.id)
         if (found) {
             return true
         } else {
@@ -414,5 +431,27 @@ export class Kisaragi extends Client {
 
     public assertReplyStatus = () => {
         return this.replyStatus === "fulfilled"
+    }
+
+    public checkSufficientPermissions = (message: Message) => {
+        const embeds = new Embeds(this, message)
+        if (message.guild && !(message.channel as TextChannel).permissionsFor(message.guild.members.me!)?.has(["SendMessages", "ReadMessageHistory", "AddReactions", "EmbedLinks", "AttachFiles"])) {
+            let setEmbed = false
+            if ((message.channel as TextChannel).permissionsFor(message.guild.members.me!)?.has(["EmbedLinks"])) setEmbed = true
+            const permMessage =
+              `Sorry but the bot is missing permissions that break or prevent the execution of most commands.${setEmbed ? "" : " " + this.getEmoji("kannaFacepalm").toString()}\n` +
+              `\`Send Messages\` - Needed for everything? If you can see this message, the bot has this one at least.\n` +
+              `\`Embed Links\` - Needed to post message embeds.\n` +
+              `\`Add Reactions + Read Message History\` - Needed to add reactions.\n` +
+              `\`Attach Files\` - Needed to upload attachments.\n` +
+              `Please give the bot sufficient permissions.`
+            const permEmbed = embeds.createEmbed()
+            permEmbed
+            .setTitle(`**Missing Permissions** ${this.getEmoji("kannaFacepalm")}`)
+            .setDescription(permMessage)
+            setEmbed ? this.send(message, permEmbed) : this.send(message, permMessage)
+            return false
+        }
+        return true
     }
 }

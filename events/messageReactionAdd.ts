@@ -46,8 +46,6 @@ export default class MessageReactionAdd {
                             embeds.editReactionCollector(reaction.message as Message, reaction.emoji.name!, user, newEmbeds, Boolean(collapse), Boolean(download), Number(page))
                         }
                     }
-                } else {
-                    return
                 }
             }
         }

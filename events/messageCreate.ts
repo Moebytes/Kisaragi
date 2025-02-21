@@ -28,15 +28,7 @@ export default class MessageCreate {
 
     public run = async (message: Message) => {
       const discord = this.discord
-      if (message.partial) {
-        try {
-          message = await message.fetch()
-        } catch (e) {
-          console.log(e)
-          return
-        }
-      }
-
+      if (message.partial) message = await message.fetch()
       const letters = new Letters(this.discord)
       const points = new Points(this.discord, message)
       const haiku = new Haiku(this.discord, message)
@@ -177,7 +169,7 @@ export default class MessageCreate {
 
       if (!message.content.trim().startsWith(prefix)) return
       if (message.content.trim() === prefix) return
-      const args = message.content.trim().slice(prefix.length).trim().split(/ +/g)
+      const args = message.content.trim().slice(prefix.length).split(/ +/g)
       if (args[0] === undefined) return
       const cmd = args[0].toLowerCase()
       const command = cmdFunctions.findCommand(cmd)
@@ -186,27 +178,9 @@ export default class MessageCreate {
       if (command.options.premium && !perms.checkPremium()) return
       command.message = message
 
+      if (!discord.checkSufficientPermissions(message)) return
       if (command.options.guildOnly) {
-        // @ts-ignore
         if (message.channel.type === ChannelType.DM) return this.discord.send(message, `<@${message.author.id}>, sorry but you can only use this command in guilds. ${this.discord.getEmoji("smugFace")}`)
-      }
-
-      if (message.guild && !(message.channel as TextChannel).permissionsFor(message.guild.members.me!)?.has(["SendMessages", "ReadMessageHistory", "AddReactions", "EmbedLinks", "AttachFiles", "UseExternalEmojis", "Connect", "Speak"])) {
-        let setEmbed = false
-        if ((message.channel as TextChannel).permissionsFor(message.guild.members.me!)?.has(["EmbedLinks"])) setEmbed = true
-        const permMessage =
-          `Sorry, but the bot is missing permissions that break or prevent the execution of most commands.${setEmbed ? "" : " " + this.discord.getEmoji("kannaFacepalm").toString()}\n` +
-          `\`Send Messages\` - Needed for... everything? If you can see this message, the bot has this one at least.\n` +
-          `\`Use External Emojis\` - Needed to post and react with custom emojis.\n` +
-          `\`Embed Links\` - Needed to post message embeds.\n` +
-          `\`Add Reactions + Read Message History\` - Needed to add reactions messages.\n` +
-          `\`Attach Files\` - Needed to upload attachments.\n` +
-          `Please give the bot sufficient permissions.`
-        const permEmbed = embeds.createEmbed()
-        permEmbed
-        .setTitle(`**Missing Permissions** ${this.discord.getEmoji("kannaFacepalm")}`)
-        .setDescription(permMessage)
-        return setEmbed ? this.discord.send(message, permEmbed) : this.discord.send(message, permMessage)
       }
 
       const disabledCategories = await sql.fetchColumn("guilds", "disabled categories")
@@ -214,12 +188,12 @@ export default class MessageCreate {
         return this.discord.reply(message, `Sorry, commands in the category **${command.category}** were disabled on this server. ${this.discord.getEmoji("mexShrug")}`)
       }
 
-      sql.usageStatistics(command.path)
       const cooldown = new Cooldown(this.discord, message)
       const onCooldown = cooldown.cmdCooldown(command.name, command.options.cooldown)
       if (onCooldown && (message.author?.id !== process.env.OWNER_ID)) return this.discord.reply(message, onCooldown)
       if (command.options.unlist && message.author.id !== process.env.OWNER_ID) return this.discord.reply(message, `Only the bot developer can use commands not listed on the help command. ${this.discord.getEmoji("sagiriBleh")}`)
 
+      sql.usageStatistics(command.path)
       this.discord.muted = false
       const msg = await this.discord.send(message, `**Loading** ${this.discord.getEmoji("kisaragiCircle")}`) as Message
       this.discord.muted = this.discord.checkMuted(message)
