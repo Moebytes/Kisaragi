@@ -659,7 +659,7 @@
     {
         "command": "pickle",
         "category": "fun",
-        "description": "Posts your pickle size null",
+        "description": "Posts your pickle size",
         "help": "_Note:_ The sizes are seeded and won't change null\npickle - Gets your pickle size.\npickle @user - Gets the pickle size of the user.",
         "aliases": "pp, peepee, hotdog, dong, cock, dick, penis, sausage, fun stick, schlong, willy, ding dong, peen, meat stick",
         "examples": "=>pickle",
@@ -726,6 +726,15 @@
         "help": "azurlane - Gets some handpicked girls.\nazurlane shipgirl - Gets information on the shipgirl.",
         "aliases": "al",
         "examples": "=>azurlane kisaragi\n=>azurlane laffey",
+        "cooldown": 10
+    },
+    {
+        "command": "bluearchive",
+        "category": "game",
+        "description": "Searches for a blue archive character.",
+        "help": "bluearchive - Gets some picked characters.\nbluearchive character - Gets information on the character.",
+        "aliases": "ba",
+        "examples": "=>bluearchive shiroko\n=>bluearchive hoshino",
         "cooldown": 10
     },
     {
@@ -1023,7 +1032,7 @@
         "help": "waifu2x - Upscales the first image found above\nwaifu2x url - Upscales the image from the url\nwaifu2x cugan url? - Changes the upscaler to real-cugan\nwaifu2x esrgan url? - Changes the upscaler to real-esrgan\nwaifu2x anime4k url? - Changes the upscaler to anime4k",
         "aliases": "2x",
         "examples": "=>waifu2x",
-        "cooldown": 30
+        "cooldown": 60
     },
     {
         "command": "avatar",
@@ -2565,6 +2574,15 @@
         "cooldown": 15
     },
     {
+        "command": "anilist",
+        "category": "website",
+        "description": "Searches for anime and manga on anilist.",
+        "help": "anilist query - Searches for anime matching the query\nanilist manga query - Searches for manga with the query\nanilist user name - Gets an anilist user profile",
+        "aliases": "animelist",
+        "examples": "=>anilist eromanga sensei",
+        "cooldown": 10
+    },
+    {
         "command": "bandcamp",
         "category": "website",
         "description": "Searches for artists, tracks, and albums on bandcamp.",
@@ -2612,7 +2630,7 @@
     {
         "command": "mal",
         "category": "website",
-        "description": "Searches for anime, characters, and users on my anime list.",
+        "description": "Searches for anime, characters, and users on myanimelist.",
         "help": "mal - Gets the top anime\nmal query - Searches for anime matching the query\nmal character query - Searches for characters with the query\nmal user query - Searches for users matching the query",
         "aliases": "myanimelist",
         "examples": "=>mal gabriel dropout\n=>mal satania",
