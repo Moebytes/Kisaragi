@@ -40,8 +40,9 @@ export default class Changelog extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
 
-        // {num: 1, date: "", changes: ""},
         const changelog = [
+            {num: 39, date: "2/21/2025", changes: "Added \`bluearchive\` and \`anilist\` commands."},
+            {num: 38, date: "2/18/2025", changes: "Added support for slash commands, context menu commands and user installs. Bot is back online."},
             {num: 37, date: "6/10/2020", changes: "Added \`source\` to automatically search pictures in certain channels on saucenao."},
             {num: 36, date: "5/6/2020", changes: "Added a new copy reaction. The \`emojis\` command was modified to return just the emojis by default."},
             {num: 35, date: "5/3/2020", changes: "Added \`gallery\` and revamped the moderation case system."},

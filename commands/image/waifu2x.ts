@@ -1,6 +1,8 @@
 import axios from "axios"
-import {AttachmentBuilder, Message} from "discord.js"
-import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
+import {Message, AttachmentBuilder, ContextMenuCommandInteraction, ModalBuilder,
+TextInputBuilder, TextInputStyle, ActionRowBuilder, ModalActionRowComponentBuilder,
+ModalSubmitInteraction} from "discord.js"
+import {SlashCommandSubcommand, SlashCommandOption, ContextMenuCommand} from "../../structures/SlashCommandOption"
 import * as fs from "fs"
 import * as path from "path"
 import waifu2x from "waifu2x"
@@ -28,7 +30,8 @@ export default class Waifu2x extends Command {
             cooldown: 60,
             premium: true,
             defer: true,
-            subcommandEnabled: true
+            subcommandEnabled: true,
+            contextEnabled: false
         })
         const urlOption = new SlashCommandOption()
             .setType("string")
@@ -45,6 +48,11 @@ export default class Waifu2x extends Command {
             .setDescription(this.options.description)
             .addOption(upscalerOption)
             .addOption(urlOption)
+
+        this.context = new ContextMenuCommand()
+            .setName(this.constructor.name)
+            .setType("message")
+            .toJSON()
     }
 
     public run = async (args: string[]) => {
@@ -55,8 +63,29 @@ export default class Waifu2x extends Command {
         let upscaler = "waifu2x"
         let scale = 2
         let lastAttachment = ""
-        if (args[1]) {
-            switch (args[1]) {
+        let input = args[1]
+        if (message instanceof ContextMenuCommandInteraction) {
+            const interaction = message as ContextMenuCommandInteraction
+            const modal = new ModalBuilder()
+                .setCustomId("waifu2x-modal")
+                .setTitle("Waifu2x")
+
+            const upscalerInput = new TextInputBuilder()
+                .setCustomId("upscaler-input")
+                .setLabel("Upscaler:")
+                .setStyle(TextInputStyle.Short)
+
+            const actionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(upscalerInput)
+            modal.addComponents(actionRow)
+            await interaction.showModal(modal)
+            const filter = (interaction: ModalSubmitInteraction) => interaction.customId === "waifu2x-modal"
+            const modalSubmit = await interaction.awaitModalSubmit({filter, time: 600000})
+
+            input = modalSubmit.fields.getTextInputValue("upscaler-input").trim()
+            this.message = modalSubmit as any
+        }
+        if (input) {
+            switch (input) {
                 case "waifu2x":
                     break
                 case "cugan":
@@ -75,12 +104,18 @@ export default class Waifu2x extends Command {
                     lastAttachment = args[2] ? args[2] : ""
                     break
                 default:
-                    lastAttachment = args[1]
+                    lastAttachment = ""
             }
         }
 
         if (!lastAttachment) {
-            lastAttachment = await discord.fetchLastAttachment(message) as string
+            let messageID = args[1].match(/\d{10,}/)?.[0] || ""
+            if (messageID) {
+                const msg = await message.channel.messages.fetch(messageID)
+                lastAttachment = msg.attachments.first()?.url as string
+            } else {
+                lastAttachment = await discord.fetchLastAttachment(message) as string
+            }
             if (!lastAttachment) return this.reply("You must post an image first!")
         }
 

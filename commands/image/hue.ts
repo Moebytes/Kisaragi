@@ -1,5 +1,7 @@
-import {Message, AttachmentBuilder} from "discord.js"
-import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
+import {Message, AttachmentBuilder, ContextMenuCommandInteraction, ModalBuilder,
+TextInputBuilder, TextInputStyle, ActionRowBuilder, ModalActionRowComponentBuilder,
+ModalSubmitInteraction} from "discord.js"
+import {SlashCommandSubcommand, SlashCommandOption, ContextMenuCommand} from "../../structures/SlashCommandOption"
 import sharp from "sharp"
 import {Command} from "../../structures/Command"
 import {Embeds} from "./../../structures/Embeds"
@@ -22,7 +24,8 @@ export default class Hue extends Command {
           aliases: ["spin"],
           cooldown: 10,
           defer: true,
-          subcommandEnabled: true
+          subcommandEnabled: true,
+          contextEnabled: false
         })
         const urlOption = new SlashCommandOption()
             .setType("string")
@@ -40,6 +43,11 @@ export default class Hue extends Command {
             .setDescription(this.options.description)
             .addOption(shiftOption)
             .addOption(urlOption)
+
+        this.context = new ContextMenuCommand()
+            .setName(this.constructor.name)
+            .setType("message")
+            .toJSON()
     }
 
     public run = async (args: string[]) => {
@@ -47,11 +55,38 @@ export default class Hue extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         let url: string | undefined
-        const shift = Number(args[1]) ? Number(args[1]) : 0
+        let shift = Number(args[1]) ? Number(args[1]) : 0
         if (args[2]) {
             url = args[2]
         } else {
-            url = await discord.fetchLastAttachment(message)
+            let messageID = args[1].match(/\d{10,}/)?.[0] || ""
+            if (messageID) {
+                const msg = await message.channel.messages.fetch(messageID)
+                url = msg.attachments.first()?.url
+            } else {
+                url = await discord.fetchLastAttachment(message)
+            }
+        }
+        if (message instanceof ContextMenuCommandInteraction) {
+            const interaction = message as ContextMenuCommandInteraction
+            const modal = new ModalBuilder()
+                .setCustomId("hue-modal")
+                .setTitle("Hue")
+
+            const shiftInput = new TextInputBuilder()
+                .setCustomId("shift-input")
+                .setLabel("Shift:")
+                .setStyle(TextInputStyle.Short)
+
+            const actionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(shiftInput)
+            modal.addComponents(actionRow)
+            await interaction.showModal(modal)
+            const filter = (interaction: ModalSubmitInteraction) => interaction.customId === "hue-modal"
+            const modalSubmit = await interaction.awaitModalSubmit({filter, time: 600000})
+
+            const shiftField = modalSubmit.fields.getTextInputValue("shift-input").trim()
+            shift = shiftField ? Number(shiftField) : 0
+            this.message = modalSubmit as any
         }
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
         const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())

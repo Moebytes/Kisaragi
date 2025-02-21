@@ -1,5 +1,5 @@
 import {ChatInputCommandInteraction, Message, GuildMember} from "discord.js"
-import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
+import {SlashCommandSubcommand, SlashCommandOption, ContextMenuCommand} from "../../structures/SlashCommandOption"
 import {Command} from "../../structures/Command"
 import {Embeds} from "../../structures/Embeds"
 import {Functions} from "../../structures/Functions"
@@ -21,7 +21,8 @@ export default class Avatar extends Command {
           aliases: ["av"],
           random: "none",
           cooldown: 5,
-          subcommandEnabled: true
+          subcommandEnabled: true,
+          contextEnabled: true
         })
         const userOption = new SlashCommandOption()
             .setType("mentionable")
@@ -32,6 +33,11 @@ export default class Avatar extends Command {
             .setName(this.constructor.name.toLowerCase())
             .setDescription(this.options.description)
             .addOption(userOption)
+        
+        this.context = new ContextMenuCommand()
+          .setName(this.constructor.name)
+          .setType("user")
+          .toJSON()
     }
 
     public run = async (args: string[]) => {

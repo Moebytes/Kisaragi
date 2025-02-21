@@ -1,5 +1,7 @@
-import {Message, AttachmentBuilder} from "discord.js"
-import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
+import {Message, AttachmentBuilder, ContextMenuCommandInteraction, ModalBuilder,
+TextInputBuilder, TextInputStyle, ActionRowBuilder, ModalActionRowComponentBuilder,
+ModalSubmitInteraction} from "discord.js"
+import {SlashCommandSubcommand, SlashCommandOption, ContextMenuCommand} from "../../structures/SlashCommandOption"
 import sharp from "sharp"
 import {Command} from "../../structures/Command"
 import {Embeds} from "./../../structures/Embeds"
@@ -23,7 +25,8 @@ export default class Crop extends Command {
           aliases: [],
           cooldown: 10,
           defer: true,
-          subcommandEnabled: true
+          subcommandEnabled: true,
+          contextEnabled: false
         })
         const urlOption = new SlashCommandOption()
             .setType("string")
@@ -61,6 +64,11 @@ export default class Crop extends Command {
             .addOption(widthOption)
             .addOption(heightOption)
             .addOption(urlOption)
+
+        this.context = new ContextMenuCommand()
+            .setName(this.constructor.name)
+            .setType("message")
+            .toJSON()
     }
 
     public run = async (args: string[]) => {
@@ -68,14 +76,20 @@ export default class Crop extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         let url: string | undefined
-        const x = Number(args[1]) ? Number(args[1]) : 0
-        const y = Number(args[2]) ? Number(args[2]) : 0
+        let x = Number(args[1]) ? Number(args[1]) : 0
+        let y = Number(args[2]) ? Number(args[2]) : 0
         if (args[5]) {
             url = args[5]
         } else if (args[4] && Number.isNaN(Number(args[4]))) {
             url = args[4]
         } else {
-            url = await discord.fetchLastAttachment(message)
+            let messageID = args[1].match(/\d{10,}/)?.[0] || ""
+            if (messageID) {
+                const msg = await message.channel.messages.fetch(messageID)
+                url = msg.attachments.first()?.url
+            } else {
+                url = await discord.fetchLastAttachment(message)
+            }
         }
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
         const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())
@@ -84,6 +98,52 @@ export default class Crop extends Command {
         let height = args[4] ? Number(args[4]) : Math.floor(metadata.height! / (metadata.width! / width * 1.0))
         if (width > metadata.width!) width = metadata.width!
         if (height > metadata.height!) height = metadata.height!
+        if (message instanceof ContextMenuCommandInteraction) {
+            const interaction = message as ContextMenuCommandInteraction
+            const modal = new ModalBuilder()
+                .setCustomId("crop-modal")
+                .setTitle("Crop")
+
+            const xInput = new TextInputBuilder()
+                .setCustomId("x-input")
+                .setLabel("X:")
+                .setStyle(TextInputStyle.Short)
+
+            const yInput = new TextInputBuilder()
+                .setCustomId("y-input")
+                .setLabel("Y:")
+                .setStyle(TextInputStyle.Short)
+            
+            const widthInput = new TextInputBuilder()
+                .setCustomId("width-input")
+                .setLabel("Width:")
+                .setStyle(TextInputStyle.Short)
+
+            const heightInput = new TextInputBuilder()
+                .setCustomId("height-input")
+                .setLabel("Height:")
+                .setStyle(TextInputStyle.Short)
+
+            const actionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(xInput)
+            const actionRow2 = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(yInput)
+            const actionRow3 = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(widthInput)
+            const actionRow4 = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(heightInput)
+            modal.addComponents(actionRow, actionRow2, actionRow3, actionRow4)
+            await interaction.showModal(modal)
+            const filter = (interaction: ModalSubmitInteraction) => interaction.customId === "crop-modal"
+            const modalSubmit = await interaction.awaitModalSubmit({filter, time: 600000})
+
+            const xField = modalSubmit.fields.getTextInputValue("x-input").trim()
+            const yField = modalSubmit.fields.getTextInputValue("y-input").trim()
+            const widthField = modalSubmit.fields.getTextInputValue("width-input").trim()
+            const heightField = modalSubmit.fields.getTextInputValue("height-input").trim()
+
+            x = xField ? Number(xField) : 0
+            y = yField ? Number(yField) : 0
+            width = widthField ? Number(widthField) : width
+            height = heightField ? Number(heightField) : height
+            this.message = modalSubmit as any
+        }
         const buffer = await sharp(arrayBuffer, {limitInputPixels: false})
         .extract({left: x, top: y, width, height})
         .toBuffer()

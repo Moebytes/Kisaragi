@@ -13,8 +13,9 @@ import {
 	InteractionContextType,
 	ApplicationIntegrationType,
 	SlashCommandBuilder,
-	ChatInputCommandInteraction,
-	UserContextMenuCommandInteraction
+	ContextMenuCommandBuilder,
+	ApplicationCommandType,
+	ContextMenuCommandType
 } from "discord.js"
 
 type SlashCommandOptionType =
@@ -196,6 +197,29 @@ export class SlashCommandOption {
 				return new SlashCommandUserOption() as ApplicationCommandOptionTypeMap<OptionType>
 			default:
 				throw new Error(`Unsupported option type: ${type}`)
+		}
+	}
+}
+
+export class ContextMenuCommand extends ContextMenuCommandBuilder {
+	public constructor() {
+		super()
+		this.setContexts(InteractionContextType.Guild, InteractionContextType.BotDM, InteractionContextType.PrivateChannel)
+		this.setIntegrationTypes(ApplicationIntegrationType.GuildInstall, ApplicationIntegrationType.UserInstall)
+	}
+
+	public override setType = (type: "user" | "message" | ApplicationCommandType) => {
+		switch (type) {
+			case ApplicationCommandType.Message:
+				return super.setType(ApplicationCommandType.Message)
+			case ApplicationCommandType.User:
+				return super.setType(ApplicationCommandType.User) 
+			case "message":
+				return super.setType(ApplicationCommandType.Message)
+			case "user":
+				return super.setType(ApplicationCommandType.User)
+			default:
+				throw new Error(`Unsupported type: ${type}`)
 		}
 	}
 }

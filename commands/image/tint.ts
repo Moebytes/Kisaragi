@@ -1,5 +1,7 @@
-import {Message, AttachmentBuilder} from "discord.js"
-import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
+import {Message, AttachmentBuilder, ContextMenuCommandInteraction, ModalBuilder,
+TextInputBuilder, TextInputStyle, ActionRowBuilder, ModalActionRowComponentBuilder,
+ModalSubmitInteraction} from "discord.js"
+import {SlashCommandSubcommand, SlashCommandOption, ContextMenuCommand} from "../../structures/SlashCommandOption"
 import {Jimp as jimp, JimpMime} from "jimp"
 import sharp from "sharp"
 import {Command} from "../../structures/Command"
@@ -23,7 +25,8 @@ export default class Tint extends Command {
           aliases: ["colorize", "photofilter"],
           cooldown: 10,
           defer: true,
-          subcommandEnabled: true
+          subcommandEnabled: true,
+          contextEnabled: false
         })
         const urlOption = new SlashCommandOption()
             .setType("string")
@@ -41,6 +44,11 @@ export default class Tint extends Command {
             .setDescription(this.options.description)
             .addOption(colorOption)
             .addOption(urlOption)
+
+        this.context = new ContextMenuCommand()
+            .setName(this.constructor.name)
+            .setType("message")
+            .toJSON()
     }
 
     public run = async (args: string[]) => {
@@ -48,11 +56,38 @@ export default class Tint extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         let url: string | undefined
-        const color = args[1] ? args[1] : "#ff0fd3"
+        let color = args[1] ? args[1] : "#ff0fd3"
         if (args[2]) {
             url = args[2]
         } else {
-            url = await discord.fetchLastAttachment(message)
+            let messageID = args[1].match(/\d{10,}/)?.[0] || ""
+            if (messageID) {
+                const msg = await message.channel.messages.fetch(messageID)
+                url = msg.attachments.first()?.url
+            } else {
+                url = await discord.fetchLastAttachment(message)
+            }
+        }
+        if (message instanceof ContextMenuCommandInteraction) {
+            const interaction = message as ContextMenuCommandInteraction
+            const modal = new ModalBuilder()
+                .setCustomId("tint-modal")
+                .setTitle("Tint")
+
+            const colorInput = new TextInputBuilder()
+                .setCustomId("color-input")
+                .setLabel("Color:")
+                .setStyle(TextInputStyle.Short)
+
+            const actionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(colorInput)
+            modal.addComponents(actionRow)
+            await interaction.showModal(modal)
+            const filter = (interaction: ModalSubmitInteraction) => interaction.customId === "tint-modal"
+            const modalSubmit = await interaction.awaitModalSubmit({filter, time: 600000})
+
+            const colorField = modalSubmit.fields.getTextInputValue("color-input").trim()
+            color = colorField ? colorField : "#ff0fd3"
+            this.message = modalSubmit as any
         }
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
         const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())

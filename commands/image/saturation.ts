@@ -1,5 +1,7 @@
-import {Message, AttachmentBuilder} from "discord.js"
-import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
+import {Message, AttachmentBuilder, ContextMenuCommandInteraction, ModalBuilder,
+TextInputBuilder, TextInputStyle, ActionRowBuilder, ModalActionRowComponentBuilder,
+ModalSubmitInteraction} from "discord.js"
+import {SlashCommandSubcommand, SlashCommandOption, ContextMenuCommand} from "../../structures/SlashCommandOption"
 import sharp from "sharp"
 import {Command} from "../../structures/Command"
 import {Embeds} from "../../structures/Embeds"
@@ -24,7 +26,8 @@ export default class Saturation extends Command {
           aliases: ["saturate", "desaturate"],
           cooldown: 10,
           defer: true,
-          subcommandEnabled: true
+          subcommandEnabled: true,
+          contextEnabled: true
         })
         const urlOption = new SlashCommandOption()
             .setType("string")
@@ -42,6 +45,11 @@ export default class Saturation extends Command {
             .setDescription(this.options.description)
             .addOption(factorOption)
             .addOption(urlOption)
+
+        this.context = new ContextMenuCommand()
+            .setName(this.constructor.name)
+            .setType("message")
+            .toJSON()
     }
 
     public run = async (args: string[]) => {
@@ -53,7 +61,34 @@ export default class Saturation extends Command {
         if (args[2]) {
             url = args[2]
         } else {
-            url = await discord.fetchLastAttachment(message)
+            let messageID = args[1].match(/\d{10,}/)?.[0] || ""
+            if (messageID) {
+                const msg = await message.channel.messages.fetch(messageID)
+                url = msg.attachments.first()?.url
+            } else {
+                url = await discord.fetchLastAttachment(message)
+            }
+        }
+        if (message instanceof ContextMenuCommandInteraction) {
+            const interaction = message as ContextMenuCommandInteraction
+            const modal = new ModalBuilder()
+                .setCustomId("saturation-modal")
+                .setTitle("Saturation")
+
+            const factorInput = new TextInputBuilder()
+                .setCustomId("factor-input")
+                .setLabel("Amount:")
+                .setStyle(TextInputStyle.Short)
+
+            const actionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(factorInput)
+            modal.addComponents(actionRow)
+            await interaction.showModal(modal)
+            const filter = (interaction: ModalSubmitInteraction) => interaction.customId === "saturation-modal"
+            const modalSubmit = await interaction.awaitModalSubmit({filter, time: 600000})
+
+            const factorField = modalSubmit.fields.getTextInputValue("factor-input").trim()
+            value = factorField ? Number(factorField) : 0
+            this.message = modalSubmit as any
         }
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
         let newValue = Functions.transformRange(value, -100, 100, 0, 2)

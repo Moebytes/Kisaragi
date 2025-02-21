@@ -1,4 +1,4 @@
-import {GuildEmoji, ApplicationEmoji, Message, SlashCommandSubcommandBuilder} from "discord.js"
+import {GuildEmoji, ApplicationEmoji, Message} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
 import {Command} from "../../structures/Command"
 import {Kisaragi} from "./../../structures/Kisaragi"

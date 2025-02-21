@@ -1,5 +1,7 @@
-import {Message, AttachmentBuilder} from "discord.js"
-import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
+import {Message, AttachmentBuilder, ContextMenuCommandInteraction, ModalBuilder,
+TextInputBuilder, TextInputStyle, ActionRowBuilder, ModalActionRowComponentBuilder,
+ModalSubmitInteraction} from "discord.js"
+import {SlashCommandSubcommand, SlashCommandOption, ContextMenuCommand} from "../../structures/SlashCommandOption"
 import sharp from "sharp"
 import {Command} from "../../structures/Command"
 import {Embeds} from "./../../structures/Embeds"
@@ -22,7 +24,8 @@ export default class Sharpen extends Command {
           aliases: ["sharp", "sharpness"],
           cooldown: 10,
           defer: true,
-          subcommandEnabled: true
+          subcommandEnabled: true,
+          contextEnabled: true
         })
         const urlOption = new SlashCommandOption()
             .setType("string")
@@ -39,6 +42,11 @@ export default class Sharpen extends Command {
             .setDescription(this.options.description)
             .addOption(sigmaOption)
             .addOption(urlOption)
+
+        this.context = new ContextMenuCommand()
+            .setName(this.constructor.name)
+            .setType("message")
+            .toJSON()
     }
 
     public run = async (args: string[]) => {
@@ -49,12 +57,37 @@ export default class Sharpen extends Command {
         let url: string | undefined
         if (args[2]) {
             url = args[2]
-        } else if (Number(args[1])) {
-            sigma = Number(args[1])
-        } else if (args[1]) {
-            url = args[1]
+        } else {
+            let messageID = args[1].match(/\d{10,}/)?.[0] || ""
+            if (messageID) {
+                const msg = await message.channel.messages.fetch(messageID)
+                url = msg.attachments.first()?.url
+            } else {
+                sigma = args[1] ? Number(args[1]) : 1
+                url = await discord.fetchLastAttachment(message)
+            }
         }
-        if (!url) url = await discord.fetchLastAttachment(message)
+        if (message instanceof ContextMenuCommandInteraction) {
+            const interaction = message as ContextMenuCommandInteraction
+            const modal = new ModalBuilder()
+                .setCustomId("sharpen-modal")
+                .setTitle("Sharpen")
+
+            const factorInput = new TextInputBuilder()
+                .setCustomId("factor-input")
+                .setLabel("Sigma:")
+                .setStyle(TextInputStyle.Short)
+
+            const actionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(factorInput)
+            modal.addComponents(actionRow)
+            await interaction.showModal(modal)
+            const filter = (interaction: ModalSubmitInteraction) => interaction.customId === "sharpen-modal"
+            const modalSubmit = await interaction.awaitModalSubmit({filter, time: 600000})
+
+            const factorField = modalSubmit.fields.getTextInputValue("factor-input").trim()
+            sigma = factorField ? Number(factorField) : 1
+            this.message = modalSubmit as any
+        }
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
         const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())
         const buffer = await sharp(arrayBuffer, {limitInputPixels: false})

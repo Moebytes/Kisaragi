@@ -1,5 +1,7 @@
-import {Message, AttachmentBuilder} from "discord.js"
-import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
+import {Message, AttachmentBuilder, ContextMenuCommandInteraction, ModalBuilder,
+TextInputBuilder, TextInputStyle, ActionRowBuilder, ModalActionRowComponentBuilder,
+ModalSubmitInteraction} from "discord.js"
+import {SlashCommandSubcommand, SlashCommandOption, ContextMenuCommand} from "../../structures/SlashCommandOption"
 import sharp from "sharp"
 import {Command} from "../../structures/Command"
 import {Embeds} from "../../structures/Embeds"
@@ -22,7 +24,8 @@ export default class Scale extends Command {
           aliases: [],
           cooldown: 10,
           defer: true,
-          subcommandEnabled: true
+          subcommandEnabled: true,
+          contextEnabled: false
         })
         const urlOption = new SlashCommandOption()
             .setType("string")
@@ -40,22 +43,54 @@ export default class Scale extends Command {
             .setDescription(this.options.description)
             .addOption(factorOption)
             .addOption(urlOption)
+
+        this.context = new ContextMenuCommand()
+            .setName(this.constructor.name)
+            .setType("message")
+            .toJSON()
     }
 
     public run = async (args: string[]) => {
         const discord = this.discord
         const message = this.message
         const embeds = new Embeds(discord, message)
+        let factor = args[1] ? Number(args[1]) : 1
         let url: string | undefined
         if (args[2]) {
             url = args[2]
         } else {
-            url = await discord.fetchLastAttachment(message)
+            let messageID = args[1].match(/\d{10,}/)?.[0] || ""
+            if (messageID) {
+                const msg = await message.channel.messages.fetch(messageID)
+                url = msg.attachments.first()?.url
+            } else {
+                url = await discord.fetchLastAttachment(message)
+            }
+        }
+        if (message instanceof ContextMenuCommandInteraction) {
+            const interaction = message as ContextMenuCommandInteraction
+            const modal = new ModalBuilder()
+                .setCustomId("scale-modal")
+                .setTitle("Scale")
+
+            const factorInput = new TextInputBuilder()
+                .setCustomId("factor-input")
+                .setLabel("Factor:")
+                .setStyle(TextInputStyle.Short)
+
+            const actionRow = new ActionRowBuilder<ModalActionRowComponentBuilder>().addComponents(factorInput)
+            modal.addComponents(actionRow)
+            await interaction.showModal(modal)
+            const filter = (interaction: ModalSubmitInteraction) => interaction.customId === "scale-modal"
+            const modalSubmit = await interaction.awaitModalSubmit({filter, time: 600000})
+
+            const factorField = modalSubmit.fields.getTextInputValue("factor-input").trim()
+            factor = factorField ? Number(factorField) : 1
+            this.message = modalSubmit as any
         }
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
         const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())
         const metadata = await sharp(arrayBuffer, {limitInputPixels: false}).png().metadata()
-        const factor = args[1] ? Number(args[1]) : 1
         const width = Math.floor(metadata.width! * factor)
         const height = Math.floor(metadata.height! * factor)
         const buffer = await sharp(arrayBuffer, {limitInputPixels: false})

@@ -1,5 +1,6 @@
 import {BaseInteraction, InteractionReplyOptions, MessageFlags} from "discord.js"
 import {Kisaragi} from "../structures/Kisaragi"
+import {Command} from "../structures/Command"
 import {CommandFunctions} from "../structures/CommandFunctions"
 import {Permission} from "../structures/Permission"
 import {Cooldown} from "../structures/Cooldown"
@@ -9,7 +10,7 @@ export default class InteractionCreate {
 
     public run = async (interaction: BaseInteraction) => {
         const discord = this.discord
-        if (!interaction.isChatInputCommand()) return
+        if (!interaction.isChatInputCommand() && !interaction.isContextMenuCommand()) return
 
         // We override some properties to run message command based code with minimal changes
         // @ts-expect-error
@@ -27,25 +28,27 @@ export default class InteractionCreate {
 
         const cmd = new CommandFunctions(discord, interaction as any)
         const perms = new Permission(discord, interaction as any)
+        const cooldown = new Cooldown(discord, interaction as any)
 
-        const subcommand = interaction.options.getSubcommand(false)
-        let slashCommand = interaction.commandName
+        let subcommand = null as string | null
+        if (interaction.isChatInputCommand()) {
+            subcommand = interaction.options.getSubcommand(false)
+        }
+        let slashCommand = interaction.commandName.toLowerCase()
         if (subcommand) slashCommand += "slash"
 
         const command = discord.commands.get(slashCommand)
 
-        let targetCommand = command
+        let targetCommand = command as Command
         if (subcommand) {
-            targetCommand = discord.commands.get(subcommand)
+            targetCommand = discord.commands.get(subcommand)!
         }
 
         if (command) {
-            if (!command.slash) return
-            if (command.options.premium && !perms.checkPremium()) return
+            if (targetCommand.options.premium && !perms.checkPremium()) return
 
-            const cooldown = new Cooldown(discord, interaction as any)
-            const onCooldown = cooldown.cmdCooldown(subcommand ? subcommand : slashCommand, command.options.cooldown)
-            if (onCooldown && (interaction.user.id !== process.env.OWNER_ID)) return this.discord.reply(interaction,onCooldown)
+            const onCooldown = cooldown.cmdCooldown(subcommand ? subcommand : slashCommand, targetCommand.options.cooldown)
+            if (onCooldown && (interaction.user.id !== process.env.OWNER_ID)) return this.discord.reply(interaction, onCooldown)
 
             let args = [] as string[]
             if (subcommand) {
@@ -54,7 +57,7 @@ export default class InteractionCreate {
                 args = [slashCommand, ...interaction.options.data.map((o) => o.value)] as string[]
             }
             discord.clearDeferState(interaction)
-            if (targetCommand?.options.defer) await command.deferReply(interaction)
+            if (targetCommand?.options.defer && interaction.isChatInputCommand()) await command.deferReply(interaction)
             await cmd.runCommandClass(command, interaction as any, args)
         }
     }

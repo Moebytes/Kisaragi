@@ -1,5 +1,6 @@
 import {Message, EmbedBuilder, ChatInputCommandInteraction, SlashCommandSubcommandBuilder, 
-RESTPostAPIChatInputApplicationCommandsJSONBody, AttachmentBuilder, MessageReplyOptions} from "discord.js"
+RESTPostAPIChatInputApplicationCommandsJSONBody, AttachmentBuilder, MessageReplyOptions,
+RESTPostAPIContextMenuApplicationCommandsJSONBody, ContextMenuCommandInteraction} from "discord.js"
 import {Kisaragi} from "./Kisaragi"
 
 interface CommandOptions {
@@ -21,6 +22,7 @@ interface CommandOptions {
   defer: boolean
   slashEnabled: boolean
   subcommandEnabled: boolean
+  contextEnabled: boolean
 }
 
 export class Command {
@@ -30,6 +32,7 @@ export class Command {
   public options: CommandOptions
   public slash: RESTPostAPIChatInputApplicationCommandsJSONBody
   public subcommand: SlashCommandSubcommandBuilder
+  public context: RESTPostAPIContextMenuApplicationCommandsJSONBody
 
   constructor(public discord: Kisaragi, public message: Message, {
       params = "",
@@ -49,15 +52,17 @@ export class Command {
       premium = false,
       defer = false,
       slashEnabled = false,
-      subcommandEnabled = false
+      subcommandEnabled = false,
+      contextEnabled = false
     }) {
       this.name = ""
       this.category = ""
       this.path = ""
       this.options = {params, description, help, examples, enabled, guildOnly, aliases, cooldown, permission, 
-      botPermission, random, unlist, nsfw, botdev, premium, defer, slashEnabled, subcommandEnabled}
+      botPermission, random, unlist, nsfw, botdev, premium, defer, slashEnabled, subcommandEnabled, contextEnabled}
       this.slash = null as unknown as RESTPostAPIChatInputApplicationCommandsJSONBody
       this.subcommand = null as unknown as SlashCommandSubcommandBuilder
+      this.context = null as unknown as RESTPostAPIContextMenuApplicationCommandsJSONBody
     }
 
   get help() {
@@ -81,7 +86,7 @@ export class Command {
     return this.discord.edit(msg, embeds, files, opts)
   }
 
-  public deferReply = (interaction?: ChatInputCommandInteraction) => {
+  public deferReply = (interaction?: ChatInputCommandInteraction | ContextMenuCommandInteraction) => {
     return this.discord.deferReply(interaction ? interaction : this.message as any)
   }
 

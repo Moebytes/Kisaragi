@@ -1,6 +1,6 @@
 import "dotenv/config"
 import {REST, Routes} from "discord.js"
-
+import {Command} from "./structures/Command"
 import {Logger} from "./structures/Logger"
 import fs from "fs"
 import path from "path"
@@ -9,6 +9,10 @@ class Dummy {
     constructor() {}
     public getEmoji = () => null
 }
+
+let token = process.env.TESTING === "yes" ? process.env.TEST_TOKEN! : process.env.TOKEN!
+let clientID = process.env.TESTING === "yes" ? process.env.TEST_CLIENT_ID! : process.env.CLIENT_ID!
+let ownerServer = process.env.TESTING === "yes" ? process.env.TEST_OWNER_SERVER! : process.env.OWNER_SERVER!
 
 let devCommands = [] as any
 let slashCommands = [] as any
@@ -26,7 +30,7 @@ const register = async () => {
             const commandName = file.split(".")[0]
             if (commandName === "empty" || commandName === "tempCodeRunnerFile") return
             
-            const command = new (require(path.join(__dirname, `./commands/${currDir}/${file}`)).default)(new Dummy(), null)
+            const command = new (require(path.join(__dirname, `./commands/${currDir}/${file}`)).default)(new Dummy(), null) as Command
 
             if (command.options.slashEnabled && command.slash) {
                 if (command.options.botdev) {
@@ -35,14 +39,22 @@ const register = async () => {
                     slashCommands.push(command.slash)
                 }
             }
+
+            if (command.options.contextEnabled && command.context) {
+                if (command.options.botdev) {
+                    devCommands.push(command.context)
+                } else {
+                    slashCommands.push(command.context)
+                }
+            }
         }))
     }
 
-    const rest = new REST().setToken(process.env.TOKEN!)
+    const rest = new REST().setToken(token)
 
     try {
-        await rest.put(Routes.applicationCommands(process.env.CLIENT_ID!), {body: slashCommands})
-        await rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID!, process.env.OWNER_SERVER!), {body: devCommands})
+        await rest.put(Routes.applicationCommands(clientID), {body: slashCommands})
+        await rest.put(Routes.applicationGuildCommands(clientID, ownerServer), {body: devCommands})
         Logger.log(`Refreshed ${slashCommands.length} application (/) commands.`)
     } catch (error) {
         console.error(error)

@@ -1,7 +1,7 @@
 import axios from "axios"
 import {MessagePayload, ChannelType, Client, ClientOptions, Guild, Collection, GuildBasedChannel, MessageFlags,
 ApplicationEmoji, GuildEmoji, Message, MessageTarget, Role, TextChannel, User, PartialMessage, AttachmentBuilder,
-EmbedBuilder, GuildMember, ChatInputCommandInteraction, MessageReplyOptions, SendableChannels} from "discord.js"
+EmbedBuilder, GuildMember, ChatInputCommandInteraction, MessageReplyOptions, SendableChannels, ContextMenuCommandInteraction} from "discord.js"
 import querystring from "querystring"
 import muted from "../assets/json/muted.json"
 import {Command} from "../structures/Command"
@@ -36,8 +36,9 @@ export class Kisaragi extends Client {
     }
 
     /** Reply or follow up depending on defer state */
-    public reply = (input: Message | ChatInputCommandInteraction, embeds: EmbedBuilder | EmbedBuilder[] | string, 
-    files?: AttachmentBuilder | AttachmentBuilder[], opts?: MessageReplyOptions) => {
+    public reply = (input: Message | ChatInputCommandInteraction | ContextMenuCommandInteraction, 
+    embeds: EmbedBuilder | EmbedBuilder[] | string, files?: AttachmentBuilder | AttachmentBuilder[], 
+    opts?: MessageReplyOptions) => {
         let options = {...opts} as any
         if (Array.isArray(embeds)) {
             options.embeds = embeds
@@ -60,13 +61,14 @@ export class Kisaragi extends Client {
     }
 
     /** Clear defer state */
-    public clearDeferState = (input: Message | ChatInputCommandInteraction) => {
+    public clearDeferState = (input: Message | ChatInputCommandInteraction | ContextMenuCommandInteraction) => {
         this.deferState.delete(input.id)
     }
 
     /** Defer this reply */
-    public deferReply = (interaction: ChatInputCommandInteraction) => {
+    public deferReply = (interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction, noReply?: boolean) => {
         this.deferState.add(interaction.id)
+        if (noReply) return
         return interaction.deferReply()
     }
     
