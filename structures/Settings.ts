@@ -49,7 +49,6 @@ export class Settings {
             "blocked words": null,
             "disabled categories": null,
             "pfp ban toggle": "off",
-            "leaver ban toggle": "off",
             "everyone ban toggle": "off",
             "ascii name toggle": "off",
             "default channel": null,

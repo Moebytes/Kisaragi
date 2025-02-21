@@ -52,28 +52,6 @@ export default class GuildMemberRemove {
 
         leaveMessages()
 
-        const leaveBan = async (discord: Kisaragi) => {
-            const leaveBanToggle = await sql.fetchColumn("guilds", "leaver ban toggle")
-            const banEmbed = embeds.createEmbed()
-            if (!leaveBanToggle || leaveBanToggle === "off") return
-            const now = Math.ceil(Date.now())
-            const joinDate = member.joinedTimestamp!
-            if ((now - joinDate) <= 300000) {
-                const channel = defaultChannel
-                const reason = "Joining and leaving in under 5 minutes."
-                banEmbed
-                .setAuthor({name: "ban", iconURL: "https://kisaragi.moe/assets/embed/ban.png"})
-                .setTitle(`**Member Banned** ${discord.getEmoji("kannaFU")}`)
-                .setDescription(`${discord.getEmoji("star")}_Successfully banned <@${member.user.id}> for reason:_ **${reason}**`)
-                if (channel) this.discord.channelSend(channel, banEmbed)
-                banEmbed
-                .setTitle(`**You Were Banned** ${discord.getEmoji("kannaFU")}`)
-                .setDescription(`${discord.getEmoji("star")}_You were banned from ${member.guild.name} for reason:_ **${reason}**`)
-                await member.ban({reason}).catch(() => null)
-            }
-        }
-        leaveBan(this.discord)
-
         const logKick = async (member: GuildMember | PartialGuildMember) => {
             const modLog = await sql.fetchColumn("guilds", "mod log")
             if (modLog) {

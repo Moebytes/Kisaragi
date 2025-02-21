@@ -108,7 +108,6 @@ CREATE TABLE IF NOT EXISTS "guilds" (
     "blocked words" text[],
     "disabled categories" text[],
     "pfp ban toggle" text,
-    "leaver ban toggle" text,
     "ascii name toggle" text,
     "default channel" text,
     "block match" text,

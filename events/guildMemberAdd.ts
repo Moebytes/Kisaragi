@@ -56,7 +56,7 @@ export default class GuildMemberAdd {
         welcomeMessages()
 
         const avatarBan = async (discord: Kisaragi) => {
-            const banToggle = await sql.fetchColumn("guilds", "leaver ban toggle")
+            const banToggle = await sql.fetchColumn("guilds", "pfp ban toggle")
             const banEmbed = embeds.createEmbed()
             if (!(banToggle === "on")) return
 
