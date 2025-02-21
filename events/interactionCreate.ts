@@ -20,7 +20,7 @@ export default class InteractionCreate {
         interaction.reply = ((originalReply) => {
             return async function (options: InteractionReplyOptions) {
                 if (typeof options === "string") options = {content: options}
-                let flags = !interaction.guild ? MessageFlags.Ephemeral : undefined
+                let flags = undefined //!interaction.guild ? MessageFlags.Ephemeral : undefined
                 await originalReply.call(this, {withResponse: true, flags, ...options})
                 return interaction.fetchReply()
             }
