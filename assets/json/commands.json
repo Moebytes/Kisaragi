@@ -66,9 +66,9 @@
         "command": "instantban",
         "category": "admin",
         "description": "Configure settings for instant bans.",
-        "help": "instantban - Opens the instant ban prompt\ninstantban pfp - Toggles no profile picture bans\ninstantban everyone - Toggles banning of people who tag @everyone\ninstantban leave - Toggles banning of people who leave in under 5 minutes",
+        "help": "instantban - Opens the instant ban prompt\ninstantban pfp - Toggles no profile picture bans\ninstantban everyone - Toggles banning of people who tag @everyone",
         "aliases": "iban",
-        "examples": "=>instantban pfp everyone leave",
+        "examples": "=>instantban pfp everyone",
         "cooldown": 3
     },
     {
@@ -2878,6 +2878,15 @@
         "aliases": "none",
         "examples": "=>steam anime",
         "cooldown": 10
+    },
+    {
+        "command": "topgg",
+        "category": "website 3",
+        "description": "Searches for bots on top.gg (discord bot list).",
+        "help": "_Note: You can refine the search by specifying a certain property:value. Example: username:kisaragi, prefix:=>, owners:ID_\ntopgg - Search for new bots.\ntopgg query - Searches for bots with the query.",
+        "aliases": "dbl, discordbotlist",
+        "examples": "=>topgg anime\n=>topgg shortdesc:anime",
+        "cooldown": 15
     },
     {
         "command": "tumblr",

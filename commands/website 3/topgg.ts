@@ -44,7 +44,6 @@ export default class TOPGG extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         const perms = new Permission(discord, message)
-        if (discord.checkMuted(message)) if (!perms.checkNSFW()) return
         const headers = {
             authorization: process.env.TOP_GG_TOKEN
         }
@@ -65,7 +64,7 @@ export default class TOPGG extends Command {
             .setAuthor({name: "topgg", iconURL: "https://kisaragi.moe/assets/embed/topgg.png"})
             .setTitle(`**Top.GG Search** ${discord.getEmoji("RaphiSmile")}`)
             .setURL(`https://top.gg/bot/${bot.id}`)
-            .setThumbnail(`https://images.discordapp.net/avatars/${bot.id}/${bot.avatar}.png`)
+            .setThumbnail(bot.avatar)
             .setDescription(
                 `${discord.getEmoji("star")}_Bot:_ **${bot.username}**\n` +
                 `${discord.getEmoji("star")}_ID:_ \`${bot.id}\`\n` +
