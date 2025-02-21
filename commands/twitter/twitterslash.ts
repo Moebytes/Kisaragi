@@ -11,7 +11,7 @@ export default class TwitterSlash extends Command {
         super(discord, message, {
             description: "Twitter commands",
             unlist: true,
-            slashEnabled: true
+            slashEnabled: false
         })
 
         const commandDir = fs.readdirSync(path.join(__dirname, "./"))

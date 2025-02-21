@@ -80,7 +80,7 @@ export default class BlueArchive extends Command {
         blueArchiveEmbed
         .setAuthor({name: "bluearchive", iconURL: "https://kisaragi.moe/assets/embed/bluearchive.png"})
         .setTitle(`**Blue Archive Search** ${discord.getEmoji("midoriHug")}`)
-        .setURL(`https://bluearchive.fandom.com/wiki/${student.Name}`)
+        .setURL(`https://bluearchive.fandom.com/wiki/${student.FamilyName}_${student.Name}`)
         .setThumbnail("attachment://thumbnail.png")
         .setImage("attachment://image.png")
         .setDescription(
