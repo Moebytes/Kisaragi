@@ -35,7 +35,6 @@ export default class Karen extends Command {
         const embeds = new Embeds(discord, message)
         const pixiv = new PixivApi(discord, message)
         const perms = new Permission(discord, message)
-        if (!perms.checkNSFW()) return
 
         const pixivArray = await pixiv.animeEndpoint("karen", 10)
         embeds.createReactionEmbed(pixivArray, true, true)

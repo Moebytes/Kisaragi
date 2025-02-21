@@ -34,7 +34,6 @@ export default class Kitsune extends Command {
         const perms = new Permission(discord, message)
         const embeds = new Embeds(discord, message)
         const neko = new nekoClient()
-        if (!perms.checkNSFW()) return
 
         let image: NekoRequestResults
         let title: string

@@ -31,8 +31,7 @@ export default class Yandere extends Command {
             random: "none",
             cooldown: 20,
             defer: true,
-            nsfw: true,
-            subcommandEnabled: false
+            subcommandEnabled: true
         })
         const tagOption = new SlashCommandOption()
             .setType("string")

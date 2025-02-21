@@ -33,7 +33,7 @@ const redis = Redis.createClient({
   url: process.env.LOCAL_DATABASE === "yes" ? process.env.LOCAL_REDIS_URL : process.env.REDIS_URL
 })
 
-if (process.env.REDIS === "on") redis.connect()
+if (process.env.TESTING !== "yes" && process.env.REDIS === "on") redis.connect()
 
 export class SQLQuery {
   constructor(private readonly message: Message) {}
@@ -363,8 +363,8 @@ export class SQLQuery {
   public static revokeOuath2 = async (id: string) => {
     const token = await SQLQuery.fetchColumn("oauth2", "access token", "user id", id)
     if (!token) return
-    const clientID = config.testing ? process.env.TEST_CLIENT_ID : process.env.CLIENT_ID
-    const clientSecret = config.testing ? process.env.TEST_CLIENT_SECRET : process.env.CLIENT_SECRET
+    const clientID = process.env.TESTING === "yes" ? process.env.TEST_CLIENT_ID : process.env.CLIENT_ID
+    const clientSecret = process.env.TESTING === "yes" ? process.env.TEST_CLIENT_SECRET : process.env.CLIENT_SECRET
     await axios.post(`https://discordapp.com/api/oauth2/token/revoke`, querystring.stringify({
       client_id: clientID,
       client_secret: clientSecret,
@@ -376,9 +376,9 @@ export class SQLQuery {
   /** Inits an oauth2 entry */
   public static initOauth2 = async (code: string) => {
     try {
-    const clientID = config.testing ? process.env.TEST_CLIENT_ID : process.env.CLIENT_ID
-    const clientSecret = config.testing ? process.env.TEST_CLIENT_SECRET : process.env.CLIENT_SECRET
-    const redirectURI = config.testing ? config.oauth2Testing : config.oauth2
+    const clientID = process.env.TESTING === "yes" ? process.env.TEST_CLIENT_ID : process.env.CLIENT_ID
+    const clientSecret = process.env.TESTING === "yes" ? process.env.TEST_CLIENT_SECRET : process.env.CLIENT_SECRET
+    const redirectURI = process.env.TESTING === "yes" ? config.oauth2Testing : config.oauth2
     const data = await axios.post(`https://discordapp.com/api/oauth2/token`, querystring.stringify({
       client_id: clientID,
       client_secret: clientSecret,

@@ -327,7 +327,7 @@ export class Kisaragi extends Client {
 
     /** Post guild count on bot lists */
     public postGuildCount = async () => {
-        if (config.testing) return
+        if (process.env.TESTING === "yes") return
         const urls = [
             `https://discord.bots.gg/api/v1/bots/${this.user!.id}/stats`,
             `https://discordbotlist.com/api/v1/bots/${this.user!.id}/stats`,

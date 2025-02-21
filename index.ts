@@ -118,7 +118,7 @@ const start = async (): Promise<void> => {
     //const server = new Server()
     //server.run()
 
-    const token = config.testing ? process.env.TEST_TOKEN : process.env.TOKEN
+    const token = process.env.TESTING === "yes" ? process.env.TEST_TOKEN : process.env.TOKEN
     await discord.login(token)
     discord.setPfp(discord.user!.displayAvatarURL({extension: "png"}))
     discord.setUsername(discord.user!.username)

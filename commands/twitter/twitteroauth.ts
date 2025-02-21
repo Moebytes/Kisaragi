@@ -54,7 +54,7 @@ export default class TwitterOauth extends Command {
             return this.reply(oauth2Embed)
         }
 
-        const callback = config.testing ? config.twitterRedirectTesting : config.twitterRedirect
+        const callback = process.env.TESTING === "yes" ? config.twitterRedirectTesting : config.twitterRedirect
         const oauth = new OAuth(
             "https://api.twitter.com/oauth/request_token",
             "https://api.twitter.com/oauth/access_token",

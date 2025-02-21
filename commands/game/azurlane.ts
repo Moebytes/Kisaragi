@@ -74,7 +74,6 @@ export default class AzurLane extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         const perms = new Permission(discord, message)
-        if (!perms.checkNSFW()) return
         let query = Functions.combineArgs(args, 1).trim().replace(/ +/g, "_")
         if (!query) {
             query = this.defaults[Math.floor(Math.random()*this.defaults.length)].trim().replace(/ +/g, "_")

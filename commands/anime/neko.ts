@@ -47,7 +47,6 @@ export default class Neko extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
         const perms = new Permission(discord, message)
-        if (!perms.checkNSFW()) return
 
         if (args[1]?.toLowerCase() === "gif") {
             const neko = new nekoClient()

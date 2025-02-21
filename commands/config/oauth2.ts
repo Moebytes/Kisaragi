@@ -60,7 +60,7 @@ export default class Oauth2 extends Command {
         states.push(state)
         await SQLQuery.redisSet("state", JSON.stringify(states))
 
-        const redirect = config.testing ? config.oauth2Testing : config.oauth2
+        const redirect = process.env.TESTING === "yes" ? config.oauth2Testing : config.oauth2
         const url = `https://discord.com/api/oauth2/authorize?client_id=${discord.user!.id}&redirect_uri=${encodeURIComponent(redirect)}&state=${state}&response_type=code&scope=email%20connections%20guilds%20identify`
         const oauth2Embed = embeds.createEmbed()
         oauth2Embed

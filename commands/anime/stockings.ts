@@ -35,7 +35,6 @@ export default class Stockings extends Command {
         const embeds = new Embeds(discord, message)
         const perms = new Permission(discord, message)
         const pixiv = new PixivApi(discord, message)
-        if (!perms.checkNSFW()) return
 
         const pixivArray = await pixiv.animeEndpoint("stockings", 20)
         return embeds.createReactionEmbed(pixivArray, true, true)

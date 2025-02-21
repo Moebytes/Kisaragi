@@ -7,7 +7,7 @@ import {Permission} from "../../structures/Permission"
 export default class Pickle extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: `Posts your pickle size ${discord.getEmoji("tohruSmug")}`,
+            description: `Posts your pickle size`,
             help:
             `
             _Note:_ The sizes are seeded and won't change ${discord.getEmoji("tohruSmug")}

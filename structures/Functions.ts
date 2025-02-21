@@ -177,6 +177,7 @@ export class Functions {
 
     // Check Message Characters
     public static checkChar = (message: string, num: number, char: string): string => {
+        if (!message) return ""
         const splitText = Functions.splitMessage(message, {maxLength: num, char})
         if (splitText[0]) {
             return splitText[0]
@@ -497,7 +498,7 @@ export class Functions {
 
     /** Re-subscribes to youtube notifications on bot restart */
     public static youtubeReSubscribe = async () => {
-        if (config.testing) return
+        if (process.env.TESTING === "yes") return
         const yt: any[] = []
         const configs = await SQLQuery.selectColumn("yt", "config")
         if (!configs) return

@@ -13,7 +13,7 @@ export default class Mal extends Command {
     private user = null as any
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Searches for anime, characters, and users on my anime list.",
+            description: "Searches for anime, characters, and users on myanimelist.",
             help:
             `
             \`mal\` - Gets the top anime
