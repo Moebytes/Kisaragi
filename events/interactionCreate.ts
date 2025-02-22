@@ -77,7 +77,7 @@ export default class InteractionCreate {
 
         if (command) {
             if (!discord.checkSufficientPermissions(interaction as any)) return
-            if (command.options.guildOnly) {
+            if (targetCommand.options.guildOnly) {
                 if (interaction.channel?.type === ChannelType.DM) return this.discord.send(interaction, `<@${interaction.user.id}>, sorry but you can only use this command in guilds. ${this.discord.getEmoji("smugFace")}`)
             }
             const disabledCategories = await sql.fetchColumn("guilds", "disabled categories")
