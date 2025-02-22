@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Delay extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Applies a delay effect to an audio file.",
+            description: "Applies a delay effect.",
             help:
             `
             _Note: You can add a variable number of delay and decay pairs. An odd amount of arguments is invalid. The unit is milliseconds._
@@ -24,6 +24,7 @@ export default class Delay extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

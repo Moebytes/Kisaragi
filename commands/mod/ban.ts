@@ -19,6 +19,8 @@ export default class Ban extends Command {
             \`=>ban @user spammer\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
+            botPermission: "BanMembers",
             aliases: [],
             cooldown: 3,
             subcommandEnabled: true

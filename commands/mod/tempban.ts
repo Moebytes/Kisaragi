@@ -22,6 +22,8 @@ export default class TempBan extends Command {
             \`=>tempban @user 100y bye\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
+            botPermission: "BanMembers",
             aliases: [],
             cooldown: 3,
             subcommandEnabled: true

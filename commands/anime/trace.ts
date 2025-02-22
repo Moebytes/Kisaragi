@@ -56,7 +56,6 @@ export default class Trace extends Command {
         const headers = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36"}
 
         const json = await axios.get(`https://api.trace.moe/search?url=${url}`, {headers}).then((r) => r.data)
-        console.log(json)
         if (!json?.result) return this.reply(`No search results found ${discord.getEmoji("aquaCry")}`)
 
         const traceArray: EmbedBuilder[] = []

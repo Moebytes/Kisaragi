@@ -17,6 +17,7 @@ export default class NSFW extends Command {
           \`=>nsfw\`
           `,
           guildOnly: true,
+          cachedGuildOnly: true,
           aliases: [],
           cooldown: 5,
           subcommandEnabled: true

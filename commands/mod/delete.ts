@@ -25,6 +25,8 @@ export default class Delete extends Command {
             `,
             aliases: ["del", "purge"],
             guildOnly: true,
+            cachedGuildOnly: true,
+            botPermission: "ManageMessages",
             cooldown: 10,
             defer: true,
             subcommandEnabled: true

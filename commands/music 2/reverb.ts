@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Reverb extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Applies a reverb effect to an audio file.",
+            description: "Applies a reverb effect.",
             help:
             `
             _Note: The first four parameters are percentages, pre-delay is in milliseconds and gain is in decibels._
@@ -25,6 +25,7 @@ export default class Reverb extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 5,
             premium: true,
             subcommandEnabled: true

@@ -24,6 +24,7 @@ export default class Remove extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 10,
             subcommandEnabled: true
         })

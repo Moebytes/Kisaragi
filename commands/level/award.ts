@@ -20,6 +20,8 @@ export default class Award extends Command {
             \`=>award @user1 @user2 @user3 2000\`
             \`=>award @user1 -99999\`
             `,
+            guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["give"],
             cooldown: 10,
             subcommandEnabled: true

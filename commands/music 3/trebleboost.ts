@@ -21,6 +21,7 @@ export default class Trebleboost extends Command {
             `,
             aliases: ["treble"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

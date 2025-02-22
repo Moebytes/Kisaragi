@@ -10,6 +10,7 @@ interface CommandOptions {
   examples: string
   enabled: boolean
   guildOnly: boolean
+  cachedGuildOnly: boolean
   aliases: string[]
   cooldown: number
   permission: string
@@ -18,6 +19,7 @@ interface CommandOptions {
   unlist: boolean
   nsfw: boolean
   botdev: boolean
+  voteLocked: boolean
   premium: boolean
   defer: boolean
   slashEnabled: boolean
@@ -41,6 +43,7 @@ export class Command {
       examples = "There are no examples.",
       enabled = true,
       guildOnly = false,
+      cachedGuildOnly = false,
       aliases = [""],
       cooldown = 3,
       permission = "SendMessages",
@@ -49,6 +52,7 @@ export class Command {
       unlist = false,
       nsfw = false,
       botdev = false,
+      voteLocked = false,
       premium = false,
       defer = false,
       slashEnabled = false,
@@ -58,8 +62,8 @@ export class Command {
       this.name = ""
       this.category = ""
       this.path = ""
-      this.options = {params, description, help, examples, enabled, guildOnly, aliases, cooldown, permission, 
-      botPermission, random, unlist, nsfw, botdev, premium, defer, slashEnabled, subcommandEnabled, contextEnabled}
+      this.options = {params, description, help, examples, enabled, guildOnly, cachedGuildOnly, aliases, cooldown, permission, 
+      botPermission, random, unlist, nsfw, botdev, voteLocked, premium, defer, slashEnabled, subcommandEnabled, contextEnabled}
       this.slash = null as unknown as RESTPostAPIChatInputApplicationCommandsJSONBody
       this.subcommand = null as unknown as SlashCommandSubcommandBuilder
       this.context = null as unknown as RESTPostAPIContextMenuApplicationCommandsJSONBody

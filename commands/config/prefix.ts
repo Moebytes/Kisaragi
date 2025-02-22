@@ -19,6 +19,7 @@ export default class Prefix extends Command {
             \`=>prefix k!\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["pref"],
             cooldown: 10,
             subcommandEnabled: true

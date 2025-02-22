@@ -28,6 +28,7 @@ export default class Detect extends Command {
             \`=>detect reset\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["detection"],
             cooldown: 10,
             defer: true,

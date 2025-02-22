@@ -27,6 +27,7 @@ export default class Record extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 10,
             defer: true,
             subcommandEnabled: true

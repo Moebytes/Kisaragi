@@ -23,6 +23,7 @@ export default class Loop extends Command {
             `,
             aliases: ["repeat"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 10,
             subcommandEnabled: true
         })

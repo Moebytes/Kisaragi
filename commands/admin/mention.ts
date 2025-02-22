@@ -20,6 +20,7 @@ export default class Mention extends Command {
             \`=>mention @news\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 5,
             subcommandEnabled: true

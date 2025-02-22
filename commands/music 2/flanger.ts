@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Flanger extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Applies a flanger effect to an audio file.",
+            description: "Applies a flanger effect.",
             help:
             `
             _Note: Parameters are delay (0-30), depth (0-10), regen (-95-95), width (0-100), speed (0.1-10), shape (sin/tri), phase (0-100), and interp (lin/quad)._
@@ -24,6 +24,7 @@ export default class Flanger extends Command {
             `,
             aliases: ["flg"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

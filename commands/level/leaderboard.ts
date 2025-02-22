@@ -17,6 +17,8 @@ export default class Leaderboard extends Command {
           `
           \`=>leaderboard\`
           `,
+          guildOnly: true,
+          cachedGuildOnly: true,
           aliases: ["lb", "top"],
           cooldown: 3,
           subcommandEnabled: true

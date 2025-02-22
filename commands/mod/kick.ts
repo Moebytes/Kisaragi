@@ -19,6 +19,8 @@ export default class Kick extends Command {
             \`=>kick @user annoying\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
+            botPermission: "KickMembers",
             aliases: [],
             cooldown: 3,
             subcommandEnabled: true

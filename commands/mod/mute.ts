@@ -21,6 +21,7 @@ export default class Mute extends Command {
             \`=>mute @user shush\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["silence"],
             cooldown: 3,
             subcommandEnabled: true

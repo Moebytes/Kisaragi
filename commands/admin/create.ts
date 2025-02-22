@@ -24,6 +24,7 @@ export default class Create extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 10,
             subcommandEnabled: true
         })

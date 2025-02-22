@@ -21,6 +21,7 @@ export default class Fastforward extends Command {
             `,
             aliases: ["seek"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 5,
             defer: true,
             subcommandEnabled: true

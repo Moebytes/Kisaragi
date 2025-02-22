@@ -19,6 +19,7 @@ export default class VCMute extends Command {
             \`=>vcmute @user earrape\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 3,
             subcommandEnabled: true

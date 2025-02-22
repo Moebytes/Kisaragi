@@ -23,6 +23,7 @@ export default class LevelChannels extends Command {
             \`=>levelchannels #spam\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["pointchannels"],
             cooldown: 10,
             defer: true,

@@ -180,7 +180,7 @@ export default class MessageCreate {
 
       if (!discord.checkSufficientPermissions(message)) return
       if (command.options.guildOnly) {
-        if (message.channel.type === ChannelType.DM) return this.discord.send(message, `<@${message.author.id}>, sorry but you can only use this command in servers the bot is in. ${this.discord.getEmoji("kannaFacepalm")}`)
+        if (message.channel.type === ChannelType.DM) return this.discord.send(message, `<@${message.author.id}>, sorry but you can only use this command in guilds. ${this.discord.getEmoji("kannaFacepalm")}`)
       }
 
       const disabledCategories = await sql.fetchColumn("guilds", "disabled categories")

@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Lowshelf extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Applies a lowshelf filter to an audio file (boosts bass).",
+            description: "Applies a lowshelf filter (boosts bass).",
             help:
             `
             \`lowshelf gain? freq? width?\` - Applies a lowshelf filter to the audio file with the parameters.
@@ -23,6 +23,7 @@ export default class Lowshelf extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

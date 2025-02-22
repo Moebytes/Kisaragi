@@ -27,6 +27,7 @@ export default class Link extends Command {
             `,
             aliases: ["links", "linked", "linkchannel"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 3,
             defer: true,
             subcommandEnabled: true

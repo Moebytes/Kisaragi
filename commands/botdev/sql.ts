@@ -22,7 +22,8 @@ export default class SQL extends Command {
             aliases: [],
             cooldown: 3,
             botdev: true,
-            subcommandEnabled: true
+            unlist: true,
+            subcommandEnabled: false
         })
         const queryOption = new SlashCommandOption()
             .setType("string")
@@ -41,6 +42,8 @@ export default class SQL extends Command {
         const message = this.message
         const perms = new Permission(discord, message)
         const embeds = new Embeds(discord, message)
+        return
+        /* - Disable this command
         if (!perms.checkBotDev()) return
         const query = {text: Functions.combineArgs(args, 1), rowMode: "array"}
         const sqlEmbed = embeds.createEmbed()
@@ -58,6 +61,6 @@ export default class SQL extends Command {
         "\n" +
         `\`\`\`${Functions.checkChar(JSON.stringify(result), 1500, ",")}\`\`\``)
         this.reply(sqlEmbed)
-
+        */
     }
 }

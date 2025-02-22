@@ -21,6 +21,7 @@ export default class Stop extends Command {
             `,
             aliases: ["disconnect"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 5,
             subcommandEnabled: true
         })

@@ -19,6 +19,7 @@ export default class Topic extends Command {
           \`=>topic general chat\`
           `,
           guildOnly: true,
+          cachedGuildOnly: true,
           aliases: ["channeltopic"],
           cooldown: 5,
           subcommandEnabled: true

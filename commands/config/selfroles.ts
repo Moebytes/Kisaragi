@@ -27,6 +27,7 @@ export default class Selfroles extends Command {
             \`=>selfroles reset\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 10,
             defer: true,

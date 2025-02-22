@@ -24,6 +24,7 @@ export default class Cases extends Command {
           \`=>cases mod @moderator\`
           `,
           guildOnly: true,
+          cachedGuildOnly: true,
           aliases: ["modlog", "caselog"],
           cooldown: 10,
           subcommandEnabled: true

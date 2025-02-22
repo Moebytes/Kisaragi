@@ -24,6 +24,7 @@ export default class Config extends Command {
             \`=>config reset\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 10,
             defer: true,

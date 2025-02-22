@@ -19,6 +19,7 @@ export default class Deafen extends Command {
             \`=>deafen @user\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["deaf", "vcdeaf"],
             cooldown: 3,
             subcommandEnabled: true

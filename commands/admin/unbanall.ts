@@ -21,6 +21,7 @@ export default class UnbanAll extends Command {
             \`=>unbanall\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 10,
             subcommandEnabled: true

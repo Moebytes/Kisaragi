@@ -30,6 +30,7 @@ export default class Welcome extends Command {
             \`=>welcome enable rainbow\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["greeting"],
             cooldown: 10,
             defer: true,

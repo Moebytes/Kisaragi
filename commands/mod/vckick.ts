@@ -19,6 +19,7 @@ export default class VCKick extends Command {
             \`=>vckick @user earrape\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["vcdisconnect"],
             cooldown: 3,
             subcommandEnabled: true

@@ -23,6 +23,7 @@ export default class InstantBan extends Command {
             `,
             aliases: ["iban"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 3,
             defer: true,
             subcommandEnabled: true

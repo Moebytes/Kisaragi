@@ -30,6 +30,7 @@ export default class CaptchaCmd extends Command {
             \`=>captcha math easy\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["verification"],
             cooldown: 10,
             defer: true,

@@ -23,6 +23,7 @@ export default class Source extends Command {
             \`=>source #channel\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["autosaucenao"],
             cooldown: 10,
             defer: true,

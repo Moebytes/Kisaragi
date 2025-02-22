@@ -26,6 +26,7 @@ export default class Speed extends Command {
             `,
             aliases: ["timestretch", "tempo"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 10,
             premium: true,
             subcommandEnabled: true

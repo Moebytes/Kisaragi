@@ -19,6 +19,8 @@ export default class Softban extends Command {
             \`=>softban @user spammer\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
+            botPermission: "BanMembers",
             aliases: [],
             cooldown: 3,
             subcommandEnabled: true

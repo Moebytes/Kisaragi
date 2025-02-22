@@ -21,6 +21,7 @@ export default class Bassboost extends Command {
             `,
             aliases: ["bass"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

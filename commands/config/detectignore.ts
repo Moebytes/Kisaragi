@@ -23,6 +23,7 @@ export default class DetectIgnore extends Command {
             \`=>detectignore #channel\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 10,
             defer: true,

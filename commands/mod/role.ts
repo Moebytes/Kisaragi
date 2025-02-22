@@ -20,6 +20,7 @@ export default class Role extends Command {
           \`=>role del @user @normie\`
           `,
           guildOnly: true,
+          cachedGuildOnly: true,
           aliases: [],
           cooldown: 5,
           subcommandEnabled: true

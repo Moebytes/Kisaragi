@@ -21,6 +21,7 @@ export default class NowPlaying extends Command {
             `,
             aliases: ["np", "playing"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 10,
             subcommandEnabled: true
         })

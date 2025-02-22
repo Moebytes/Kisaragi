@@ -11,7 +11,6 @@ export default class Warn extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
             description: "Gives users a warning.",
-            guildOnly: true,
             help:
             `
             \`warn @user/id reason?\` - Warns the user for the reason
@@ -20,6 +19,8 @@ export default class Warn extends Command {
             `
             \`=>warn @user stop spamming\`
             `,
+            guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 10,
             subcommandEnabled: true

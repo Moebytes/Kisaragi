@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Upsample extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Applies upsampling to an audio file.",
+            description: "Applies upsampling effect.",
             help:
             `
             \`upsample factor?\` - Applies upsampling to the audio file with the parameters.
@@ -23,6 +23,7 @@ export default class Upsample extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

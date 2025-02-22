@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Highshelf extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Applies a highshelf filter to an audio file (boosts treble).",
+            description: "Applies a highshelf filter (boosts treble).",
             help:
             `
             \`highshelf gain? freq? width?\` - Applies a highshelf filter to the audio file with the parameters.
@@ -23,6 +23,7 @@ export default class Highshelf extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

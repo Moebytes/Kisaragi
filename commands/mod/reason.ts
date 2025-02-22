@@ -19,6 +19,7 @@ export default class Reason extends Command {
           \`=>reason 3 being bad\`
           `,
           guildOnly: true,
+          cachedGuildOnly: true,
           aliases: [],
           cooldown: 5,
           subcommandEnabled: true

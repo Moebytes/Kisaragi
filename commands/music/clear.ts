@@ -21,6 +21,7 @@ export default class Clear extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 10,
             subcommandEnabled: true
         })

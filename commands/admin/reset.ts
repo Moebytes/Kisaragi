@@ -19,6 +19,7 @@ export default class Reset extends Command {
             \`=>reset\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 10,
             defer: true,

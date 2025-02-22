@@ -21,6 +21,7 @@ export default class Restrict extends Command {
             \`=>restrict @user can't post images\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 3,
             subcommandEnabled: true

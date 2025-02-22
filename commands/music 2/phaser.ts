@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Phaser extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Applies a phaser effect to an audio file.",
+            description: "Applies a phaser effect.",
             help:
             `
             \`phaser delay? decay? speed?\` - Applies phaser to the audio file with the parameters.
@@ -23,6 +23,7 @@ export default class Phaser extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

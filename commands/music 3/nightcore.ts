@@ -21,6 +21,7 @@ export default class Nightcore extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 10,
             premium: true,
             subcommandEnabled: true

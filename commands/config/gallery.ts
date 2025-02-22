@@ -23,6 +23,7 @@ export default class Gallery extends Command {
             \`=>gallery #channel\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 10,
             defer: true,

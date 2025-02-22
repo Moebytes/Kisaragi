@@ -24,6 +24,7 @@ export default class Reverse extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 15,
             premium: true,
             subcommandEnabled: true

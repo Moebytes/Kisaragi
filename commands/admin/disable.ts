@@ -23,6 +23,7 @@ export default class Disable extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 3,
             defer: true,
             subcommandEnabled: true

@@ -30,8 +30,9 @@ export default class YTNotify extends Command {
             \`=>ytnotify channel #updates\`
             `,
             aliases: ["ytnotification", "ytnotifications"],
-            botPermission: "MANAGE_WEBHOOKS",
+            botPermission: "ManageWebhooks",
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 15,
             defer: true,
             unlist: true,

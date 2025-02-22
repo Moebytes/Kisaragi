@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Bandpass extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Applies a bandpass filter to an audio file.",
+            description: "Applies a bandpass filter.",
             help:
             `
             \`bandpass freq? width?\` - Applies a bandpass filter to the audio file with the parameters.
@@ -23,6 +23,7 @@ export default class Bandpass extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

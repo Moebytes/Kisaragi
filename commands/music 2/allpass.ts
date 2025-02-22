@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class AllPass extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Applies an allpass filter to an audio file.",
+            description: "Applies an allpass filter.",
             help:
             `
             _Note: Frequency and width are in Hz._
@@ -23,6 +23,7 @@ export default class AllPass extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

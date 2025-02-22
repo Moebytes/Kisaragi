@@ -21,6 +21,7 @@ export default class Volume extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 5,
             premium: true,
             subcommandEnabled: true

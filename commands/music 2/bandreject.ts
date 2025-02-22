@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Bandreject extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Applies a bandreject filter to an audio file.",
+            description: "Applies a bandreject filter.",
             help:
             `
             \`bandreject freq? width?\` - Applies a bandreject filter to the audio file with the parameters.
@@ -23,6 +23,7 @@ export default class Bandreject extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

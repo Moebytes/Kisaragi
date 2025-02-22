@@ -28,6 +28,7 @@ export default class Auto extends Command {
             \`=>auto delete 1\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 10,
             premium: true,

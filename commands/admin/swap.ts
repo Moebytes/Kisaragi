@@ -21,6 +21,7 @@ export default class Swap extends Command {
             \`=>swap\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 10,
             subcommandEnabled: true

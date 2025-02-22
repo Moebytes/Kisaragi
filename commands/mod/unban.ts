@@ -18,6 +18,7 @@ export default class Unban extends Command {
             \`=>unban 593838271650332672 forgiven\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 3,
             subcommandEnabled: true

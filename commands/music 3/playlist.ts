@@ -24,6 +24,7 @@ export default class Playlists extends Command {
             `,
             aliases: ["playlists"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 10,
             unlist: true
         })

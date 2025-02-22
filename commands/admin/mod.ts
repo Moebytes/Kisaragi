@@ -31,6 +31,7 @@ export default class Mod extends Command {
             `,
             aliases: ["moderation"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 10,
             defer: true,
             subcommandEnabled: true

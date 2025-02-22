@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Bitcrush extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Applies bitcrushing (downsampling) to an audio file.",
+            description: "Applies bitcrushing (downsampling) effect.",
             help:
             `
             \`bitcrush factor?\` - Applies bitcrush to the audio file with the parameters.
@@ -23,6 +23,7 @@ export default class Bitcrush extends Command {
             `,
             aliases: ["downsample"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

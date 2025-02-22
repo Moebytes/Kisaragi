@@ -23,6 +23,7 @@ export default class DeleteCase extends Command {
             `,
             aliases: ["delcase"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 10,
             subcommandEnabled: true
         })

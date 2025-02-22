@@ -22,6 +22,7 @@ export default class Effects extends Command {
             `,
             aliases: ["fx"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             defer: true,
             premium: true,

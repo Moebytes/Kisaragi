@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Chorus extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Applies a chorus effect to an audio file.",
+            description: "Applies a chorus effect.",
             help:
             `
             \`chorus delay? decay? speed? depth?\` - Applies chorus to the audio file with the parameters.
@@ -23,6 +23,7 @@ export default class Chorus extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

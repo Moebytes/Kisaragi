@@ -22,6 +22,7 @@ export default class TempMute extends Command {
             \`=>tempmute @user 10m\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 3,
             subcommandEnabled: true

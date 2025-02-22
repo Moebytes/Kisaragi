@@ -30,6 +30,7 @@ export default class Leave extends Command {
             \`=>leave reset\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["farewell"],
             cooldown: 10,
             defer: true,

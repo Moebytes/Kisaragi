@@ -20,7 +20,8 @@ export default class Verify extends Command {
             \`=>verify\`
             `,
             guildOnly: true,
-            botPermission: "MANAGE_ROLES",
+            cachedGuildOnly: true,
+            botPermission: "ManageRoles",
             aliases: [],
             cooldown: 10,
             slashEnabled: true

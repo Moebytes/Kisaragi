@@ -25,6 +25,8 @@ export default class Points extends Command {
             \`=>points enable [10, 20] {1000} <60>\`
             \`=>points destroy\`
             `,
+            guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["point", "pointsettings"],
             cooldown: 10,
             defer: true,

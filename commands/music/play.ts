@@ -28,6 +28,7 @@ export default class Play extends Command {
             \`=>play reverse first synthion comet\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["pl", "stream"],
             cooldown: 15,
             defer: true,

@@ -20,6 +20,7 @@ export default class Unmute extends Command {
             \`=>unmute @user\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 3,
             subcommandEnabled: true

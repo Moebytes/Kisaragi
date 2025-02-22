@@ -20,6 +20,8 @@ export default class Rank extends Command {
             `
             \`=>rank\`
             `,
+            guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["score", "level", "xp"],
             cooldown: 5,
             subcommandEnabled: true

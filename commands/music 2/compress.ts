@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Compress extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Applies compression to an audio file (reduces dynamic range).",
+            description: "Applies compression (reduces dynamic range).",
             help:
             `
             _Note: This is a simple compression effect, set the amount from 0-100._
@@ -24,6 +24,7 @@ export default class Compress extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

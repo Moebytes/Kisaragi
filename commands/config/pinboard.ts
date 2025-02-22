@@ -25,7 +25,8 @@ export default class Pinboard extends Command {
             `,
             aliases: [],
             guildOnly: true,
-            botPermission: "MANAGE_WEBHOOKS",
+            cachedGuildOnly: true,
+            botPermission: "ManageWebhooks",
             cooldown: 15,
             defer: true,
             subcommandEnabled: true

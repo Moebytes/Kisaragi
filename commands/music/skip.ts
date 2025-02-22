@@ -23,6 +23,7 @@ export default class Skip extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 5,
             subcommandEnabled: true
         })

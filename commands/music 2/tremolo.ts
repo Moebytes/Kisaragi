@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Tremolo extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Applies tremolo (amplitude modulation) to an audio file.",
+            description: "Applies tremolo (amplitude modulation) effect.",
             help:
             `
             \`tremolo speed? depth?\` - Applies a tremolo effect to the audio file with the parameters.
@@ -23,6 +23,7 @@ export default class Tremolo extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

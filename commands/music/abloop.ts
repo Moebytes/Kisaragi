@@ -22,6 +22,7 @@ export default class ABLoop extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 10,
             premium: true,
             subcommandEnabled: true

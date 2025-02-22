@@ -21,6 +21,7 @@ export default class Autoplay extends Command {
             `,
             aliases: [],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 5,
             subcommandEnabled: true
         })

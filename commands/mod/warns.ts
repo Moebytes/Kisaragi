@@ -27,6 +27,7 @@ export default class Warns extends Command {
             \`=>warns destroy\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 10,
             defer: true,

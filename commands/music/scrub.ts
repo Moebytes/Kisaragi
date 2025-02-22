@@ -22,6 +22,7 @@ export default class Scrub extends Command {
             `,
             aliases: ["seek"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 5,
             subcommandEnabled: true
         })

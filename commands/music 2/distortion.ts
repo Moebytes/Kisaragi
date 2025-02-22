@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Distortion extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Applies distortion to an audio file.",
+            description: "Applies distortion effect.",
             help:
             `
             \`distortion gain? color?\` - Applies distortion to the audio file with the parameters.
@@ -23,6 +23,7 @@ export default class Distortion extends Command {
             `,
             aliases: ["overdrive"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

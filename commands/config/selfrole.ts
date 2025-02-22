@@ -20,6 +20,7 @@ export default class Selfrole extends Command {
             \`=>selfrole kanna\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["sr"],
             cooldown: 10,
             subcommandEnabled: true

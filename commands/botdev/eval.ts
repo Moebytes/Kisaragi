@@ -38,7 +38,8 @@ export default class Eval extends Command {
           aliases: [],
           cooldown: 3,
           botdev: true,
-          subcommandEnabled: true
+          unlist: true,
+          subcommandEnabled: false
       })
       const codeOption = new SlashCommandOption()
           .setType("string")
@@ -62,6 +63,8 @@ export default class Eval extends Command {
         const discord = this.discord
         const message = this.message
         const perms = new Permission(discord, message)
+        return
+        /* - Disable this command
         if (!perms.checkBotDev()) return
         const embeds = new Embeds(discord, message)
         const audio = new Audio(discord, message)
@@ -93,6 +96,6 @@ export default class Eval extends Command {
           this.reply(evalEmbed)
         } catch (error: any) {
           this.reply(`\`ERROR\` \`\`\`xl\n${this.clean(error)}\n\`\`\``)
-        }
+        }*/
   }
 }

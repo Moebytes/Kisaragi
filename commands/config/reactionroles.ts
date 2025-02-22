@@ -28,6 +28,7 @@ export default class ReactionRoles extends Command {
             `,
             aliases: ["rr"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 15,
             defer: true,
             subcommandEnabled: true

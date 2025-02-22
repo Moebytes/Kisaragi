@@ -20,6 +20,8 @@ export default class Zero extends Command {
             `
             \`=>zero\`
             `,
+            guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["resetpoints", "pointreset"],
             cooldown: 10,
             subcommandEnabled: true

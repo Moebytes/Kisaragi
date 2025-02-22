@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Highpass extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Applies a highpass filter to an audio file.",
+            description: "Applies a highpass filter.",
             help:
             `
             \`highpass freq? width?\` - Applies a highpass filter to the audio file with the parameters.
@@ -23,6 +23,7 @@ export default class Highpass extends Command {
             `,
             aliases: ["lowcut"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             premium: true,
             subcommandEnabled: true

@@ -24,6 +24,7 @@ export default class Pitch extends Command {
             `,
             aliases: ["pitchshift", "semitones"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 10,
             premium: true,
             subcommandEnabled: true

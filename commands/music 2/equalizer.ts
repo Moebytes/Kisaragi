@@ -22,6 +22,7 @@ export default class Equalizer extends Command {
             `,
             aliases: ["eq"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 20,
             defer: true,
             premium: true,

@@ -20,6 +20,7 @@ export default class Connect extends Command {
             `,
             aliases: ["join"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 10,
             subcommandEnabled: true
         })

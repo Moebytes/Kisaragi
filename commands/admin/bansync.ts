@@ -24,6 +24,7 @@ export default class BanSync extends Command {
             \`=>bansync another server perfect\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["syncbans"],
             cooldown: 10,
             subcommandEnabled: true

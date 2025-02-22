@@ -25,6 +25,7 @@ export default class EmojiRoles extends Command {
             `,
             aliases: ["er", "eroles"],
             guildOnly: true,
+            cachedGuildOnly: true,
             cooldown: 3,
             defer: true,
             subcommandEnabled: true

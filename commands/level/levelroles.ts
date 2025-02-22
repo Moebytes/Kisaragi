@@ -25,6 +25,8 @@ export default class LevelRoles extends Command {
             \`=>levelroles @senpai 10000\`
             \`=>levelroles @cute 5000 You are cute!\`
             `,
+            guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["lr"],
             cooldown: 10,
             defer: true,

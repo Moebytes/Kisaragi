@@ -20,6 +20,7 @@ export default class Unrestrict extends Command {
             \`=>unrestrict @user shush\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: [],
             cooldown: 3,
             subcommandEnabled: true

@@ -32,9 +32,10 @@ export default class Block extends Command {
             \`=>block reset\`
             `,
             guildOnly: true,
+            cachedGuildOnly: true,
             aliases: ["filter"],
-            permission: "MANAGE_MESSAGES",
-            botPermission: "MANAGE_MESSAGES",
+            permission: "ManageMessages",
+            botPermission: "ManageMessages",
             cooldown: 10,
             defer: true,
             subcommandEnabled: true
