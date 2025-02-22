@@ -41,14 +41,14 @@ export class Kisaragi extends Client {
     public reply = async (input: Message | ChatInputCommandInteraction | ContextMenuCommandInteraction | ButtonInteraction, 
     embeds: EmbedBuilder | EmbedBuilder[] | string, files?: AttachmentBuilder | AttachmentBuilder[], 
     opts?: MessageReplyOptions) => {
+        const self = this
         if (!(input instanceof Message)) {
             // patch interaction reply
             // @ts-expect-error
             input.reply = ((originalReply) => {
                 return async function (options: InteractionReplyOptions) {
                     if (typeof options === "string") options = {content: options}
-                    const ephemeral = !input.inCachedGuild() && input.channel?.type !== ChannelType.DM
-                    const flags = ephemeral ? MessageFlags.Ephemeral : undefined
+                    const flags = self.isUncachedInteraction(input) ? MessageFlags.Ephemeral : undefined
                     await originalReply.call(this, {withResponse: true,  flags, ...options})
                     return input.fetchReply()
                 }
@@ -65,8 +65,7 @@ export class Kisaragi extends Client {
         if (files) options.files = Array.isArray(files) ? files : [files]
         if (this.deferState.has(input.id)) {
             if ("followUp" in input) {
-                const ephemeral = !input.inCachedGuild() && input.channel?.type !== ChannelType.DM
-                const flags = ephemeral ? MessageFlags.Ephemeral : undefined
+                const flags = this.isUncachedInteraction(input) ? MessageFlags.Ephemeral : undefined
                 return (input as ChatInputCommandInteraction).followUp({...options, flags})
             } else {
                 return (input as Message).reply(options)
@@ -86,8 +85,7 @@ export class Kisaragi extends Client {
     public deferReply = (interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction, noReply?: boolean) => {
         this.deferState.add(interaction.id)
         if (noReply) return
-        const ephemeral = !interaction.inCachedGuild() && interaction.channel?.type !== ChannelType.DM
-        const flags = ephemeral ? MessageFlags.Ephemeral : undefined
+        const flags = this.isUncachedInteraction(interaction) ? MessageFlags.Ephemeral : undefined
         return interaction.deferReply({flags})
     }
     
@@ -97,8 +95,7 @@ export class Kisaragi extends Client {
         if (!opts) opts = {}
         let flags = undefined as number | undefined
         if (!(input instanceof Message)) {
-            const ephemeral = !input.inCachedGuild() && input.channel?.type !== ChannelType.DM
-            flags = ephemeral ? MessageFlags.Ephemeral : undefined
+            flags = this.isUncachedInteraction(input) ? MessageFlags.Ephemeral : undefined
         }
         opts.flags = flags
         if (!input.channel) return this.reply(input, embeds, files, opts)
@@ -151,8 +148,7 @@ export class Kisaragi extends Client {
         if (msg instanceof Message) {
             return msg.edit(options)
         } else {
-            const ephemeral = !msg.inCachedGuild() && msg.channel?.type !== ChannelType.DM
-            options.flags = ephemeral ? MessageFlags.Ephemeral : undefined
+            options.flags = this.isUncachedInteraction(msg) ? MessageFlags.Ephemeral : undefined
             return msg.update(options)
         }
     }
@@ -467,5 +463,10 @@ export class Kisaragi extends Client {
             return false
         }
         return true
+    }
+
+    public isUncachedInteraction = (interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction | 
+        ButtonInteraction | StringSelectMenuInteraction) => {
+        return !interaction.guild || !interaction.client.guilds.cache.has(interaction.guild.id)
     }
 }

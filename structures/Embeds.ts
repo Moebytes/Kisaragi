@@ -65,9 +65,9 @@ export class Embeds {
 
     /** Create Reaction Embed */
     public createReactionEmbed = async (embeds: EmbedBuilder[], collapseOn?: boolean, downloadOn?: boolean, startPage?: number, dm?: User) => {
-        if (this.message instanceof ChatInputCommandInteraction) {
+        if (!(this.message instanceof Message)) {
             const interaction = this.message as ChatInputCommandInteraction
-            if (!interaction.inCachedGuild() && interaction.channel?.type !== ChannelType.DM) {
+            if (this.discord.isUncachedInteraction(interaction)) {
                 return this.createButtonEmbed(embeds, collapseOn, downloadOn, startPage, dm)
             }
         }
@@ -1077,9 +1077,9 @@ export class Embeds {
 
     /** Create Help Embed */
     public createHelpEmbed = async (embeds: EmbedBuilder[], reactionPage?: number) => {
-        if (this.message instanceof ChatInputCommandInteraction) {
+        if (!(this.message instanceof Message)) {
             const interaction = this.message as ChatInputCommandInteraction
-            if (!interaction.inCachedGuild() && interaction.channel?.type !== ChannelType.DM) {
+            if (this.discord.isUncachedInteraction(interaction)) {
                 return this.createHelpMenu(embeds, reactionPage)
             }
         }
