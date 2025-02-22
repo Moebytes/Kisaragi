@@ -467,6 +467,6 @@ export class Kisaragi extends Client {
 
     public isUncachedInteraction = (interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction | 
         ButtonInteraction | StringSelectMenuInteraction) => {
-        return interaction.guild && !interaction.client.guilds.cache.has(interaction.guild.id)
+        return (!interaction.guild || !interaction.client.guilds.cache.has(interaction.guild.id)) && interaction.channel?.type !== ChannelType.DM
     }
 }
