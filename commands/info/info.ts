@@ -35,15 +35,7 @@ export default class Info extends Command {
         const message = this.message
         const embeds = new Embeds(discord, message)
 
-        let cmdCount = 0
-        const subDir = fs.readdirSync("./commands")
-        for (let i = 0; i < subDir.length; i++) {
-            if (subDir[i] === ".DS_Store") continue
-            const commands = fs.readdirSync(`./commands/${subDir[i]}`)
-            for (let j = 0; j < commands.length; j++) {
-                cmdCount++
-            }
-        }
+        let cmdCount = discord.commands.size
 
         const description =
         `[Kisaragi](https://azurlane.koumakan.jp/Kisaragi) was a Mutsuki-Class Destroyer of the Imperial Japanese Navy ` +
@@ -63,9 +55,9 @@ export default class Info extends Command {
             `${discord.getEmoji("star")}_Runtime:_ **Node.js**\n` +
             `${discord.getEmoji("star")}_Language:_ **Typescript**\n` +
             `${discord.getEmoji("star")}_Database:_ **PostgreSQL**\n` +
-            `${discord.getEmoji("star")}_Guilds:_ **${discord.guilds.cache.size}**\n` +
-            `${discord.getEmoji("star")}_Channels:_ **${discord.channels.cache.size}**\n` +
-            `${discord.getEmoji("star")}_Users:_ **${discord.users.cache.size}**\n` +
+            `${discord.getEmoji("star")}_Guilds:_ **${await discord.shardedGuildCount()}**\n` +
+            `${discord.getEmoji("star")}_Channels:_ **${await discord.shardedChannelCount()}**\n` +
+            `${discord.getEmoji("star")}_Users:_ **${await discord.shardedUserCount()}**\n` +
             `${discord.getEmoji("star")}_Emojis:_ **${discord.emojis.cache.size}**\n` +
             `${discord.getEmoji("star")}_Commands_: **${cmdCount}**\n`+
             `${discord.getEmoji("star")}_Prefix_: Your prefix is set to **${await SQLQuery.fetchPrefix(message)}**.\n`+

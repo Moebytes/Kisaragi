@@ -16,5 +16,6 @@ export default class Ready {
       console.log(chalk.magentaBright(logString))
       console.log(chalk.magentaBright(readyString))
       SQLQuery.cleanup()
-  }
+      this.discord.postGuildCount()
+    }
 }

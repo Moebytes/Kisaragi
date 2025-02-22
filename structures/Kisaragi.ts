@@ -357,23 +357,24 @@ export class Kisaragi extends Client {
     /** Post guild count on bot lists */
     public postGuildCount = async () => {
         if (process.env.TESTING === "yes") return
+        const guildCount = await this.shardedGuildCount()
         const urls = [
-            `https://discord.bots.gg/api/v1/bots/${this.user!.id}/stats`,
-            `https://discordbotlist.com/api/v1/bots/${this.user!.id}/stats`,
-            `https://bots.ondiscord.xyz/bot-api/bots/${this.user!.id}/guilds`,
-            `https://top.gg/api/bots/${this.user!.id}/stats`
+            `https://top.gg/api/bots/${this.user!.id}/stats`,
+            //`https://discord.bots.gg/api/v1/bots/${this.user!.id}/stats`,
+            //`https://discordbotlist.com/api/v1/bots/${this.user!.id}/stats`,
+            //`https://bots.ondiscord.xyz/bot-api/bots/${this.user!.id}/guilds`
         ]
         const headers = [
-            {authorization: process.env.DISCORD_BOTS_TOKEN},
-            {authorization: process.env.DISCORD_BOTLIST_TOKEN},
-            {authorization: process.env.BOTS_ON_DISCORD_KEY},
-            {"Authorization": process.env.DBL_TOKEN, "Content-Type": "application/x-www-form-urlencoded"}
+            {"Authorization": process.env.TOP_GG_TOKEN, "Content-Type": "application/x-www-form-urlencoded"}
+            //{authorization: process.env.DISCORD_BOTS_TOKEN},
+            //{authorization: process.env.DISCORD_BOTLIST_TOKEN},
+            //{authorization: process.env.BOTS_ON_DISCORD_KEY},
         ]
         const data = [
-            {guildCount: this.guilds.cache.size},
-            {guilds: this.guilds.cache.size, users: this.users.cache.size},
-            {guildCount: this.guilds.cache.size},
-            querystring.stringify({server_count: this.guilds.cache.size})
+            querystring.stringify({server_count: guildCount}),
+            //{guildCount: guildCount},
+            //{guilds: guildCount, users: this.users.cache.size},
+            //{guildCount: guildCount},
         ]
         for (let i = 0; i < urls.length; i++) {
             await axios.post(urls[i], data[i], {headers: headers[i]})
@@ -468,5 +469,23 @@ export class Kisaragi extends Client {
     public isUncachedInteraction = (interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction | 
         ButtonInteraction | StringSelectMenuInteraction) => {
         return (!interaction.guild || !interaction.client.guilds.cache.has(interaction.guild.id)) && interaction.channel?.type !== ChannelType.DM
+    }
+
+    public shardedGuildCount = async () => {
+        if (!this.shard) return this.guilds.cache.size
+        const result = await this.shard.fetchClientValues("guilds.cache.size") as number[]
+        return result.reduce((acc, count) => acc + count, 0)
+    }
+
+    public shardedChannelCount = async () => {
+        if (!this.shard) return this.channels.cache.size
+        const result = await this.shard.fetchClientValues("channels.cache.size") as number[]
+        return result.reduce((acc, count) => acc + count, 0)
+    }
+
+    public shardedUserCount = async () => {
+        if (!this.shard) return this.users.cache.size
+        const result = await this.shard.fetchClientValues("users.cache.size") as number[]
+        return result.reduce((acc, count) => acc + count, 0)
     }
 }
