@@ -88,6 +88,7 @@ export default class InteractionCreate {
                 return this.discord.reply(interaction, `Sorry, commands in the category **${command.category}** were disabled on this server. ${this.discord.getEmoji("mexShrug")}`)
             }
 
+            if (targetCommand.options.voteLocked && !await perms.checkVoteLocked()) return
             if (targetCommand.options.premium && !perms.checkPremium()) return
 
             const onCooldown = cooldown.cmdCooldown(subcommand ? subcommand : slashCommand, targetCommand.options.cooldown)
@@ -100,8 +101,7 @@ export default class InteractionCreate {
             } else {
                 args = [slashCommand, ...interaction.options.data.map((o) => o.value)] as string[]
             }
-            discord.clearDeferState(interaction)
-            if (targetCommand?.options.defer && interaction.isChatInputCommand()) await command.deferReply(interaction)
+            if (targetCommand?.options.defer) await command.deferReply(interaction)
             await cmd.runCommandClass(command, interaction as any, args)
         }
     }

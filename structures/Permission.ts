@@ -1,8 +1,11 @@
 import {Message, PermissionsBitField, PermissionsString, Role, TextChannel, User} from "discord.js"
-import * as config from "../assets/json/blacklist.json"
+import blacklist from "../assets/json/blacklist.json"
+import config from "../config.json"
 import {Kisaragi} from "./Kisaragi"
 import {SQLQuery} from "./SQLQuery"
-import { Functions } from "./Functions"
+import {Functions} from "./Functions"
+import {Embeds} from "./Embeds"
+import axios from "axios"
 
 export class Permission {
     private readonly sql: SQLQuery
@@ -143,10 +146,51 @@ export class Permission {
         }
     }
 
+    /** Check Vote Locked */
+    public checkVoteLocked = async (noMsg?: boolean) => {
+        const premium = this.checkPremium(true)
+        // if (premium) return true
+        const result = await SQLQuery.fetchColumn("misc", "last voted", "user id", this.message.author.id)
+        let voted = false
+        if (result) {
+            const timestamp = new Date(result).getTime()
+            const now = Date.now()
+            if (now - timestamp <= 48 * 60 * 60 * 1000) voted = true
+        }
+        if (!voted) {
+            const headers = {"Authorization": process.env.TOP_GG_TOKEN}
+            const response = await axios.get(`https://top.gg/api/bots/${this.discord.user!.id}/check?userId=${this.message.author.id}`, {headers}).then((r) => r.data)
+            voted = Boolean(response.voted)
+            if (voted) {
+                try {
+                    await SQLQuery.insertInto("misc", "user id", this.message.author.id)
+                    await SQLQuery.updateColumn("misc", "username", this.message.author.username, "user id", this.message.author.id)
+                } finally {
+                    const now = new Date().toISOString()
+                    await SQLQuery.updateColumn("misc", "last voted", now, "user id", this.message.author.id)
+                }
+            }
+        }
+        if (voted) {
+            return true
+        } else {
+            if (noMsg) return false
+            const embeds = new Embeds(this.discord, this.message)
+            const voteEmbed = embeds.createEmbed()
+            .setTitle(`**Voting Required** ${this.discord.getEmoji("uniHurt")}`)
+            .setDescription(
+                `To use this command you must vote for us! You will gain access to all the vote-locked commands for **48 hours**.\n` +
+                `[**Voting Link**](${config.vote})\n`
+            )
+            await this.discord.reply(this.message, voteEmbed)
+            return false
+        }
+    }
+
     /** Booru content filter */
     public booruFilter = (tags: string) => {
-        for (let i = 0; i < config.booru.length; i++) {
-            if (tags.includes(config.booru[i])) return true
+        for (let i = 0; i < blacklist.booru.length; i++) {
+            if (tags.includes(blacklist.booru[i])) return true
         }
         return false
     }

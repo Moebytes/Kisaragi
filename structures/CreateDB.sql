@@ -35,7 +35,8 @@ CREATE TABLE IF NOT EXISTS "misc" (
     "bookmarks" text,
     "playlists" text,
     "birthday" text,
-    "usage" text
+    "usage" text,
+    "last voted" timestampz
 );
 
 CREATE TABLE IF NOT EXISTS "oauth2" (

@@ -9,6 +9,7 @@
     "website": "https://kisaragi.moe",
     "support": "https://discord.gg/sNhUu5JN6y",
     "invite": "https://discord.com/oauth2/authorize?client_id=593838271650332672&scope=bot&permissions=543279148279",
+    "vote": "https://top.gg/bot/593838271650332672/vote",
     "oauth2": "https://kisaragi.moe/discord",
     "oauth2Testing": "http://localhost:5000/discord",
     "twitterRedirect": "https://kisaragi.moe/twitter",

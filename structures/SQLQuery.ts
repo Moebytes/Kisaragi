@@ -539,6 +539,7 @@ export class SQLQuery {
     if (!userUsage) {
       try {
         await SQLQuery.insertInto("misc", "user id", this.message.author.id)
+        await SQLQuery.updateColumn("misc", "username", this.message.author.username, "user id", this.message.author.id)
       } catch {
         // Do nothing
       }
