@@ -58,9 +58,9 @@ export class Kisaragi extends Client {
         if (Array.isArray(embeds)) {
             options.embeds = embeds
         } else if (embeds instanceof EmbedBuilder) {
-          options.embeds = [embeds]
+            options.embeds = [embeds]
         } else if (typeof embeds === "string") {
-          options.content = embeds
+            options.content = embeds
         }
         if (files) options.files = Array.isArray(files) ? files : [files]
         if (this.deferState.has(input.id)) {
@@ -86,7 +86,9 @@ export class Kisaragi extends Client {
     public deferReply = (interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction, noReply?: boolean) => {
         this.deferState.add(interaction.id)
         if (noReply) return
-        return interaction.deferReply()
+        const ephemeral = !interaction.inCachedGuild() && interaction.channel?.type !== ChannelType.DM
+        const flags = ephemeral ? MessageFlags.Ephemeral : undefined
+        return interaction.deferReply({flags})
     }
     
     /** Send message to a channel */
