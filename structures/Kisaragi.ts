@@ -42,15 +42,15 @@ export class Kisaragi extends Client {
     opts?: MessageReplyOptions) => {
         let options = {...opts} as InteractionReplyOptions
         if (!(input instanceof Message)) {
+            const flags = this.isUncachedInteraction(input) ? MessageFlags.Ephemeral : undefined
+            options.flags = flags
             // @ts-expect-error patch interaction reply to return message
             input.reply = ((originalReply) => {
                 return async function (options: InteractionReplyOptions) {
-                    await originalReply.call(this, {...options, withResponse: true})
+                    await originalReply.call(this, {...options, flags, withResponse: true})
                     return input.fetchReply()
                 }
             })(input.reply)
-            const flags = this.isUncachedInteraction(input) ? MessageFlags.Ephemeral : undefined
-            options.flags = flags
         }
         if (Array.isArray(embeds)) {
             options.embeds = embeds
