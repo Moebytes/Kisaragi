@@ -24,6 +24,7 @@ export default class Volume extends Command {
             cachedGuildOnly: true,
             cooldown: 5,
             premium: true,
+            voteLocked: true,
             subcommandEnabled: true
         })
         const volumeOption = new SlashCommandOption()

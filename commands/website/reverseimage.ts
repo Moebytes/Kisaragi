@@ -34,6 +34,7 @@ export default class ReverseImage extends Command {
             aliases: ["revimg", "reverseimg"],
             random: "none",
             cooldown: 10,
+            voteLocked: true,
             defer: true,
             unlist: true,
             subcommandEnabled: false

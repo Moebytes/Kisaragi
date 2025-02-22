@@ -31,6 +31,7 @@ export default class Pixiv extends Command {
             random: "none",
             cooldown: 60,
             defer: true,
+            voteLocked: true,
             subcommandEnabled: true
         })
         const tag3Option = new SlashCommandOption()

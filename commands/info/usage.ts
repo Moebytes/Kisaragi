@@ -34,6 +34,7 @@ export default class Usage extends Command {
             random: "none",
             cooldown: 5,
             defer: true,
+            voteLocked: true,
             subcommandEnabled: true
         })
         const command2Option = new SlashCommandOption()

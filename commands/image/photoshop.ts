@@ -37,6 +37,7 @@ export default class Photoshop extends Command {
           aliases: ["ps", "edit", "editor", "adjust", "hsv", "hsb"],
           cooldown: 10,
           defer: true,
+          voteLocked: true,
           slashEnabled: true
         })
         const urlOption = new SlashCommandOption()

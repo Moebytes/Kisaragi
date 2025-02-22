@@ -33,6 +33,7 @@ export default class Ugoira extends Command {
             random: "none",
             cooldown: 30,
             defer: true,
+            voteLocked: true,
             subcommandEnabled: true
         })
         const tag2Option = new SlashCommandOption()

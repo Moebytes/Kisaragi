@@ -28,6 +28,7 @@ export default class Twitch extends Command {
             aliases: ["tw"],
             random: "string",
             cooldown: 10,
+            voteLocked: true,
             defer: true,
             subcommandEnabled: true
         })

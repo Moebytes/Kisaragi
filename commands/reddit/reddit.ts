@@ -32,6 +32,7 @@ export default class Reddit extends Command {
             aliases: ["r"],
             random: "none",
             cooldown: 10,
+            voteLocked: true,
             defer: true,
             subcommandEnabled: true
         })

@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Speed extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Changes the song speed (and optionally, the pitch as well).",
+            description: "Changes the song speed (and optionally, pitch as well).",
             help:
             `
             _Note: Speed changes are based on the speed of the original file._
@@ -29,6 +29,7 @@ export default class Speed extends Command {
             cachedGuildOnly: true,
             cooldown: 10,
             premium: true,
+            voteLocked: true,
             subcommandEnabled: true
         })
         const opt3 = new SlashCommandOption()

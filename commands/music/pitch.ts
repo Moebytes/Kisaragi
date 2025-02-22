@@ -10,7 +10,7 @@ import {Permission} from "../../structures/Permission"
 export default class Pitch extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Changes the pitch of an audio file (in semitones).",
+            description: "Changes the pitch of the audio (in semitones).",
             help:
             `
             _Note: Negative values will decrease pitch 12 semitones = 1 octave._
@@ -27,6 +27,7 @@ export default class Pitch extends Command {
             cachedGuildOnly: true,
             cooldown: 10,
             premium: true,
+            voteLocked: true,
             subcommandEnabled: true
         })
         const opt2Option = new SlashCommandOption()

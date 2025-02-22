@@ -1,4 +1,4 @@
-import {ChatInputCommandInteraction, Message, GuildMember} from "discord.js"
+import {ChatInputCommandInteraction, Message, GuildMember, ContextMenuCommandInteraction} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption, ContextMenuCommand} from "../../structures/SlashCommandOption"
 import {Command} from "../../structures/Command"
 import {Embeds} from "../../structures/Embeds"
@@ -52,12 +52,15 @@ export default class Avatar extends Command {
             .setImage(await discord.displayAvatar(message)))
         }
 
-        if (!message.guild) {
-          let interaction = message as unknown as ChatInputCommandInteraction
-          const member = interaction.options.getMentionable("user") as GuildMember
+        if (!(message instanceof Message)) {
+          let interaction = message as unknown as ChatInputCommandInteraction | ContextMenuCommandInteraction
+          let member = undefined as GuildMember | undefined
           const user = await this.discord.users.fetch(args[1])
+          if (interaction.guild) {
+            member = interaction.guild.members.cache.get(args[1])
+          }
           let avatar = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=512`
-          if (member.avatar) avatar = `https://cdn.discordapp.com/guilds/${message.guildId}/users/${user.id}/avatars/${member.avatar}.webp?size=512`
+          if (member?.avatar) avatar = `https://cdn.discordapp.com/guilds/${interaction.guildId}/users/${user.id}/avatars/${member.avatar}.webp?size=512`
           return this.reply(avatarEmbed
             .setDescription(`**${user.username}'s Profile Picture**`)
             .setURL(avatar)

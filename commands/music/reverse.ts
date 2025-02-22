@@ -11,7 +11,7 @@ import {Permission} from "../../structures/Permission"
 export default class Reverse extends Command {
     constructor(discord: Kisaragi, message: Message) {
         super(discord, message, {
-            description: "Reverses an audio file (this one is awesome).",
+            description: "Reverses the current audio.",
             help:
             `
             \`reverse\` - Reverses the song that is playing.
@@ -27,6 +27,7 @@ export default class Reverse extends Command {
             cachedGuildOnly: true,
             cooldown: 15,
             premium: true,
+            voteLocked: true,
             subcommandEnabled: true
         })
         const linkOption = new SlashCommandOption()

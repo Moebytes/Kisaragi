@@ -29,6 +29,7 @@ export default class Record extends Command {
             guildOnly: true,
             cachedGuildOnly: true,
             cooldown: 10,
+            voteLocked: true,
             defer: true,
             subcommandEnabled: true
         })

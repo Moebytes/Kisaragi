@@ -27,6 +27,7 @@ export default class Saucenao extends Command {
             aliases: ["sn"],
             random: "none",
             cooldown: 10,
+            voteLocked: true,
             defer: true,
             subcommandEnabled: true
         })

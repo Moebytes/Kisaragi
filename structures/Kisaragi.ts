@@ -15,7 +15,6 @@ export class Kisaragi extends Client {
     public readonly categories = new Set<string>()
     public readonly commands: Collection<string, Command> = new Collection()
     public readonly cooldowns: Collection<string, Collection<string, number>> = new Collection()
-    public readonly deferState = new Set<string>()
     public readonly activeEmbeds = new Set<string>()
     public static ignoreDelete = new Set<string>()
     public static username = "Kisaragi"
@@ -37,24 +36,22 @@ export class Kisaragi extends Client {
         Kisaragi.username = username
     }
 
-    /** Reply or follow up depending on defer state */
-    public reply = async (input: Message | ChatInputCommandInteraction | ContextMenuCommandInteraction | ButtonInteraction, 
-    embeds: EmbedBuilder | EmbedBuilder[] | string, files?: AttachmentBuilder | AttachmentBuilder[], 
+    /** Reply or follow up */
+    public reply = async (input: Message | ChatInputCommandInteraction | ContextMenuCommandInteraction | ButtonInteraction | 
+    StringSelectMenuInteraction, embeds: EmbedBuilder | EmbedBuilder[] | string, files?: AttachmentBuilder | AttachmentBuilder[], 
     opts?: MessageReplyOptions) => {
-        const self = this
+        let options = {...opts} as InteractionReplyOptions
         if (!(input instanceof Message)) {
-            // patch interaction reply
-            // @ts-expect-error
+            // @ts-expect-error patch interaction reply to return message
             input.reply = ((originalReply) => {
                 return async function (options: InteractionReplyOptions) {
-                    if (typeof options === "string") options = {content: options}
-                    const flags = self.isUncachedInteraction(input) ? MessageFlags.Ephemeral : undefined
-                    await originalReply.call(this, {withResponse: true,  flags, ...options})
+                    await originalReply.call(this, {...options, withResponse: true})
                     return input.fetchReply()
                 }
             })(input.reply)
+            const flags = this.isUncachedInteraction(input) ? MessageFlags.Ephemeral : undefined
+            options.flags = flags
         }
-        let options = {...opts} as any
         if (Array.isArray(embeds)) {
             options.embeds = embeds
         } else if (embeds instanceof EmbedBuilder) {
@@ -63,27 +60,15 @@ export class Kisaragi extends Client {
             options.content = embeds
         }
         if (files) options.files = Array.isArray(files) ? files : [files]
-        if (this.deferState.has(input.id)) {
-            if ("followUp" in input) {
-                const flags = this.isUncachedInteraction(input) ? MessageFlags.Ephemeral : undefined
-                return (input as ChatInputCommandInteraction).followUp({...options, flags})
-            } else {
-                return (input as Message).reply(options)
-            }
+        if (!(input instanceof Message) && input.deferred) {
+            return input.followUp(options)
         }
-        if (!this.deferState.has(input.id)) this.deferState.add(input.id)
         // @ts-expect-error
-        return input.reply(options) as Promise<Message<true>>
-    }
-
-    /** Clear defer state */
-    public clearDeferState = (input: Message | ChatInputCommandInteraction | ContextMenuCommandInteraction) => {
-        this.deferState.delete(input.id)
+        return input.reply(options) as Promise<Message>
     }
 
     /** Defer this reply */
     public deferReply = (interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction, noReply?: boolean) => {
-        this.deferState.add(interaction.id)
         if (noReply) return
         const flags = this.isUncachedInteraction(interaction) ? MessageFlags.Ephemeral : undefined
         return interaction.deferReply({flags})
@@ -437,7 +422,6 @@ export class Kisaragi extends Client {
 
     public resetReplyStatus = () => {
         this.replyStatus = "rejected"
-        this.deferState.clear()
     }
 
     public assertReplyStatus = () => {

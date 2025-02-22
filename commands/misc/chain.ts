@@ -24,6 +24,7 @@ export default class Chain extends Command {
             aliases: [],
             cooldown: 200,
             premium: true,
+            voteLocked: true,
             slashEnabled: true
         })
         const chainOption = new SlashCommandOption()

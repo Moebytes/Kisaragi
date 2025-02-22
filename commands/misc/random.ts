@@ -20,6 +20,7 @@ export default class Random extends Command {
             `,
             aliases: ["r", "rc", "rand", "randomcommand"],
             cooldown: 10,
+            voteLocked: true,
             slashEnabled: true
         })
         this.slash = new SlashCommand()

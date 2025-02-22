@@ -33,6 +33,7 @@ export default class Youtube extends Command {
             aliases: ["yt"],
             random: "string",
             cooldown: 10,
+            voteLocked: true,
             defer: true,
             subcommandEnabled: true
         })

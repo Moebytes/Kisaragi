@@ -27,6 +27,7 @@ export default class Screenshot extends Command {
           aliases: ["screencap"],
           cooldown: 15,
           defer: true,
+          voteLocked: true,
           subcommandEnabled: true
         })
         const url2Option = new SlashCommandOption()

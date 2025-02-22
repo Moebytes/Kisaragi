@@ -30,6 +30,7 @@ export default class Download extends Command {
             aliases: ["dl"],
             cooldown: 10,
             premium: true,
+            voteLocked: true,
             defer: true,
             subcommandEnabled: true
         })

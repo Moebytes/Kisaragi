@@ -29,6 +29,7 @@ export default class Waifu2x extends Command {
             aliases: ["2x"],
             cooldown: 60,
             premium: true,
+            voteLocked: true,
             defer: true,
             subcommandEnabled: true,
             contextEnabled: false

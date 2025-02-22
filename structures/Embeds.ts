@@ -67,7 +67,7 @@ export class Embeds {
     public createReactionEmbed = async (embeds: EmbedBuilder[], collapseOn?: boolean, downloadOn?: boolean, startPage?: number, dm?: User) => {
         if (!(this.message instanceof Message)) {
             const interaction = this.message as ChatInputCommandInteraction
-            if (this.discord.isUncachedInteraction(interaction)) {
+            if (this.discord.isUncachedInteraction(interaction) || interaction.channel?.type === ChannelType.DM) {
                 return this.createButtonEmbed(embeds, collapseOn, downloadOn, startPage, dm)
             }
         }
@@ -166,7 +166,7 @@ export class Embeds {
         })
 
         numberSelect.on("collect", async (reaction: MessageReaction, user: User) => {
-            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor?.(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
                 return Functions.deferDelete(rep, 3000)
             }
@@ -257,7 +257,7 @@ export class Embeds {
             const id = msg.guild ? msg.guild.id : user.id
             await reaction.users.remove(user).catch(() => null)
             if (copyOn) return
-            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor?.(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
                 return Functions.deferDelete(rep, 3000)
             }
@@ -360,7 +360,7 @@ export class Embeds {
                     Functions.removeDirectory(src)
                     break
             case "copy":
-                    if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+                    if (!(msg.channel as TextChannel)?.permissionsFor?.(msg.guild?.members.me!)?.has("ManageMessages")) {
                         const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
                         Functions.deferDelete(rep, 3000)
                         return
@@ -523,7 +523,7 @@ export class Embeds {
             const id = msg.guild ? msg.guild.id : user.id
             await reaction.users.remove(user).catch(() => null)
             if (copyOn) return
-            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor?.(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
                 Functions.deferDelete(rep, 3000)
                 return
@@ -597,9 +597,14 @@ export class Embeds {
         if (!dm) buttonRow.addComponents(numberSelectButton)
         if (collapseOn) buttonRow2.addComponents(collapseButton)
         if (downloadOn) buttonRow2.addComponents(downloadButton)
-        buttonRow2.addComponents(copyButton)
+        if (buttonRow.components.length < 5) {
+            buttonRow.addComponents(copyButton)
+        } else {
+            buttonRow2.addComponents(copyButton)
+        }
 
-        let components = [buttonRow, buttonRow2]
+        let components = [buttonRow]
+        if (buttonRow2.components.length) components.push(buttonRow2)
 
         let msg: Message
         if (dm) {
@@ -688,7 +693,7 @@ export class Embeds {
 
         numberSelect.on("collect", async (interaction: ButtonInteraction) => {
             const user = interaction.user
-            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor?.(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.reply(interaction, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
                 return Functions.deferDelete(rep, 3000)
             }
@@ -777,7 +782,7 @@ export class Embeds {
         copy.on("collect", async (interaction: ButtonInteraction) => {
             if (copyOn) return
             const user = interaction.user
-            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor?.(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.reply(interaction, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
                 return Functions.deferDelete(rep, 3000)
             }
@@ -895,7 +900,7 @@ export class Embeds {
                     Functions.removeDirectory(src)
                     break
             case "copy":
-                    if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+                    if (!(msg.channel as TextChannel)?.permissionsFor?.(msg.guild?.members.me!)?.has("ManageMessages")) {
                         const rep = await this.discord.reply(interaction, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
                         Functions.deferDelete(rep, 3000)
                         return
@@ -1055,7 +1060,7 @@ export class Embeds {
         copy.on("collect", async (interaction: ButtonInteraction) => {
             if (copyOn) return
             const user = interaction.user
-            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor?.(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.reply(interaction, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
                 return Functions.deferDelete(rep, 3000)
             }
@@ -1079,7 +1084,7 @@ export class Embeds {
     public createHelpEmbed = async (embeds: EmbedBuilder[], reactionPage?: number) => {
         if (!(this.message instanceof Message)) {
             const interaction = this.message as ChatInputCommandInteraction
-            if (this.discord.isUncachedInteraction(interaction)) {
+            if (this.discord.isUncachedInteraction(interaction) || interaction.channel?.type === ChannelType.DM) {
                 return this.createHelpMenu(embeds, reactionPage)
             }
         }
@@ -1251,7 +1256,7 @@ export class Embeds {
         }
 
         right.on("collect", async (reaction: MessageReaction, user: User) => {
-            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor?.(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to remove every reaction on this message. You can use \`help 2\` to send the second page in a new message. ${this.discord.getEmoji("kannaFacepalm")}`)
                 Functions.deferDelete(rep, 5000)
                 return
@@ -1264,7 +1269,7 @@ export class Embeds {
         })
 
         left.on("collect", async (reaction: MessageReaction, user: User) => {
-            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor?.(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to remove every reaction on this message. You can use \`help\` to send the first page in a new message. ${this.discord.getEmoji("kannaFacepalm")}`)
                 Functions.deferDelete(rep, 5000)
                 return
@@ -1444,7 +1449,7 @@ export class Embeds {
         }
 
         right.on("collect", async (reaction: MessageReaction, user: User) => {
-            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor?.(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to remove every reaction on this message. You can use \`help 2\` to send the second page in a new message. ${this.discord.getEmoji("kannaFacepalm")}`)
                 Functions.deferDelete(rep, 5000)
                 return
@@ -1457,7 +1462,7 @@ export class Embeds {
         })
 
         left.on("collect", async (reaction: MessageReaction, user: User) => {
-            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor?.(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to remove every reaction on this message. You can use \`help\` to send the first page in a new message. ${this.discord.getEmoji("kannaFacepalm")}`)
                 Functions.deferDelete(rep, 0)
                 return

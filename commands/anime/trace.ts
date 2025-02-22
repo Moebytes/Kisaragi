@@ -22,6 +22,7 @@ export default class Trace extends Command {
             aliases: ["animescene"],
             random: "string",
             cooldown: 10,
+            voteLocked: true,
             subcommandEnabled: true
         })
         const urlOption = new SlashCommandOption()

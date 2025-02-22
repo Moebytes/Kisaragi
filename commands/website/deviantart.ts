@@ -38,6 +38,7 @@ export default class Deviantart extends Command {
             aliases: ["da", "deviant"],
             random: "none",
             cooldown: 30,
+            voteLocked: true,
             defer: true,
             subcommandEnabled: true
         })
