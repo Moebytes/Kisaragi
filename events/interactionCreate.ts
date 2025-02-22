@@ -1,4 +1,4 @@
-import {BaseInteraction, EmbedBuilder, ChannelType, ButtonInteraction} from "discord.js"
+import {BaseInteraction, EmbedBuilder, ChannelType, ButtonInteraction, StringSelectMenuInteraction} from "discord.js"
 import {Kisaragi} from "../structures/Kisaragi"
 import {Command} from "../structures/Command"
 import {CommandFunctions} from "../structures/CommandFunctions"
@@ -22,7 +22,7 @@ export default class InteractionCreate {
         const embeds = new Embeds(discord, interaction as any)
         const sql = new SQLQuery(interaction as any)
 
-        const retriggerEmbed = async (interaction: ButtonInteraction) => {
+        const retriggerEmbed = async (interaction: ButtonInteraction | StringSelectMenuInteraction) => {
             if (interaction.message.author.id === discord.user!.id) {
                 if (this.discord.activeEmbeds.has(interaction.message.id)) return
                 if (active.has(interaction.message.id)) return
@@ -47,16 +47,16 @@ export default class InteractionCreate {
                         }
                         active.add(interaction.message.id)
                         if (help && !download) {
-                            // embeds.editHelpEmbed(reaction.message as Message, reaction.emoji.name!, user, newEmbeds)
+                            embeds.editHelpMenu(interaction as StringSelectMenuInteraction, newEmbeds)
                         } else {
-                            embeds.editButtonCollector(interaction, newEmbeds, Boolean(collapse), Boolean(download), Number(page))
+                            embeds.editButtonCollector(interaction as ButtonInteraction, newEmbeds, Boolean(collapse), Boolean(download), Number(page))
                         }
                     }
                 }
             }
         }
 
-        if (interaction.isButton()) retriggerEmbed(interaction)
+        if (interaction.isButton() || interaction.isStringSelectMenu()) retriggerEmbed(interaction)
         if (!interaction.isChatInputCommand() && !interaction.isContextMenuCommand()) return
 
         if (await this.discord.blacklistStop(interaction as any)) return

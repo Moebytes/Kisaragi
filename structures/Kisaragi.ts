@@ -1,8 +1,7 @@
-import axios from "axios"
 import {MessagePayload, ChannelType, Client, ClientOptions, Guild, Collection, GuildBasedChannel, MessageFlags,
 ApplicationEmoji, GuildEmoji, Message, MessageTarget, Role, TextChannel, User, PartialMessage, AttachmentBuilder,
 EmbedBuilder, GuildMember, ChatInputCommandInteraction, MessageReplyOptions, SendableChannels, ContextMenuCommandInteraction, 
-ButtonInteraction, InteractionReplyOptions} from "discord.js"
+ButtonInteraction, InteractionReplyOptions, StringSelectMenuInteraction} from "discord.js"
 import querystring from "querystring"
 import muted from "../assets/json/muted.json"
 import {Command} from "../structures/Command"
@@ -10,6 +9,7 @@ import config from "./../config.json"
 import {Embeds} from "./Embeds"
 import {Functions} from "./Functions"
 import {SQLQuery} from "./SQLQuery"
+import axios from "axios"
 
 export class Kisaragi extends Client {
     public readonly categories = new Set<string>()
@@ -42,12 +42,14 @@ export class Kisaragi extends Client {
     embeds: EmbedBuilder | EmbedBuilder[] | string, files?: AttachmentBuilder | AttachmentBuilder[], 
     opts?: MessageReplyOptions) => {
         if (!(input instanceof Message)) {
-            // patch interaction reply to support string and return a message
+            // patch interaction reply
             // @ts-expect-error
             input.reply = ((originalReply) => {
                 return async function (options: InteractionReplyOptions) {
                     if (typeof options === "string") options = {content: options}
-                    await originalReply.call(this, {withResponse: true,  ...options})
+                    const ephemeral = !input.inCachedGuild() && input.channel?.type !== ChannelType.DM
+                    const flags = ephemeral ? MessageFlags.Ephemeral : undefined
+                    await originalReply.call(this, {withResponse: true,  flags, ...options})
                     return input.fetchReply()
                 }
             })(input.reply)
@@ -89,8 +91,15 @@ export class Kisaragi extends Client {
     /** Send message to a channel */
     public send = (input: Message | ChatInputCommandInteraction | ContextMenuCommandInteraction, embeds: EmbedBuilder | EmbedBuilder[] | string, 
         files?: AttachmentBuilder | AttachmentBuilder[], opts?: MessageReplyOptions) => {
-        if (!input.channel?.isSendable()) return Promise.resolve(input as Message)
+        if (!opts) opts = {}
+        let flags = undefined as number | undefined
+        if (!(input instanceof Message)) {
+            const ephemeral = !input.inCachedGuild() && input.channel?.type !== ChannelType.DM
+            flags = ephemeral ? MessageFlags.Ephemeral : undefined
+        }
+        opts.flags = flags
         if (!input.channel) return this.reply(input, embeds, files, opts)
+        if (!input.channel?.isSendable()) return Promise.resolve(input as Message)
         return this.channelSend(input.channel, embeds, files, opts)
     }
 
@@ -125,20 +134,22 @@ export class Kisaragi extends Client {
     }
 
     /** Edit message */
-    public edit = (msg: Message | ButtonInteraction, embeds: EmbedBuilder | EmbedBuilder[] | string, 
+    public edit = (msg: Message | ButtonInteraction | StringSelectMenuInteraction, embeds: EmbedBuilder | EmbedBuilder[] | string, 
         files?: AttachmentBuilder | AttachmentBuilder[], opts?: MessageReplyOptions) => {
         let options = {...opts} as any
         if (Array.isArray(embeds)) {
             options.embeds = embeds
         } else if (embeds instanceof EmbedBuilder) {
-          options.embeds = [embeds]
+            options.embeds = [embeds]
         } else if (typeof embeds === "string") {
-          options.content = embeds
+            options.content = embeds
         }
         if (files) options.files = Array.isArray(files) ? files : [files]
         if (msg instanceof Message) {
             return msg.edit(options)
         } else {
+            const ephemeral = !msg.inCachedGuild() && msg.channel?.type !== ChannelType.DM
+            options.flags = ephemeral ? MessageFlags.Ephemeral : undefined
             return msg.update(options)
         }
     }

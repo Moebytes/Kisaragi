@@ -1,6 +1,7 @@
 import {Collection, Emoji, GuildEmoji, Message, AttachmentBuilder, MessageCollector, EmbedBuilder, ChannelType,
 APIEmbedThumbnail, MessageReaction, ReactionEmoji, TextChannel, User, ChatInputCommandInteraction, ButtonBuilder,
-ActionRowBuilder, ButtonStyle, ButtonInteraction, ComponentType, APIActionRowComponent, APIButtonComponent} from "discord.js"
+ActionRowBuilder, ButtonStyle, ButtonInteraction, ComponentType, APIActionRowComponent, APIButtonComponent,
+StringSelectMenuBuilder, StringSelectMenuOptionBuilder, StringSelectMenuInteraction, StringSelectMenuComponent} from "discord.js"
 import {CommandFunctions} from "./CommandFunctions"
 import {Functions} from "./Functions"
 import {Images} from "./Images"
@@ -165,7 +166,7 @@ export class Embeds {
         })
 
         numberSelect.on("collect", async (reaction: MessageReaction, user: User) => {
-            if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
                 return Functions.deferDelete(rep, 3000)
             }
@@ -256,7 +257,7 @@ export class Embeds {
             const id = msg.guild ? msg.guild.id : user.id
             await reaction.users.remove(user).catch(() => null)
             if (copyOn) return
-            if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
                 return Functions.deferDelete(rep, 3000)
             }
@@ -359,7 +360,7 @@ export class Embeds {
                     Functions.removeDirectory(src)
                     break
             case "copy":
-                    if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+                    if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                         const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
                         Functions.deferDelete(rep, 3000)
                         return
@@ -522,7 +523,7 @@ export class Embeds {
             const id = msg.guild ? msg.guild.id : user.id
             await reaction.users.remove(user).catch(() => null)
             if (copyOn) return
-            if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
                 Functions.deferDelete(rep, 3000)
                 return
@@ -543,8 +544,6 @@ export class Embeds {
             await reaction.users.remove(user).catch(() => null)
         })
     }
-
-
 
     /** Create Button Embed */
     public createButtonEmbed = async (embeds: EmbedBuilder[], collapseOn?: boolean, downloadOn?: boolean, startPage?: number, dm?: User) => {
@@ -689,7 +688,7 @@ export class Embeds {
 
         numberSelect.on("collect", async (interaction: ButtonInteraction) => {
             const user = interaction.user
-            if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.reply(interaction, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
                 return Functions.deferDelete(rep, 3000)
             }
@@ -778,7 +777,7 @@ export class Embeds {
         copy.on("collect", async (interaction: ButtonInteraction) => {
             if (copyOn) return
             const user = interaction.user
-            if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.reply(interaction, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
                 return Functions.deferDelete(rep, 3000)
             }
@@ -896,7 +895,7 @@ export class Embeds {
                     Functions.removeDirectory(src)
                     break
             case "copy":
-                    if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+                    if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                         const rep = await this.discord.reply(interaction, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
                         Functions.deferDelete(rep, 3000)
                         return
@@ -1056,7 +1055,7 @@ export class Embeds {
         copy.on("collect", async (interaction: ButtonInteraction) => {
             if (copyOn) return
             const user = interaction.user
-            if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.reply(interaction, `<@${user.id}>, The bot needs the permission **Manage Messages** to use this function. ${this.discord.getEmoji("kannaFacepalm")}`)
                 return Functions.deferDelete(rep, 3000)
             }
@@ -1078,6 +1077,12 @@ export class Embeds {
 
     /** Create Help Embed */
     public createHelpEmbed = async (embeds: EmbedBuilder[], reactionPage?: number) => {
+        if (this.message instanceof ChatInputCommandInteraction) {
+            const interaction = this.message as ChatInputCommandInteraction
+            if (!interaction.inCachedGuild() && interaction.channel?.type !== ChannelType.DM) {
+                return this.createHelpMenu(embeds, reactionPage)
+            }
+        }
         let page = 9
         if (reactionPage === 2) page = 17
         const titles = ["Admin", "Anime", "Booru", "Botdev", "Config", "Fun", "Game", "Heart", "Image", "Info", "Weeb", "Level", "Misc", "Misc 2", "Mod", "Music", "Music 2", "Music 3", "Reddit", "Twitter", "Video", "Waifu", "Website", "Website 2", "Website 3"]
@@ -1138,11 +1143,15 @@ export class Embeds {
         let pageIndex = 0
         if (reactionPage === 2) pageIndex = 1
         let msg = await this.discord.reply(this.message, embeds[page]) as Message
-        await SQLQuery.insertInto("collectors", "message", msg.id)
-        await this.sql.updateColumn("collectors", "embeds", embeds, "message", msg.id)
-        await this.sql.updateColumn("collectors", "collapse", true, "message", msg.id)
-        await this.sql.updateColumn("collectors", "page", page, "message", msg.id)
-        await this.sql.updateColumn("collectors", "help", true, "message", msg.id)
+
+        try {
+            await SQLQuery.insertInto("collectors", "message", msg.id)
+            await this.sql.updateColumn("collectors", "embeds", embeds, "message", msg.id)
+            await this.sql.updateColumn("collectors", "collapse", true, "message", msg.id)
+            await this.sql.updateColumn("collectors", "page", page, "message", msg.id)
+            await this.sql.updateColumn("collectors", "help", true, "message", msg.id)
+        } catch {}
+
         if (reactionPage === 2) {
             for (let i = 0; i < page2.length; i++) await msg.react(page2[i])
             await msg.react(this.discord.getEmoji("dm"))
@@ -1242,7 +1251,7 @@ export class Embeds {
         }
 
         right.on("collect", async (reaction: MessageReaction, user: User) => {
-            if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to remove every reaction on this message. You can use \`help 2\` to send the second page in a new message. ${this.discord.getEmoji("kannaFacepalm")}`)
                 Functions.deferDelete(rep, 5000)
                 return
@@ -1255,7 +1264,7 @@ export class Embeds {
         })
 
         left.on("collect", async (reaction: MessageReaction, user: User) => {
-            if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to remove every reaction on this message. You can use \`help\` to send the first page in a new message. ${this.discord.getEmoji("kannaFacepalm")}`)
                 Functions.deferDelete(rep, 5000)
                 return
@@ -1435,7 +1444,7 @@ export class Embeds {
         }
 
         right.on("collect", async (reaction: MessageReaction, user: User) => {
-            if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to remove every reaction on this message. You can use \`help 2\` to send the second page in a new message. ${this.discord.getEmoji("kannaFacepalm")}`)
                 Functions.deferDelete(rep, 5000)
                 return
@@ -1448,7 +1457,7 @@ export class Embeds {
         })
 
         left.on("collect", async (reaction: MessageReaction, user: User) => {
-            if (!(msg.channel as TextChannel).permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
+            if (!(msg.channel as TextChannel)?.permissionsFor(msg.guild?.members.me!)?.has("ManageMessages")) {
                 const rep = await this.discord.send(msg, `<@${user.id}>, The bot needs the permission **Manage Messages** to remove every reaction on this message. You can use \`help\` to send the first page in a new message. ${this.discord.getEmoji("kannaFacepalm")}`)
                 Functions.deferDelete(rep, 0)
                 return
@@ -1464,6 +1473,365 @@ export class Embeds {
             await reaction.users.remove(user).catch(() => null)
             if (dmSet.has(user.id)) return
             const msg = this.message
+            msg.author = user
+            const cmd = new CommandFunctions(this.discord, msg)
+            await cmd.runCommand(msg, ["help", "dm", "delete"])
+            dmSet.add(user.id)
+        })
+    }
+
+    /** Create Help Select Menu */
+    public createHelpMenu = async (embeds: EmbedBuilder[], reactionPage?: number) => {
+        let page = 9
+        if (reactionPage === 2) page = 17
+        const titles = ["Admin", "Anime", "Booru", "Botdev", "Config", "Fun", "Game", "Heart", "Image", 
+        "Info", "Weeb", "Level", "Misc", "Misc 2", "Mod", "Music", "Music 2", "Music 3", "Reddit", "Twitter", 
+        "Video", "Waifu", "Website", "Website 2", "Website 3"]
+        let compressed = false
+        const longDescription: string[] = []
+        const commandCount: number[] = []
+        for (let i = 0; i < embeds.length; i++) {
+            longDescription.push(embeds[i].data.description!)
+        }
+        const shortDescription: string[] = []
+        for (let i = 0; i < longDescription.length; i++) {
+            const top = longDescription[i].match(/(^)(.*?)(>)/g)?.[0]
+            let text = longDescription[i].replace(top!, "").trim()
+            const second = text.match(/(^)(.*?)(>)/g)?.[0]
+            text = text.replace(second!, "").trim()
+            const commands = text.match(/(`)(.*?)(`)/gm)?.slice(1)
+            commandCount.push(commands?.map((c)=>c)?.length ?? 0)
+            const desc = `${top} ${second}\n_Click on a reaction twice to toggle compact mode._\n${commands?.map((c) => c).join(", ")}`
+            shortDescription.push(desc)
+        }
+        for (let i = 0; i < embeds.length; i++) {
+            embeds[i].setFooter({text: `${titles[i]} Commands (${commandCount[i]}) • Page ${i + 1}/${embeds.length}`, iconURL: this.discord.displayAvatar(this.message)})
+        }
+
+        const generateComponents = (page: number) => {
+            const options = [
+                {label: "Admin", value: "admin"},
+                {label: "Anime", value: "anime"},
+                {label: "Config", value: "config"},
+                {label: "Fun", value: "fun"},
+                {label: "Game", value: "game"},
+                {label: "Heart", value: "heart"},
+                {label: "Image", value: "image"},
+                {label: "Info", value: "info"},
+                {label: "Weeb", value: "japanese"},
+                {label: "Level", value: "level"},
+                {label: "Booru", value: "booru"},
+                {label: "Misc", value: "misc"},
+                {label: "Mod", value: "mod"},
+                {label: "Music", value: "music"},
+                {label: "Music 2", value: "musicTwo"},
+                {label: "Video", value: "video"},
+                {label: "Waifu", value: "waifu"},
+                {label: "Website", value: "website"},
+                {label: "Website 2", value: "websiteTwo"},
+                {label: "Music 3", value: "musicThree"},
+                {label: "Reddit", value: "reddit"},
+                {label: "Twitter", value: "twitter"},
+                {label: "Misc 2", value: "miscTwo"},
+                {label: "Website 3", value: "websiteThree"},
+                {label: "Botdev", value: "botDeveloper"}
+            ].map(item => new StringSelectMenuOptionBuilder()
+                .setLabel(item.label)
+                .setValue(item.value)
+                .setDefault(item.label === titles[page])
+                .setEmoji(this.discord.getEmoji(item.value).id))
+    
+            const helpMenu = new StringSelectMenuBuilder()
+                .setCustomId("help")
+                .addOptions(options)
+
+            const dmButton = new ButtonBuilder()
+                .setCustomId("dm")
+                .setEmoji(this.discord.getEmoji("dm").id)
+                .setStyle(ButtonStyle.Secondary)
+    
+            const actionRow = new ActionRowBuilder<StringSelectMenuBuilder>()
+            const actionRow2 = new ActionRowBuilder<ButtonBuilder>()
+            actionRow.addComponents(helpMenu)
+            actionRow2.addComponents(dmButton)
+            return [actionRow, actionRow2]
+        }
+
+        const components = generateComponents(page)
+        let msg = await this.discord.reply(this.message, embeds[page], undefined, {components})
+        this.discord.activeEmbeds.add(msg.id)
+
+        try {
+            await SQLQuery.insertInto("collectors", "message", msg.id)
+            await this.sql.updateColumn("collectors", "embeds", embeds, "message", msg.id)
+            await this.sql.updateColumn("collectors", "collapse", true, "message", msg.id)
+            await this.sql.updateColumn("collectors", "page", page, "message", msg.id)
+            await this.sql.updateColumn("collectors", "help", true, "message", msg.id)
+        } catch {}
+
+        const adminCheck = (i: StringSelectMenuInteraction) => i.values?.includes("admin") && !i.user.bot
+        const animeCheck = (i: StringSelectMenuInteraction) => i.values?.includes("anime") && !i.user.bot
+        const configCheck = (i: StringSelectMenuInteraction) => i.values?.includes("config") && !i.user.bot
+        const funCheck = (i: StringSelectMenuInteraction) => i.values?.includes("fun") && !i.user.bot
+        const gameCheck = (i: StringSelectMenuInteraction) => i.values?.includes("game") && !i.user.bot
+        const heartCheck = (i: StringSelectMenuInteraction) => i.values?.includes("heart") && !i.user.bot
+        const imageCheck = (i: StringSelectMenuInteraction) => i.values?.includes("image") && !i.user.bot
+        const infoCheck = (i: StringSelectMenuInteraction) => i.values?.includes("info") && !i.user.bot
+        const japaneseCheck = (i: StringSelectMenuInteraction) => i.values?.includes("japanese") && !i.user.bot
+        const levelCheck = (i: StringSelectMenuInteraction) => i.values?.includes("level") && !i.user.bot
+        const booruCheck = (i: StringSelectMenuInteraction) => i.values?.includes("booru") && !i.user.bot
+        const miscCheck = (i: StringSelectMenuInteraction) => i.values?.includes("misc") && !i.user.bot
+        const modCheck = (i: StringSelectMenuInteraction) => i.values?.includes("mod") && !i.user.bot
+        const musicCheck = (i: StringSelectMenuInteraction) => i.values?.includes("music") && !i.user.bot
+        const musicTwoCheck = (i: StringSelectMenuInteraction) => i.values?.includes("musicTwo") && !i.user.bot
+        const videoCheck = (i: StringSelectMenuInteraction) => i.values?.includes("video") && !i.user.bot
+        const waifuCheck = (i: StringSelectMenuInteraction) => i.values?.includes("waifu") && !i.user.bot
+        const websiteCheck = (i: StringSelectMenuInteraction) => i.values?.includes("website") && !i.user.bot
+        const websiteTwoCheck = (i: StringSelectMenuInteraction) => i.values?.includes("websiteTwo") && !i.user.bot
+        const musicThreeCheck = (i: StringSelectMenuInteraction) => i.values?.includes("musicThree") && !i.user.bot
+        const redditCheck = (i: StringSelectMenuInteraction) => i.values?.includes("reddit") && !i.user.bot
+        const twitterCheck = (i: StringSelectMenuInteraction) => i.values?.includes("twitter") && !i.user.bot
+        const miscTwoCheck = (i: StringSelectMenuInteraction) => i.values?.includes("miscTwo") && !i.user.bot
+        const websiteThreeCheck = (i: StringSelectMenuInteraction) => i.values?.includes("websiteThree") && !i.user.bot
+        const botDeveloperCheck = (i: StringSelectMenuInteraction) => i.values?.includes("botDeveloper") && !i.user.bot
+        const dmCheck = (i: ButtonInteraction) => i.customId === "dm" && !i.user.bot
+
+        const admin = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: adminCheck})
+        const anime = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: animeCheck})
+        const config = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: configCheck})
+        const fun = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: funCheck})
+        const game = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: gameCheck})
+        const heart = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: heartCheck})
+        const image = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: imageCheck})
+        const info = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: infoCheck})
+        const japanese = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: japaneseCheck})
+        const level = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: levelCheck})
+        const booru = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: booruCheck})
+        const misc = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: miscCheck})
+        const mod = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: modCheck})
+        const music = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: musicCheck})
+        const musicTwo = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: musicTwoCheck})
+        const video = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: videoCheck})
+        const waifu = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: waifuCheck})
+        const website = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: websiteCheck})
+        const websiteTwo = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: websiteTwoCheck})
+        const musicThree = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: musicThreeCheck})
+        const reddit = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: redditCheck})
+        const twitter = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: twitterCheck})
+        const miscTwo = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: miscTwoCheck})
+        const websiteThree = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: websiteThreeCheck})
+        const botDev = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: botDeveloperCheck})
+        const dm = msg.createMessageComponentCollector<ComponentType.Button>({filter: dmCheck})
+
+        const collectors = [admin, anime, booru, botDev, config, fun, game, heart, image, info, japanese, level, misc, miscTwo, mod, music, musicTwo, musicThree, reddit, twitter, video, waifu, website, websiteTwo, websiteThree]
+
+        for (let i = 0; i < collectors.length; i++) {
+            collectors[i].on("collect", async (interaction: StringSelectMenuInteraction) => {
+                if (page === i) {
+                    if (!compressed) {
+                        for (let i = 0; i < embeds.length; i++) {
+                            embeds[i].setDescription(shortDescription[i])
+                        }
+                        compressed = true
+                    } else {
+                        for (let i = 0; i < embeds.length; i++) {
+                            embeds[i].setDescription(longDescription[i])
+                        }
+                        compressed = false
+                    }
+                }
+                page = i
+                const components = generateComponents(page)
+                const stringSelect = components[0].components.find((c) => c.data.type === ComponentType.StringSelect) as StringSelectMenuBuilder
+                const curr = stringSelect.options.findIndex((o) => interaction.values.includes(o.data.value || ""))
+                const user = interaction.user
+                const embed = await this.updateEmbed(embeds, page, user, msg, true, curr, commandCount)
+                if (embed) this.discord.edit(interaction, embed, undefined, {components})
+            })
+        }
+
+        const dmSet = new Set()
+        dm.on("collect", async (interaction: ButtonInteraction) => {
+            const user = interaction.user
+            if (dmSet.has(user.id)) return
+            const msg = interaction as any
+            msg.author = user
+            const cmd = new CommandFunctions(this.discord, msg)
+            await cmd.runCommand(msg, ["help", "dm", "delete"])
+            dmSet.add(user.id)
+        })
+    }
+
+    /** Re-trigger Help Select Menu */
+    public editHelpMenu = (interaction: StringSelectMenuInteraction, embeds: EmbedBuilder[]) => {
+        const emojiMap = [
+            "admin", "anime", "booru", "botDeveloper", "config", "fun", "game", "heart",
+            "image", "info", "japanese", "level", "misc", "miscTwo", "mod", "music", "musicTwo",
+            "musicThree", "reddit", "twitter", "video", "waifu", "website", "websiteTwo", "websiteThree"
+        ]
+        const titles = ["Admin", "Anime", "Booru", "Botdev", "Config", "Fun", "Game", "Heart", "Image", 
+        "Info", "Weeb", "Level", "Misc", "Misc 2", "Mod", "Music", "Music 2", "Music 3", "Reddit", "Twitter", 
+        "Video", "Waifu", "Website", "Website 2", "Website 3"]
+        let compressed = false
+        const longDescription: string[] = []
+        const commandCount: number[] = []
+        for (let i = 0; i < embeds.length; i++) {
+            longDescription.push(embeds[i].data.description!)
+        }
+        const shortDescription: string[] = []
+        for (let i = 0; i < longDescription.length; i++) {
+            const top = longDescription[i].match(/(^)(.*?)(>)/g)?.[0]
+            let text = longDescription[i].replace(top!, "").trim()
+            const second = text.match(/(^)(.*?)(>)/g)?.[0]
+            text = text.replace(second!, "").trim()
+            const commands = text.match(/(`)(.*?)(`)/gm)?.slice(1)
+            commandCount.push(commands?.map((c)=>c)?.length ?? 0)
+            const desc = `${top} ${second}\n_Click on a reaction twice to toggle compact mode._\n${commands?.map((c) => c).join(", ")}`
+            shortDescription.push(desc)
+        }
+
+        const msg = interaction.message
+        let page = emojiMap.findIndex((o) => interaction.values?.includes(o))
+        if (page < 0) page = 0
+
+        const generateComponents = (page: number) => {
+            const options = [
+                {label: "Admin", value: "admin"},
+                {label: "Anime", value: "anime"},
+                {label: "Config", value: "config"},
+                {label: "Fun", value: "fun"},
+                {label: "Game", value: "game"},
+                {label: "Heart", value: "heart"},
+                {label: "Image", value: "image"},
+                {label: "Info", value: "info"},
+                {label: "Weeb", value: "japanese"},
+                {label: "Level", value: "level"},
+                {label: "Booru", value: "booru"},
+                {label: "Misc", value: "misc"},
+                {label: "Mod", value: "mod"},
+                {label: "Music", value: "music"},
+                {label: "Music 2", value: "musicTwo"},
+                {label: "Video", value: "video"},
+                {label: "Waifu", value: "waifu"},
+                {label: "Website", value: "website"},
+                {label: "Website 2", value: "websiteTwo"},
+                {label: "Music 3", value: "musicThree"},
+                {label: "Reddit", value: "reddit"},
+                {label: "Twitter", value: "twitter"},
+                {label: "Misc 2", value: "miscTwo"},
+                {label: "Website 3", value: "websiteThree"},
+                {label: "Botdev", value: "botDeveloper"}
+            ].map(item => new StringSelectMenuOptionBuilder()
+                .setLabel(item.label)
+                .setValue(item.value)
+                .setDefault(item.label === titles[page])
+                .setEmoji(this.discord.getEmoji(item.value).id))
+    
+            const helpMenu = new StringSelectMenuBuilder()
+                .setCustomId("help")
+                .addOptions(options)
+
+            const dmButton = new ButtonBuilder()
+                .setCustomId("dm")
+                .setEmoji(this.discord.getEmoji("dm").id)
+                .setStyle(ButtonStyle.Secondary)
+    
+            const actionRow = new ActionRowBuilder<StringSelectMenuBuilder>()
+            const actionRow2 = new ActionRowBuilder<ButtonBuilder>()
+            actionRow.addComponents(helpMenu)
+            actionRow2.addComponents(dmButton)
+            return [actionRow, actionRow2]
+        }
+
+        const components = generateComponents(page)
+        this.discord.edit(interaction, embeds[page], undefined, {components})
+
+        const adminCheck = (i: StringSelectMenuInteraction) => i.values?.includes("admin") && !i.user.bot
+        const animeCheck = (i: StringSelectMenuInteraction) => i.values?.includes("anime") && !i.user.bot
+        const configCheck = (i: StringSelectMenuInteraction) => i.values?.includes("config") && !i.user.bot
+        const funCheck = (i: StringSelectMenuInteraction) => i.values?.includes("fun") && !i.user.bot
+        const gameCheck = (i: StringSelectMenuInteraction) => i.values?.includes("game") && !i.user.bot
+        const heartCheck = (i: StringSelectMenuInteraction) => i.values?.includes("heart") && !i.user.bot
+        const imageCheck = (i: StringSelectMenuInteraction) => i.values?.includes("image") && !i.user.bot
+        const infoCheck = (i: StringSelectMenuInteraction) => i.values?.includes("info") && !i.user.bot
+        const japaneseCheck = (i: StringSelectMenuInteraction) => i.values?.includes("japanese") && !i.user.bot
+        const levelCheck = (i: StringSelectMenuInteraction) => i.values?.includes("level") && !i.user.bot
+        const booruCheck = (i: StringSelectMenuInteraction) => i.values?.includes("booru") && !i.user.bot
+        const miscCheck = (i: StringSelectMenuInteraction) => i.values?.includes("misc") && !i.user.bot
+        const modCheck = (i: StringSelectMenuInteraction) => i.values?.includes("mod") && !i.user.bot
+        const musicCheck = (i: StringSelectMenuInteraction) => i.values?.includes("music") && !i.user.bot
+        const musicTwoCheck = (i: StringSelectMenuInteraction) => i.values?.includes("musicTwo") && !i.user.bot
+        const videoCheck = (i: StringSelectMenuInteraction) => i.values?.includes("video") && !i.user.bot
+        const waifuCheck = (i: StringSelectMenuInteraction) => i.values?.includes("waifu") && !i.user.bot
+        const websiteCheck = (i: StringSelectMenuInteraction) => i.values?.includes("website") && !i.user.bot
+        const websiteTwoCheck = (i: StringSelectMenuInteraction) => i.values?.includes("websiteTwo") && !i.user.bot
+        const musicThreeCheck = (i: StringSelectMenuInteraction) => i.values?.includes("musicThree") && !i.user.bot
+        const redditCheck = (i: StringSelectMenuInteraction) => i.values?.includes("reddit") && !i.user.bot
+        const twitterCheck = (i: StringSelectMenuInteraction) => i.values?.includes("twitter") && !i.user.bot
+        const miscTwoCheck = (i: StringSelectMenuInteraction) => i.values?.includes("miscTwo") && !i.user.bot
+        const websiteThreeCheck = (i: StringSelectMenuInteraction) => i.values?.includes("websiteThree") && !i.user.bot
+        const botDeveloperCheck = (i: StringSelectMenuInteraction) => i.values?.includes("botDeveloper") && !i.user.bot
+        const dmCheck = (i: ButtonInteraction) => i.customId === "dm" && !i.user.bot
+
+        const admin = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: adminCheck})
+        const anime = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: animeCheck})
+        const config = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: configCheck})
+        const fun = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: funCheck})
+        const game = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: gameCheck})
+        const heart = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: heartCheck})
+        const image = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: imageCheck})
+        const info = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: infoCheck})
+        const japanese = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: japaneseCheck})
+        const level = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: levelCheck})
+        const booru = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: booruCheck})
+        const misc = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: miscCheck})
+        const mod = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: modCheck})
+        const music = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: musicCheck})
+        const musicTwo = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: musicTwoCheck})
+        const video = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: videoCheck})
+        const waifu = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: waifuCheck})
+        const website = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: websiteCheck})
+        const websiteTwo = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: websiteTwoCheck})
+        const musicThree = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: musicThreeCheck})
+        const reddit = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: redditCheck})
+        const twitter = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: twitterCheck})
+        const miscTwo = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: miscTwoCheck})
+        const websiteThree = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: websiteThreeCheck})
+        const botDev = msg.createMessageComponentCollector<ComponentType.StringSelect>({filter: botDeveloperCheck})
+        const dm = msg.createMessageComponentCollector<ComponentType.Button>({filter: dmCheck})
+
+        const collectors = [admin, anime, booru, botDev, config, fun, game, heart, image, info, japanese, level, misc, miscTwo, mod, music, musicTwo, musicThree, reddit, twitter, video, waifu, website, websiteTwo, websiteThree]
+
+        for (let i = 0; i < collectors.length; i++) {
+            collectors[i].on("collect", async (interaction: StringSelectMenuInteraction) => {
+                if (page === i) {
+                    if (!compressed) {
+                        for (let i = 0; i < embeds.length; i++) {
+                            embeds[i].setDescription(shortDescription[i])
+                        }
+                        compressed = true
+                    } else {
+                        for (let i = 0; i < embeds.length; i++) {
+                            embeds[i].setDescription(longDescription[i])
+                        }
+                        compressed = false
+                    }
+                }
+                page = i
+                const components = generateComponents(page)
+                const stringSelect = components[0].components.find((c) => c.data.type === ComponentType.StringSelect) as StringSelectMenuBuilder
+                const curr = stringSelect.options.findIndex((o) => interaction.values.includes(o.data.value || ""))
+                const user = interaction.user
+                const embed = await this.updateEmbed(embeds, page, user, msg, true, curr, commandCount)
+                if (embed) this.discord.edit(interaction, embed, undefined, {components})
+            })
+        }
+
+        const dmSet = new Set()
+        dm.on("collect", async (interaction: ButtonInteraction) => {
+            const user = interaction.user
+            if (dmSet.has(user.id)) return
+            const msg = interaction as any
             msg.author = user
             const cmd = new CommandFunctions(this.discord, msg)
             await cmd.runCommand(msg, ["help", "dm", "delete"])
