@@ -78,7 +78,7 @@ export default class InteractionCreate {
         if (command) {
             if (!discord.checkSufficientPermissions(interaction as any)) return
             if (targetCommand.options.guildOnly) {
-                if (interaction.channel?.type === ChannelType.DM) return this.discord.send(interaction, `<@${interaction.user.id}>, sorry but you can only use this command in guilds. ${this.discord.getEmoji("smugFace")}`)
+                if (interaction.channel?.type === ChannelType.DM || this.discord.isUncachedInteraction(interaction)) return this.discord.reply(interaction, `<@${interaction.user.id}>, sorry but you can only use this command in cached guilds. ${this.discord.getEmoji("smugFace")}`)
             }
             const disabledCategories = await sql.fetchColumn("guilds", "disabled categories")
             if (disabledCategories?.includes(command.category) && targetCommand.name !== "help") {
