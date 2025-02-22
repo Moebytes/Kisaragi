@@ -47,7 +47,7 @@ export class Kisaragi extends Client {
             // @ts-expect-error patch interaction reply to return message
             input.reply = ((originalReply) => {
                 return async function (options: InteractionReplyOptions) {
-                    await originalReply.call(this, {...options, flags, withResponse: true})
+                    await originalReply.call(this, {...options, withResponse: true})
                     return input.fetchReply()
                 }
             })(input.reply)
@@ -61,6 +61,8 @@ export class Kisaragi extends Client {
         }
         if (files) options.files = Array.isArray(files) ? files : [files]
         if (!(input instanceof Message) && input.deferred) {
+            const flags = input.ephemeral ? MessageFlags.Ephemeral : undefined
+            options.flags = flags
             return input.followUp(options)
         }
         // @ts-expect-error
@@ -68,8 +70,7 @@ export class Kisaragi extends Client {
     }
 
     /** Defer this reply */
-    public deferReply = (interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction, noReply?: boolean) => {
-        if (noReply) return
+    public deferReply = (interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction) => {
         const flags = this.isUncachedInteraction(interaction) ? MessageFlags.Ephemeral : undefined
         return interaction.deferReply({flags})
     }
