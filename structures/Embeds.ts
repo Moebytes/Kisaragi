@@ -1,7 +1,7 @@
 import {Collection, Emoji, GuildEmoji, Message, AttachmentBuilder, MessageCollector, EmbedBuilder, ChannelType,
 APIEmbedThumbnail, MessageReaction, ReactionEmoji, TextChannel, User, ChatInputCommandInteraction, ButtonBuilder,
 ActionRowBuilder, ButtonStyle, ButtonInteraction, ComponentType, APIActionRowComponent, APIButtonComponent,
-StringSelectMenuBuilder, StringSelectMenuOptionBuilder, StringSelectMenuInteraction, StringSelectMenuComponent} from "discord.js"
+StringSelectMenuBuilder, StringSelectMenuOptionBuilder, StringSelectMenuInteraction, StringSelectMenuComponent, MessageFlags} from "discord.js"
 import {CommandFunctions} from "./CommandFunctions"
 import {Functions} from "./Functions"
 import {Images} from "./Images"
