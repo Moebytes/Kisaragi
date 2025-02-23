@@ -1,7 +1,8 @@
 # Kisaragi Discord Bot
-![Best Girl](https://vignette.wikia.nocookie.net/mudae/images/7/73/Kisaragi_%28AL%294.png/revision/latest?cb=20191205095054)
+![Best Girl](https://kisaragi.moe/assets/images/promo1.png)
+![Best Girl](https://kisaragi.moe/assets/images/promo2.png)
 
-This is my first programming project, a discord bot mainly to search anime pictures and websites, play music, and provide some server utilities. Invite the bot [**here**](https://discordapp.com/oauth2/authorize?client_id=593838271650332672&permissions=2113793271&scope=bot)!
+Kisaragi is a discord bot focusing on anime, website searching, and music playback, and some other server utilities. Invite the bot [**here**](https://discordapp.com/oauth2/authorize?client_id=593838271650332672&permissions=2113793271&scope=bot)
 
 ## Help
 _Double click on the same reaction to toggle a compact form of the help menu._
@@ -16,7 +17,7 @@ _Double click on the same reaction to toggle a compact form of the help menu._
 
 ## Bugs/Feature Requests
 
-Please let me know by submitting an issue or using the `feedback` command on the bot. I appreciate all ideas.
+Please let me know by submitting an issue or using the `feedback` command on the bot. 
 
 ## Self Hosting
 
