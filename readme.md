@@ -1,8 +1,9 @@
 # Kisaragi Discord Bot
-![Best Girl](https://kisaragi.moe/assets/images/promo1.png)
-![Best Girl](https://kisaragi.moe/assets/images/promo2.png)
 
 Kisaragi is a discord bot focusing on anime, website searching, and music playback, and some other server utilities. Invite the bot [**here**](https://discordapp.com/oauth2/authorize?client_id=593838271650332672&permissions=2113793271&scope=bot)
+
+![Best Girl](https://kisaragi.moe/assets/images/promo1.png)
+![Best Girl](https://kisaragi.moe/assets/images/promo2.png)
 
 ## Help
 _Double click on the same reaction to toggle a compact form of the help menu._
