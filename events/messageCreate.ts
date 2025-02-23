@@ -175,8 +175,8 @@ export default class MessageCreate {
       const command = cmdFunctions.findCommand(cmd)
       if (!command) return cmdFunctions.noCommand(cmd)
       if (command.options.unlist && !perms.checkBotDev()) return
-      if (command.options.voteLocked && !await perms.checkVoteLocked()) return
       if (command.options.premium && !perms.checkPremium()) return
+      if (command.options.voteLocked && !await perms.checkVoteLocked()) return
       command.message = message
 
       if (!discord.checkSufficientPermissions(message)) return
