@@ -351,13 +351,13 @@ export class Kisaragi extends Client {
             //`https://bots.ondiscord.xyz/bot-api/bots/${this.user!.id}/guilds`
         ]
         const headers = [
-            {"Authorization": process.env.TOP_GG_TOKEN, "Content-Type": "application/x-www-form-urlencoded"}
+            {"Authorization": process.env.TOP_GG_TOKEN}
             //{authorization: process.env.DISCORD_BOTS_TOKEN},
             //{authorization: process.env.DISCORD_BOTLIST_TOKEN},
             //{authorization: process.env.BOTS_ON_DISCORD_KEY},
         ]
         const data = [
-            querystring.stringify({server_count: guildCount}),
+            {server_count: guildCount},
             //{guildCount: guildCount},
             //{guilds: guildCount, users: this.users.cache.size},
             //{guildCount: guildCount},
