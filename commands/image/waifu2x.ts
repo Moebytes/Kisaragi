@@ -112,8 +112,11 @@ export default class Waifu2x extends Command {
         if (!lastAttachment) {
             let messageID = args[1].match(/\d{10,}/)?.[0] || ""
             if (messageID) {
-                const msg = await message.channel.messages.fetch(messageID)
-                lastAttachment = msg.attachments.first()?.url || msg.embeds[0]?.image?.url as string
+                const channel = await discord.channels.fetch(message.channelId)
+                if (channel?.isSendable()) {
+                    const msg = await channel.messages.fetch(messageID)
+                    lastAttachment = msg.attachments.first()?.url || msg.embeds[0]?.image?.url as string
+                }
             } else {
                 lastAttachment = await discord.fetchLastAttachment(message) as string
             }

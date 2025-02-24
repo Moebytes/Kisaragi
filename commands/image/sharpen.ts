@@ -60,8 +60,11 @@ export default class Sharpen extends Command {
         } else {
             let messageID = args[1].match(/\d{10,}/)?.[0] || ""
             if (messageID) {
-                const msg = await message.channel.messages.fetch(messageID)
-                url = msg.attachments.first()?.url || msg.embeds[0]?.image?.url
+                const channel = await discord.channels.fetch(message.channelId)
+                if (channel?.isSendable()) {
+                    const msg = await channel.messages.fetch(messageID)
+                    url = msg.attachments.first()?.url || msg.embeds[0]?.image?.url
+                }
             } else {
                 sigma = args[1] ? Number(args[1]) : 1
                 url = await discord.fetchLastAttachment(message)
