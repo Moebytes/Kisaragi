@@ -60,7 +60,7 @@ export class Kisaragi extends Client {
             options.content = embeds
         }
         if (files) options.files = Array.isArray(files) ? files : [files]
-        if (!(input instanceof Message) && input.deferred) {
+        if (!(input instanceof Message) && (input.deferred || input.replied)) {
             const flags = input.ephemeral ? MessageFlags.Ephemeral : undefined
             options.flags = flags
             return input.followUp(options)
@@ -346,21 +346,15 @@ export class Kisaragi extends Client {
         const guildCount = await this.shardedGuildCount()
         const urls = [
             `https://top.gg/api/bots/${this.user!.id}/stats`,
-            //`https://discord.bots.gg/api/v1/bots/${this.user!.id}/stats`,
-            //`https://discordbotlist.com/api/v1/bots/${this.user!.id}/stats`,
-            //`https://bots.ondiscord.xyz/bot-api/bots/${this.user!.id}/guilds`
+            `https://discord.bots.gg/api/v1/bots/${this.user!.id}/stats`
         ]
         const headers = [
-            {"Authorization": process.env.TOP_GG_TOKEN}
-            //{authorization: process.env.DISCORD_BOTS_TOKEN},
-            //{authorization: process.env.DISCORD_BOTLIST_TOKEN},
-            //{authorization: process.env.BOTS_ON_DISCORD_KEY},
+            {"Authorization": process.env.TOP_GG_TOKEN},
+            {authorization: process.env.DISCORD_BOTS_TOKEN}
         ]
         const data = [
             {server_count: guildCount},
-            //{guildCount: guildCount},
-            //{guilds: guildCount, users: this.users.cache.size},
-            //{guildCount: guildCount},
+            {guildCount: guildCount}
         ]
         for (let i = 0; i < urls.length; i++) {
             await axios.post(urls[i], data[i], {headers: headers[i]})

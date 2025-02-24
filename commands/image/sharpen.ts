@@ -61,7 +61,7 @@ export default class Sharpen extends Command {
             let messageID = args[1].match(/\d{10,}/)?.[0] || ""
             if (messageID) {
                 const msg = await message.channel.messages.fetch(messageID)
-                url = msg.attachments.first()?.url
+                url = msg.attachments.first()?.url || msg.embeds[0]?.image?.url
             } else {
                 sigma = args[1] ? Number(args[1]) : 1
                 url = await discord.fetchLastAttachment(message)

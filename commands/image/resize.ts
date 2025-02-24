@@ -80,7 +80,7 @@ export default class Resize extends Command {
             let messageID = args[1].match(/\d{10,}/)?.[0] || ""
             if (messageID) {
                 const msg = await message.channel.messages.fetch(messageID)
-                url = msg.attachments.first()?.url
+                url = msg.attachments.first()?.url || msg.embeds[0]?.image?.url
             } else {
                 url = await discord.fetchLastAttachment(message)
             }
