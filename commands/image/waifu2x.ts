@@ -1,5 +1,5 @@
 import axios from "axios"
-import {Message, AttachmentBuilder, ContextMenuCommandInteraction, ModalBuilder,
+import {Message, AttachmentBuilder, MessageContextMenuCommandInteraction, ModalBuilder,
 TextInputBuilder, TextInputStyle, ActionRowBuilder, ModalActionRowComponentBuilder,
 ModalSubmitInteraction} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption, ContextMenuCommand} from "../../structures/SlashCommandOption"
@@ -65,8 +65,9 @@ export default class Waifu2x extends Command {
         let scale = 2
         let lastAttachment = ""
         let input = args[1]
-        if (message instanceof ContextMenuCommandInteraction) {
-            const interaction = message as ContextMenuCommandInteraction
+        if (message instanceof MessageContextMenuCommandInteraction) {
+            const interaction = message as MessageContextMenuCommandInteraction
+            lastAttachment = interaction.targetMessage.attachments.first()?.url || interaction.targetMessage.embeds[0]?.image?.url || ""
             const modal = new ModalBuilder()
                 .setCustomId("waifu2x-modal")
                 .setTitle("Waifu2x")
@@ -105,18 +106,15 @@ export default class Waifu2x extends Command {
                     lastAttachment = args[2] ? args[2] : ""
                     break
                 default:
-                    lastAttachment = ""
+                    break
             }
         }
 
         if (!lastAttachment) {
             let messageID = args[1].match(/\d{10,}/)?.[0] || ""
             if (messageID) {
-                const channel = await discord.channels.fetch(message.channelId)
-                if (channel?.isSendable()) {
-                    const msg = await channel.messages.fetch(messageID)
-                    lastAttachment = msg.attachments.first()?.url || msg.embeds[0]?.image?.url as string
-                }
+                const msg = message.channel?.messages.cache.get(messageID)
+                if (msg) lastAttachment = msg.attachments.first()?.url || msg.embeds[0]?.image?.url as string
             } else {
                 lastAttachment = await discord.fetchLastAttachment(message) as string
             }

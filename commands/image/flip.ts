@@ -1,4 +1,4 @@
-import {Message, AttachmentBuilder, ContextMenuCommandInteraction, ModalBuilder,
+import {Message, AttachmentBuilder, MessageContextMenuCommandInteraction, ModalBuilder,
 TextInputBuilder, TextInputStyle, ActionRowBuilder, ModalActionRowComponentBuilder,
 ModalSubmitInteraction} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption, ContextMenuCommand} from "../../structures/SlashCommandOption"
@@ -68,19 +68,17 @@ export default class Flip extends Command {
         } else {
             let messageID = args[1].match(/\d{10,}/)?.[0] || ""
             if (messageID) {
-                const channel = await discord.channels.fetch(message.channelId)
-                if (channel?.isSendable()) {
-                    const msg = await channel.messages.fetch(messageID)
-                    url = msg.attachments.first()?.url || msg.embeds[0]?.image?.url
-                }
+                const msg = message.channel?.messages.cache.get(messageID)
+                if (msg) url = msg.attachments.first()?.url || msg.embeds[0]?.image?.url
             } else {
                 url = await discord.fetchLastAttachment(message)
             }
         }
         if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
         let input = Functions.combineArgs(args, 1).replace(url, "").trim()
-        if (message instanceof ContextMenuCommandInteraction) {
-            const interaction = message as ContextMenuCommandInteraction
+        if (message instanceof MessageContextMenuCommandInteraction) {
+            const interaction = message as MessageContextMenuCommandInteraction
+            url = interaction.targetMessage.attachments.first()?.url || interaction.targetMessage.embeds[0]?.image?.url
             const modal = new ModalBuilder()
                 .setCustomId("flip-modal")
                 .setTitle("Flip")
@@ -116,6 +114,7 @@ export default class Flip extends Command {
             setHorizontal = true
             setVertical = true
         }
+        if (!url) return this.reply(`Could not find an image ${discord.getEmoji("kannaCurious")}`)
         const arrayBuffer = await fetch(url).then((r) => r.arrayBuffer())
         let img = sharp(arrayBuffer, {limitInputPixels: false}) as any
         if (setHorizontal) img = img.flop()
