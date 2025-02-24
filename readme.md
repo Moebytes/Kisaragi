@@ -28,9 +28,10 @@ First you will need to download all of these.
 - PostgreSQL v16: https://www.postgresql.org/
 - Redis v7: https://redis.io/
 - Sox: http://sox.sourceforge.net/
+- FFmpeg: https://www.ffmpeg.org/
 
 The first step is to clone this repo to download all of the code.
-```git clone <url>``` \
+```git clone https://github.com/Moebits/Kisaragi.git``` \
 In the same directory, install all of the dependencies with the command:
 ```npm install```
 
