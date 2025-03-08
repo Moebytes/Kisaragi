@@ -1,5 +1,5 @@
 import "dotenv/config"
-import {DefaultWebSocketManagerOptions, GatewayIntentBits, Partials} from "discord.js"
+import {DefaultWebSocketManagerOptions, GatewayIntentBits, Partials, Options} from "discord.js"
 import fs from "fs"
 import path from "path"
 import * as config from "./config.json"
@@ -24,7 +24,37 @@ const discord = new Kisaragi({
         GatewayIntentBits.MessageContent
     ],
     partials: [Partials.Message, Partials.Channel, Partials.Reaction],
-    rest: {offset: 0}
+    rest: {offset: 0},
+    makeCache: Options.cacheWithLimits({
+        ...Options.DefaultMakeCacheSettings,
+        PresenceManager: 0,
+        MessageManager: 30,
+        DMMessageManager: 30,
+        GuildMessageManager: 30,
+        UserManager: {
+            maxSize: 30,
+            keepOverLimit: user => user.id === user.client.user.id
+        },
+        GuildMemberManager: {
+          maxSize: 30,
+          keepOverLimit: member => member.id === member.client.user.id
+        },
+        ThreadMemberManager: {
+            maxSize: 30,
+            keepOverLimit: member => member.id === member.client.user.id
+        }
+    }),
+    sweepers: {
+        ...Options.DefaultSweeperSettings,
+        messages: {
+			interval: 3600,
+			lifetime: 3600
+		},
+        users: {
+          interval: 3600,
+          filter: () => (user) => user.id !== user.client.user.id
+        }
+    }
 })
 
 // @ts-ignore
