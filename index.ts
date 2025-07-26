@@ -57,6 +57,9 @@ const discord = new Kisaragi({
     }
 })
 
+discord.on("debug", console.log)
+discord.on("error", console.log)
+
 // @ts-ignore
 DefaultWebSocketManagerOptions.identifyProperties.browser = "Discord iOS"
 

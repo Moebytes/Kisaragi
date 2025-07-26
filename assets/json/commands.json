@@ -279,6 +279,15 @@
         "cooldown": 20
     },
     {
+        "command": "moepictures",
+        "category": "booru",
+        "description": "Searches for anime pictures on moepictures.",
+        "help": "moepictures - Get random images.\nmoepictures tags - Gets images with the tags.\nmoepictures link/id - Gets the image from the link.",
+        "aliases": "m, moe",
+        "examples": "=>moepictures\n=>moepictures usada pekora",
+        "cooldown": 20
+    },
+    {
         "command": "safebooru",
         "category": "booru",
         "description": "Searches for anime pictures on safebooru.",
@@ -303,15 +312,6 @@
         "help": "blacklist id reason? - Blacklists a guild (the default).\nblacklist user id reason? Blacklists a user.\nblacklist guild id reason? - Long form for blacklisting guilds",
         "aliases": "none",
         "examples": "=>blacklist <guild id>\n=>blacklist user <user id>",
-        "cooldown": 3
-    },
-    {
-        "command": "eval",
-        "category": "botdev",
-        "description": "Evaluates Javascript code.",
-        "help": "eval code - Evaluates the code",
-        "aliases": "none",
-        "examples": "=>code 1+1",
         "cooldown": 3
     },
     {
@@ -414,21 +414,21 @@
         "cooldown": 3
     },
     {
-        "command": "sql",
-        "category": "botdev",
-        "description": "Runs an sql query on the database.",
-        "help": "sql query - Run sql query",
-        "aliases": "none",
-        "examples": "=>sql select * from guilds",
-        "cooldown": 3
-    },
-    {
         "command": "unblacklist",
         "category": "botdev",
         "description": "Unblacklists a user or guild.",
         "help": "unblacklist id - Unblacklists a guild (the default).\nunblacklist user id reason? Unblacklists a user. Reason is sent in dms.\nunblacklist guild id - Long form for unblacklisting guilds",
         "aliases": "none",
         "examples": "=>unblacklist <guild id>\n=>unblacklist user <user id>",
+        "cooldown": 3
+    },
+    {
+        "command": "voteunlock",
+        "category": "botdev",
+        "description": "Manually unlocks voting for a user.",
+        "help": "voteunlock user id - Unlock the user's voting",
+        "aliases": "none",
+        "examples": "=>voteunlock <user id>",
         "cooldown": 3
     },
     {
@@ -1838,7 +1838,7 @@
     {
         "command": "pitch",
         "category": "music",
-        "description": "Changes the pitch of an audio file (in semitones).",
+        "description": "Changes the pitch of the audio (in semitones).",
         "help": "_Note: Negative values will decrease pitch 12 semitones = 1 octave._\npitch semitones - Changes the pitch of the song\npitch download/dl semitones - Applies the effect to an attachment and uploads it.",
         "aliases": "pitchshift, semitones",
         "examples": "=>pitch 12\n=>pitch -12",
@@ -1874,7 +1874,7 @@
     {
         "command": "reverse",
         "category": "music",
-        "description": "Reverses an audio file (this one is awesome).",
+        "description": "Reverses the current audio.",
         "help": "reverse - Reverses the song that is playing.\nreverse link/query - An alias for play reverse\nreverse download/dl - Applies the effect on an mp3 attachment and uploads it.",
         "aliases": "none",
         "examples": "=>reverse",
@@ -1919,7 +1919,7 @@
     {
         "command": "speed",
         "category": "music",
-        "description": "Changes the song speed (and optionally, the pitch as well).",
+        "description": "Changes the song speed (and optionally, pitch as well).",
         "help": "_Note: Speed changes are based on the speed of the original file._\nspeed factor - Changes the speed by a factor (eg. 2.0x, 0.5x speed)\nspeed factor pitch - The pitch will change along with the speed.\nspeed download/dl factor pitch? - Applies the effect on an mp3 attachment and uploads it.",
         "aliases": "timestretch, tempo",
         "examples": "=>speed 1.5x\n=>speed 0.7x pitch\n=>speed download 2.5x",
@@ -1946,7 +1946,7 @@
     {
         "command": "allpass",
         "category": "music 2",
-        "description": "Applies an allpass filter to an audio file.",
+        "description": "Applies an allpass filter.",
         "help": "_Note: Frequency and width are in Hz._\nallpass freq? width? - Adds an allpass filter with the specified parameters.\nallpass download/dl freq? width? - Applies the effect to an attachment and uploads it.",
         "aliases": "none",
         "examples": "=>allpass 600 100",
@@ -1955,7 +1955,7 @@
     {
         "command": "bandpass",
         "category": "music 2",
-        "description": "Applies a bandpass filter to an audio file.",
+        "description": "Applies a bandpass filter.",
         "help": "bandpass freq? width? - Applies a bandpass filter to the audio file with the parameters.\nbandpass download/dl freq? width? - Applies a bandpass filter to an attachment and uploads it.",
         "aliases": "none",
         "examples": "=>bandpass 1000 100\n=>bandpass 640 60",
@@ -1964,7 +1964,7 @@
     {
         "command": "bandreject",
         "category": "music 2",
-        "description": "Applies a bandreject filter to an audio file.",
+        "description": "Applies a bandreject filter.",
         "help": "bandreject freq? width? - Applies a bandreject filter to the audio file with the parameters.\nbandreject download/dl freq? width? - Applies a bandreject filter to an attachment and uploads it.",
         "aliases": "none",
         "examples": "=>bandreject 500 50\n=>bandreject 700 100",
@@ -1973,7 +1973,7 @@
     {
         "command": "bitcrush",
         "category": "music 2",
-        "description": "Applies bitcrushing (downsampling) to an audio file.",
+        "description": "Applies bitcrushing (downsampling) effect.",
         "help": "bitcrush factor? - Applies bitcrush to the audio file with the parameters.\nbitcrush download/dl factor? - Applies bitcrush to an attachment and uploads it.",
         "aliases": "downsample",
         "examples": "=>bitcrush 2\n=>bitcrush download 4",
@@ -1982,7 +1982,7 @@
     {
         "command": "chorus",
         "category": "music 2",
-        "description": "Applies a chorus effect to an audio file.",
+        "description": "Applies a chorus effect.",
         "help": "chorus delay? decay? speed? depth? - Applies chorus to the audio file with the parameters.\nchorus download/dl delay? decay? speed? depth? - Applies chorus to an attachment and uploads it.",
         "aliases": "none",
         "examples": "=>chorus 55 0.3 25 3\n=>chorus download 50 0.5 30 2",
@@ -1991,7 +1991,7 @@
     {
         "command": "compress",
         "category": "music 2",
-        "description": "Applies compression to an audio file (reduces dynamic range).",
+        "description": "Applies compression (reduces dynamic range).",
         "help": "_Note: This is a simple compression effect, set the amount from 0-100._\ncompress amount? - Applies compression to the audio file with the parameters.\ncompress download/dl amount? - Applies compression to an attachment and uploads it.",
         "aliases": "none",
         "examples": "=>compress 75\n=>compress 90",
@@ -2000,7 +2000,7 @@
     {
         "command": "delay",
         "category": "music 2",
-        "description": "Applies a delay effect to an audio file.",
+        "description": "Applies a delay effect.",
         "help": "_Note: You can add a variable number of delay and decay pairs. An odd amount of arguments is invalid. The unit is milliseconds._\ndelay delay decay ...delay decay pairs? - Applies delay to the audio file with the parameters.\ndelay download/dl - Applies delay to an attachment and uploads it.",
         "aliases": "none",
         "examples": "=>delay 80 0.4 60 0.5\n=>delay download 1000 0.5 400 0.7",
@@ -2009,7 +2009,7 @@
     {
         "command": "distortion",
         "category": "music 2",
-        "description": "Applies distortion to an audio file.",
+        "description": "Applies distortion effect.",
         "help": "distortion gain? color? - Applies distortion to the audio file with the parameters.\ndistortion download/dl gain? color? - Applies distortion to an attachment and uploads it.",
         "aliases": "overdrive",
         "examples": "=>distortion 10 10\n=>distortion download 20 20",
@@ -2036,7 +2036,7 @@
     {
         "command": "flanger",
         "category": "music 2",
-        "description": "Applies a flanger effect to an audio file.",
+        "description": "Applies a flanger effect.",
         "help": "_Note: Parameters are delay (0-30), depth (0-10), regen (-95-95), width (0-100), speed (0.1-10), shape (sin/tri), phase (0-100), and interp (lin/quad)._\nflanger delay? depth? regen? width? speed? shape? phase? interp? - Applies flanger to the audio file with the parameters.\nflanger download/dl delay? depth? regen? width? speed? shape? phase? interp? - Applies flanger to an attachment and uploads it.",
         "aliases": "flg",
         "examples": "=>flanger 100 30 40 60 30 10 30 20\n=>flanger download 300 20 40 60 10 50 10 50",
@@ -2045,7 +2045,7 @@
     {
         "command": "highpass",
         "category": "music 2",
-        "description": "Applies a highpass filter to an audio file.",
+        "description": "Applies a highpass filter.",
         "help": "highpass freq? width? - Applies a highpass filter to the audio file with the parameters.\nhighpass download/dl freq? width? - Applies a highpass filter to an attachment and uploads it.",
         "aliases": "lowcut",
         "examples": "=>highpass 400 50\n=>highpass 600 100",
@@ -2054,7 +2054,7 @@
     {
         "command": "highshelf",
         "category": "music 2",
-        "description": "Applies a highshelf filter to an audio file (boosts treble).",
+        "description": "Applies a highshelf filter (boosts treble).",
         "help": "highshelf gain? freq? width? - Applies a highshelf filter to the audio file with the parameters.\nhighshelf download/dl gain? freq? width? - Applies a highshelf filter to an attachment and uploads it.",
         "aliases": "none",
         "examples": "=>highshelf 4 3000 100\n=>highshelf 2 1000 50",
@@ -2063,7 +2063,7 @@
     {
         "command": "lowpass",
         "category": "music 2",
-        "description": "Applies a lowpass filter to an audio file.",
+        "description": "Applies a lowpass filter.",
         "help": "lowpass freq? width? - Applies a lowpass filter to the audio file with the parameters.\nlowpass download/dl freq? width? - Applies a lowpass filter to an attachment and uploads it.",
         "aliases": "lowcut",
         "examples": "=>lowpass 2000 50\n=>lowpass 1000 100",
@@ -2072,7 +2072,7 @@
     {
         "command": "lowshelf",
         "category": "music 2",
-        "description": "Applies a lowshelf filter to an audio file (boosts bass).",
+        "description": "Applies a lowshelf filter (boosts bass).",
         "help": "lowshelf gain? freq? width? - Applies a lowshelf filter to the audio file with the parameters.\nlowshelf download/dl gain? freq? width? - Applies a lowshelf filter to an attachment and uploads it.",
         "aliases": "none",
         "examples": "=>lowshelf 4 300 100\n=>lowshelf 2 200 50",
@@ -2081,7 +2081,7 @@
     {
         "command": "peak",
         "category": "music 2",
-        "description": "Applies a peak filter to an audio file.",
+        "description": "Applies a peak filter.",
         "help": "peak freq? resonance? gain? - Applies a peak filter to the audio file with the parameters.\npeak download/dl freq? resonance? gain? - Applies a peak filter to an attachment and uploads it.",
         "aliases": "none",
         "examples": "=>peak 1000 1 3\n=>peak 3000 2 -4",
@@ -2090,7 +2090,7 @@
     {
         "command": "phaser",
         "category": "music 2",
-        "description": "Applies a phaser effect to an audio file.",
+        "description": "Applies a phaser effect.",
         "help": "phaser delay? decay? speed? - Applies phaser to the audio file with the parameters.\nphaser download/dl delay? decay? speed? - Applies phaser to an attachment and uploads it.",
         "aliases": "none",
         "examples": "=>phaser 3 0.5 0.5\n=>phaser download 1 0.4 2",
@@ -2099,7 +2099,7 @@
     {
         "command": "reverb",
         "category": "music 2",
-        "description": "Applies a reverb effect to an audio file.",
+        "description": "Applies a reverb effect.",
         "help": "_Note: The first four parameters are percentages, pre-delay is in milliseconds and gain is in decibels._\nreverb amount? damping? room? stereo? pre-delay? wet-gain? - Applies a reverb with the specified parameters.\nreverb reverse amount? damping? room? stereo? pre-delay? wet-gain? - Applies a reverse reverb effect.\nreverb download/dl reverse? amount? damping? room? stereo? pre-delay? wet-gain? - Applies the effect to an attachment and uploads it.",
         "aliases": "none",
         "examples": "=>reverb 50 50 100 100 0 0\n=>reverb reverse 75 25 100 100 0 0",
@@ -2108,7 +2108,7 @@
     {
         "command": "tremolo",
         "category": "music 2",
-        "description": "Applies tremolo (amplitude modulation) to an audio file.",
+        "description": "Applies tremolo (amplitude modulation) effect.",
         "help": "tremolo speed? depth? - Applies a tremolo effect to the audio file with the parameters.\ntremolo download/dl speed? depth? - Applies a tremolo effect to an attachment and uploads it.",
         "aliases": "none",
         "examples": "=>tremolo 10 40\n=>tremolo 20 80",
@@ -2117,7 +2117,7 @@
     {
         "command": "upsample",
         "category": "music 2",
-        "description": "Applies upsampling to an audio file.",
+        "description": "Applies upsampling effect.",
         "help": "upsample factor? - Applies upsampling to the audio file with the parameters.\nupsample download/dl factor? - Applies upsampling to an attachment and uploads it.",
         "aliases": "none",
         "examples": "=>upsample 2\n=>upsample download 4",

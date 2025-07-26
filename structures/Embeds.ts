@@ -1,7 +1,9 @@
 import {Collection, Emoji, GuildEmoji, Message, AttachmentBuilder, MessageCollector, EmbedBuilder, ChannelType,
 APIEmbedThumbnail, MessageReaction, ReactionEmoji, TextChannel, User, ChatInputCommandInteraction, ButtonBuilder,
 ActionRowBuilder, ButtonStyle, ButtonInteraction, ComponentType, APIActionRowComponent, APIButtonComponent,
-StringSelectMenuBuilder, StringSelectMenuOptionBuilder, StringSelectMenuInteraction, StringSelectMenuComponent, MessageFlags} from "discord.js"
+StringSelectMenuBuilder, StringSelectMenuOptionBuilder, StringSelectMenuInteraction, ActionRow,
+MessageActionRowComponent,
+ButtonComponent} from "discord.js"
 import {CommandFunctions} from "./CommandFunctions"
 import {Functions} from "./Functions"
 import {Images} from "./Images"
@@ -820,9 +822,11 @@ export class Embeds {
             .setStyle(ButtonStyle.Secondary)
 
         const lastRow = components[components.length - 1]
-        const found = interaction.message.components.find((row) => 
-            row.components.some((component) => component.customId === "repost")
-        )
+        const found = interaction.message.components.find((row) => {
+            if ("components" in row) {
+                return row.components.some((component) => component.customId === "repost")
+            }
+        })
         if (!found) lastRow.addComponents(repostButton)
 
         switch (interaction.customId) {
