@@ -22,7 +22,7 @@ Please let me know by submitting an issue or using the `feedback` command on the
 
 ## Self Hosting
 
-First you will need to download all of these.
+First you need to download all of these.
 
 - Node.js v23: https://nodejs.org/en/
 - PostgreSQL v16: https://www.postgresql.org/
@@ -30,9 +30,9 @@ First you will need to download all of these.
 - Sox: http://sox.sourceforge.net/
 - FFmpeg: https://www.ffmpeg.org/
 
-The first step is to clone this repo to download all of the code.
+The first step is to clone this repo to download all of the code. \
 ```git clone https://github.com/Moebits/Kisaragi.git``` \
-In the same directory, install all of the dependencies with the command:
+In the same directory, install all of the dependencies with the command: \
 ```npm install```
 
 You need to create a bot application on Discord. Create a new application at: https://discord.com/developers/applications
