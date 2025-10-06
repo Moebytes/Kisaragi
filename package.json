@@ -63,7 +63,7 @@
     "gd.js": "^0.2.13",
     "get-pixels": "^3.3.3",
     "gif-encoder": "^0.7.2",
-    "gif-frames": "github:Moebytes/gif-frames",
+    "gif-frames": "github:Moestash/gif-frames#no-cumulative",
     "giphy-api": "^2.0.2",
     "github-api": "^3.4.0",
     "google-images": "^2.1.0",
