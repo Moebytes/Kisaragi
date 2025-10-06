@@ -31,7 +31,7 @@ First you need to download all of these.
 - FFmpeg: https://www.ffmpeg.org/
 
 The first step is to clone this repo to download all of the code. \
-```git clone https://github.com/Moebits/Kisaragi.git``` \
+```git clone https://github.com/Moebytes/Kisaragi.git``` \
 In the same directory, install all of the dependencies with the command: \
 ```npm install```
 
