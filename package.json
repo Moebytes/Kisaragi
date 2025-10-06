@@ -22,10 +22,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Moebits/Kisaragi.git"
+    "url": "git+https://github.com/Moebytes/Kisaragi.git"
   },
-  "author": "Moebits",
-  "license": "CC BY-NC",
+  "author": "Moebytes",
+  "license": "CC BY-NC 4.0",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.744.0",
     "@discordjs/opus": "^0.10.0",
@@ -63,7 +63,7 @@
     "gd.js": "^0.2.13",
     "get-pixels": "^3.3.3",
     "gif-encoder": "^0.7.2",
-    "gif-frames": "github:Moebits/gif-frames",
+    "gif-frames": "github:Moebytes/gif-frames",
     "giphy-api": "^2.0.2",
     "github-api": "^3.4.0",
     "google-images": "^2.1.0",
