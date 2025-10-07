@@ -94,7 +94,7 @@
     "node-catbox": "^3.3.0",
     "node-spotify-api": "^1.1.1",
     "node-weeb": "^1.0.4",
-    "nodemailer": "^6.10.0",
+    "nodemailer": "^7.0.7",
     "oauth": "^0.10.0",
     "osu.ts": "^0.1.2",
     "pg": "^8.13.1",
