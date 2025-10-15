@@ -58,7 +58,7 @@ export class SQLQuery {
           await redis.set(JSON.stringify(query), JSON.stringify(result.rows)).catch(() => null)
           return result.rows
         } catch (error) {
-          // console.log(error.stack)
+          console.log(error)
           return [["Error"]]
         } finally {
           pgClient.release(true)
