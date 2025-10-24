@@ -39,7 +39,7 @@
     "animequotes": "^2.0.0",
     "app-store-scraper": "^0.18.0",
     "archiver": "^7.0.1",
-    "axios": "^1.7.9",
+    "axios": "^1.12.0",
     "bad-words": "^4.0.0",
     "bandcamp-scraper": "^1.5.0",
     "bcrypt": "^5.1.1",
