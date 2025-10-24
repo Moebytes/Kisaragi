@@ -306,6 +306,15 @@
         "cooldown": 20
     },
     {
+        "command": "zerochan",
+        "category": "booru",
+        "description": "Searches for anime pictures on zerochan.",
+        "help": "zerochan - Get random images.\nzerochan tags - Gets images with the tags.\nzerochan link/id - Gets the image from the link.",
+        "aliases": "zc",
+        "examples": "=>zerochan\n=>zerochan citlali",
+        "cooldown": 20
+    },
+    {
         "command": "blacklist",
         "category": "botdev",
         "description": "Blacklists a user or entire guild.",

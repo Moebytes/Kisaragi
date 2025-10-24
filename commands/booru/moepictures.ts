@@ -145,7 +145,7 @@ export default class Moepictures extends Command {
         const perms = new Permission(discord, message)
 
         const moepicturesEmbed = embeds.createEmbed()
-        .setAuthor({name: "moepictures", iconURL: "https://moepictures.moe/assets/icons/favicon.png"})
+        .setAuthor({name: "moepictures", iconURL: "https://moepictures.net/favicon.png"})
         .setTitle(`**Moepictures Search** ${discord.getEmoji("qiqiSip")}`)
 
         let tags = Functions.combineArgs(args, 1).split(",").filter(Boolean)
@@ -170,7 +170,7 @@ export default class Moepictures extends Command {
                 if (!perms.checkNSFW(true)) continue
             }
             const moepicturesEmbed = embeds.createEmbed()
-            .setAuthor({name: "moepictures", iconURL: "https://moepictures.moe/assets/icons/favicon.png"})
+            .setAuthor({name: "moepictures", iconURL: "https://moepictures.net/favicon.png"})
             .setTitle(`**Moepictures Search** ${discord.getEmoji("qiqiSip")}`)
             .setURL(`https://moepictures.moe/post/${post.postID}/${post.slug}`)
             .setDescription(

@@ -32,7 +32,6 @@ export class Settings {
             "global chat": null,
             "linked": null,
             "gallery": null,
-            "source": null,
             "mute role": null,
             "restricted role": null,
             "warn one": null,
