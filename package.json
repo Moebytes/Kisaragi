@@ -27,7 +27,7 @@
   "author": "Moebytes",
   "license": "CC BY-NC 4.0",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.744.0",
+    "@aws-sdk/client-s3": "^3.995.0",
     "@discordjs/opus": "^0.10.0",
     "@discordjs/voice": "^0.18.0",
     "@napi-rs/canvas": "^0.1.66",
@@ -45,7 +45,7 @@
     "bcrypt": "^5.1.1",
     "blue-archive": "^1.0.6",
     "body-parser": "^1.20.3",
-    "booru": "^2.7.0",
+    "booru": "^2.8.2",
     "bufferutil": "^4.0.9",
     "capture-website": "^4.2.0",
     "chalk": "^5.4.1",
