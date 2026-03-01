@@ -1,7 +1,7 @@
 {
   "name": "kisaragi",
   "version": "1.0.0",
-  "description": "Kisaragi is the best girl!",
+  "description": "A kawaii discord bot",
   "main": "dist/shard.js",
   "scripts": {
     "start": "npm run build && npm run bot",

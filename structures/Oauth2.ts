@@ -1,3 +1,9 @@
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Kisaragi - A kawaii discord bot ❤                         *
+ * Copyright © 2026 Moebytes <moebytes.com>                  *
+ * Licensed under CC BY-NC 4.0. See license.txt for details. *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 import {Message, MessageReaction, User, EmbedBuilder} from "discord.js"
 import snoowrap from "snoowrap"
 import Twitter from "twitter"

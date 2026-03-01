@@ -1,3 +1,9 @@
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Kisaragi - A kawaii discord bot ❤                         *
+ * Copyright © 2026 Moebytes <moebytes.com>                  *
+ * Licensed under CC BY-NC 4.0. See license.txt for details. *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 import {Message, Guild, GuildMember, User, BaseGuildTextChannel, ChatInputCommandInteraction} from "discord.js"
 import {Kisaragi} from "../structures/Kisaragi"
 import fs from "fs"

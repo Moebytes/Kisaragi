@@ -1,3 +1,9 @@
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Kisaragi - A kawaii discord bot ❤                         *
+ * Copyright © 2026 Moebytes <moebytes.com>                  *
+ * Licensed under CC BY-NC 4.0. See license.txt for details. *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 import {TextChannel, VoiceState} from "discord.js"
 import {getVoiceConnection} from "@discordjs/voice"
 import {Audio} from "./../structures/Audio"

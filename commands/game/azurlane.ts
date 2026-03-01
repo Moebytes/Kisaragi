@@ -1,3 +1,9 @@
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Kisaragi - A kawaii discord bot ❤                         *
+ * Copyright © 2026 Moebytes <moebytes.com>                  *
+ * Licensed under CC BY-NC 4.0. See license.txt for details. *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 import axios from "axios"
 import {Message, EmbedBuilder} from "discord.js"
 import {SlashCommandSubcommand, SlashCommandOption} from "../../structures/SlashCommandOption"
@@ -83,16 +89,33 @@ export default class AzurLane extends Command {
         if (query.match(/azurlane.koumakan.jp/)) {
             query = query.replace("https://azurlane.koumakan.jp/wiki/", "")
         }
+
         const headers = {
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Connection": "keep-alive",
+            "Host": "azurlane.koumakan.jp",
+            "Referer": "https://azurlane.koumakan.jp/wiki/Azur_Lane_Wiki",
+            "Priority": "u=0, i",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "same-origin",
+            "Sec-Fetch-User": "?1",
+            "TE": "trailers",
+            "If-Modified-Since": new Date().toUTCString(),
+            "Upgrade-Insecure-Requests": "1",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:144.0) Gecko/20100101 Firefox/144.0"
         }
         const res = await axios.get(`https://azurlane.koumakan.jp/wiki/${query}`, {headers})
+        console.log(res)
         const galleryRes = await axios.get(`https://azurlane.koumakan.jp/wiki/${query}/Gallery`, {headers})
         const matches = res.data.match(/https:\/\/azurlane\.netojuu\.com\/images\/.*?\.png/g)
         const galleryMatches = galleryRes.data.match(/https:\/\/azurlane\.netojuu\.com\/images\/.*?\.png/g)
         const artist = res.data.match(/(?<=title="Artists">)(.*?)(?=<\/a>)/g)
         const pixivID = res.data.match(/(?<=https:\/\/www.pixiv.net\/member.php\?id=)(.*?)(?=")/g)
         const twitter = res.data.match(/(?<=https:\/\/twitter.com\/)(.*?)(?=")/g)
+
         const nationality = this.findNationality(res.data)
         let chibis = galleryMatches?.filter((m: any) => m.toLowerCase().includes("chibi"))
         const pics = matches?.filter((m: any) => m.toLowerCase().includes(query.toLowerCase()) && !m.toLowerCase().includes("banner") && !m.toLowerCase().includes("chibi"))

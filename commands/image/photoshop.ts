@@ -1,4 +1,9 @@
-import axios from "axios"
+ /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Kisaragi - A kawaii discord bot ❤                         *
+ * Copyright © 2026 Moebytes <moebytes.com>                  *
+ * Licensed under CC BY-NC 4.0. See license.txt for details. *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 import {Collection, Message, MessageReaction, TextChannel, User} from "discord.js"
 import {SlashCommand, SlashCommandOption} from "../../structures/SlashCommandOption"
 import fs from "fs"
