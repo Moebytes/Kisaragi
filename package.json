@@ -13,6 +13,7 @@
     "test": "ts-mocha --timeout 10000 -p tsconfig.json test/**/*.spec.ts",
     "register": "npm run build && cross-env REDIS=off node dist/register.js",
     "generate": "npm run build && node dist/generate.js",
+    "notice": "node notice.ts",
     "ssh": "dotenv -e .env -- sh -c 'ssh -i \"$SSH_KEY_PATH\" \"$SSH_USER\"@\"$SSH_HOST\"'",
     "clean": "del-cli dist"
   },
