@@ -28,7 +28,7 @@
   "author": "Moebytes",
   "license": "CC BY-NC 4.0",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.744.0",
+    "@aws-sdk/client-s3": "^3.1004.0",
     "@discordjs/opus": "^0.10.0",
     "@discordjs/voice": "^0.18.0",
     "@napi-rs/canvas": "^0.1.66",
