@@ -27,10 +27,12 @@
   },
   "author": "Moebytes",
   "license": "CC BY-NC 4.0",
+  "overrides": {
+    "sharp": "^0.34.3"
+  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.744.0",
-    "@discordjs/opus": "^0.10.0",
-    "@discordjs/voice": "^0.18.0",
+    "@discordjs/voice": "^0.19.2",
     "@napi-rs/canvas": "^0.1.66",
     "@twurple/api": "^7.2.1",
     "@twurple/auth": "^7.2.1",
@@ -52,7 +54,7 @@
     "chalk": "^5.4.1",
     "cheerio": "^1.0.0",
     "deviantart.ts": "^0.2.9",
-    "discord.js": "^14.23.2",
+    "discord.js": "^14.25.1",
     "discord.js-minesweeper": "^1.1.0",
     "dotenv": "^16.4.7",
     "emoji-regex": "^10.4.0",
@@ -97,6 +99,7 @@
     "node-weeb": "^1.0.4",
     "nodemailer": "^7.0.11",
     "oauth": "^0.10.0",
+    "opusscript": "^0.0.8",
     "osu.ts": "^0.1.2",
     "pg": "^8.13.1",
     "pg-dump-restore": "^1.0.12",

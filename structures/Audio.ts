@@ -1363,7 +1363,7 @@ export class Audio {
             player.on("stateChange", async (oldState, newState) => this.playerFinished(newState, player, file))
         }
 
-        let stream = createAudioResourceAndSeek(file, {seekTo: start, inlineVolume: true})
+        let stream = createAudioResource(file, {inlineVolume: true})
         stream.volume?.setVolumeLogarithmic(settings.volume)
         player.play(stream)
         if (player.state.status === AudioPlayerStatus.Paused) player.unpause()
