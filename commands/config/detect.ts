@@ -119,7 +119,7 @@ export default class Detect extends Command {
                 return
             }
             if (msg.content.toLowerCase() === "reset") {
-                await sql.updateColumn("guilds", "links", "on")
+                await sql.updateColumn("guilds", "links", "off")
                 await sql.updateColumn("guilds", "anime", "off")
                 await sql.updateColumn("guilds", "pfp", "off")
                 await sql.updateColumn("guilds", "response", "off")
