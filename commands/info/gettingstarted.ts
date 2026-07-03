@@ -64,7 +64,7 @@ export default class GettingStarted extends Command {
             `${discord.getEmoji("star")}Configure your server moderation settings with \`${prefix}mod\` and general bot settings with \`${prefix}config\`.\n` +
             `${discord.getEmoji("star")}Set welcome and leave messages with \`${prefix}welcome\` and \`${prefix}leave\`.\n` +
             `${discord.getEmoji("star")}Set selfroles and reactionroles with \`${prefix}selfroles\` and \`${prefix}reactionroles\`.\n` +
-            `${discord.getEmoji("star")}Many commands run automatically when a link is posted, such as \`${prefix}youtube\` for youtube links. If you don't want this behavior change it in \`${prefix}detect\`.\n` +
+            `${discord.getEmoji("star")}You can set commands to run automatically when a link is posted, such as \`${prefix}youtube\` for youtube links. Set this behavior in \`${prefix}detect\`.\n` +
             `${discord.getEmoji("star")}You can use \`${prefix}random\` to run a random command, or \`${prefix}chain\` to run multiple commands in succession.\n` +
             `${discord.getEmoji("star")}Send feedback and suggestions to the developer using \`${prefix}feedback\`.\n` +
             `${discord.getEmoji("star")}By adding the bot to your server, you agree to the privacy policy in \`${prefix}privacy\` and the terms of service in \`${prefix}tos\`.\n` +
