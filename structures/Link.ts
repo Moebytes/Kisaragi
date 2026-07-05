@@ -53,10 +53,6 @@ export class Link {
             await this.linkRun(this.message, ["deviantart", link])
         }
 
-        if (link.includes("newgrounds.com")) {
-            await this.linkRun(this.message, ["newgrounds", link])
-        }
-
         if (link.includes("crunchyroll.com")) {
             await this.linkRun(this.message, ["crunchyroll", link])
         }
@@ -138,15 +134,11 @@ export class Link {
         }
 
         if (link.includes("twitter.com")) {
-            await this.linkRun(this.message, ["twitter", link])
+            // await this.linkRun(this.message, ["twitter", link])
         }
 
         if (link.includes("en.wikipedia.org")) {
             await this.linkRun(this.message, ["wikipedia", link])
-        }
-
-        if (link.includes("discord.js.org")) {
-            await this.linkRun(this.message, ["discordjs", link])
         }
 
         if (link.includes("github.com")) {
@@ -170,7 +162,7 @@ export class Link {
         }
 
         if (link.includes("tenor.com")) {
-            await this.linkRun(this.message, ["tenor", link])
+            //await this.linkRun(this.message, ["tenor", link])
         }
 
         if (link.includes("urbandictionary.com")) {

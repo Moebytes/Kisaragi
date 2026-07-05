@@ -747,15 +747,6 @@
         "cooldown": 10
     },
     {
-        "command": "gd",
-        "category": "game",
-        "description": "Searches for geometry dash players and levels.",
-        "help": "gd query - Searches for levels with the query\ngd user name - Gets the profile of a user",
-        "aliases": "none",
-        "examples": "=>gd anime\n=>gd user viprin",
-        "cooldown": 10
-    },
-    {
         "command": "genshin",
         "category": "game",
         "description": "Gets information on a genshin impact character.",

@@ -61,8 +61,8 @@ export default class TenorCommand extends Command {
         let result: any
         if (query) {
             if (query.match(/tenor.com/)) {
-                const id = query.match(/(?<=-)(?:.(?!-))+$/)
-                result = tenor.Search.Find([id])
+                const id = query.match(/(?<=-)(?:.(?!-))+$/)?.[0]
+                result = await tenor.Search.Find([id])
             } else {
                 result = await tenor.Search.Query(query, "10")
             }
