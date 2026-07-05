@@ -100,7 +100,7 @@ const start = async (): Promise<void> => {
     await SQLQuery.createDB()
     runDaily()
     setInterval(runDaily, 24 * 60 * 60 * 1000)
-    //await SQLQuery.purgeTable("commands")
+    // await SQLQuery.purgeTable("commands")
 
     let commandCounter = 0
     const cmdFiles: string[][] = []

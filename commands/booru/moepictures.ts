@@ -172,6 +172,7 @@ export default class Moepictures extends Command {
         const moepicturesArray: EmbedBuilder[] = []
         for (let i = 0; i < posts.length; i++) {
             const post = posts[i]
+            const hash = post.images[0].pixelHash
             if (post.rating !== "cute" && post.rating !== "sexy") {
                 if (!perms.checkNSFW(true)) continue
             }
@@ -186,7 +187,7 @@ export default class Moepictures extends Command {
                 `${discord.getEmoji("star")}_Source:_ ${post.source}\n` +
                 `${discord.getEmoji("star")}_Commentary:_ ${Functions.checkChar(post.englishCommentary || post.commentary, 2048, " ")}\n`
             )
-            .setImage(`https://moepictures.moe/social-preview/${post.postID}.jpg`)
+            .setImage(`https://moepictures.moe/social-preview/${post.postID}.jpg?hash=${hash}`)
             moepicturesArray.push(moepicturesEmbed)
         }
         if (!moepicturesArray[0]) {
