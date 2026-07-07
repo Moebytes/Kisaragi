@@ -74,10 +74,7 @@ export class Embeds {
     /** Create Reaction Embed */
     public createReactionEmbed = async (embeds: EmbedBuilder[], collapseOn?: boolean, downloadOn?: boolean, startPage?: number, dm?: User) => {
         if (!(this.message instanceof Message)) {
-            const interaction = this.message as ChatInputCommandInteraction
-            if (this.discord.isUncachedInteraction(interaction) || interaction.channel?.type === ChannelType.DM) {
-                return this.createButtonEmbed(embeds, collapseOn, downloadOn, startPage, dm)
-            }
+            return this.createButtonEmbed(embeds, collapseOn, downloadOn, startPage, dm)
         }
         let page = 0
         if (startPage) page = startPage - 1
@@ -1093,10 +1090,7 @@ export class Embeds {
     /** Create Help Embed */
     public createHelpEmbed = async (embeds: EmbedBuilder[], reactionPage?: number) => {
         if (!(this.message instanceof Message)) {
-            const interaction = this.message as ChatInputCommandInteraction
-            if (this.discord.isUncachedInteraction(interaction) || interaction.channel?.type === ChannelType.DM) {
-                return this.createHelpMenu(embeds, reactionPage)
-            }
+            return this.createHelpMenu(embeds, reactionPage)
         }
         let page = 9
         if (reactionPage === 2) page = 17
