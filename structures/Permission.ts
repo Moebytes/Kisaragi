@@ -127,8 +127,6 @@ export class Permission {
 
     /** Check Premium */
     public checkPremium = async (noMsg?: boolean) => {
-        //const botDev = this.checkBotDev(true)
-        //if (botDev) return true
         const entitlements = await this.discord.application?.entitlements.fetch({user: this.message.author.id})
         const subscription = entitlements?.find((e) => e.isUserSubscription() && e.isActive())
 
