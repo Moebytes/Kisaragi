@@ -126,11 +126,13 @@ export class Permission {
     }
 
     /** Check Premium */
-    public checkPremium = (noMsg?: boolean) => {
-        return true
-        const botDev = this.checkBotDev(true)
-        if (botDev) return true
-        if (false) {
+    public checkPremium = async (noMsg?: boolean) => {
+        //const botDev = this.checkBotDev(true)
+        //if (botDev) return true
+        const entitlements = await this.discord.application?.entitlements.fetch({user: this.message.author.id})
+        const subscription = entitlements?.find((e) => e.isUserSubscription() && e.isActive())
+
+        if (subscription) {
             return true
         } else {
             if (noMsg) return false
@@ -141,7 +143,7 @@ export class Permission {
 
     /** Check Premium Feature */
     public checkPremiumFeature = async (noMsg?: boolean) => {
-        const result = this.checkPremium(true)
+        const result = await this.checkPremium(true)
         if (result) {
             return true
         } else {
@@ -154,8 +156,8 @@ export class Permission {
 
     /** Check Vote Locked */
     public checkVoteLocked = async (noMsg?: boolean) => {
-        const premium = this.checkPremium(true)
-        // if (premium) return true
+        const premium = await this.checkPremium(true)
+        if (premium) return true
         const result = await SQLQuery.fetchColumn("users", "last voted", "user id", this.message.author.id)
         let voted = false
         if (result) {

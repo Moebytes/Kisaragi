@@ -94,7 +94,7 @@ export default class InteractionCreate {
                 return this.discord.reply(interaction, `Sorry, commands in the category **${command.category}** were disabled on this server. ${this.discord.getEmoji("mexShrug")}`)
             }
 
-            if (targetCommand.options.premium && !perms.checkPremium()) return
+            if (targetCommand.options.premium && !await perms.checkPremium()) return
             if (targetCommand.options.voteLocked && !await perms.checkVoteLocked()) return
 
             const onCooldown = cooldown.cmdCooldown(subcommand ? subcommand : slashCommand, targetCommand.options.cooldown)

@@ -39,6 +39,7 @@ export default class Ugoira extends Command {
             random: "none",
             cooldown: 30,
             defer: true,
+            premium: true,
             voteLocked: true,
             subcommandEnabled: true
         })

@@ -37,6 +37,7 @@ export default class Play extends Command {
             cachedGuildOnly: true,
             aliases: ["pl", "stream"],
             cooldown: 15,
+            premium: true,
             voteLocked: true,
             defer: true,
             slashEnabled: true

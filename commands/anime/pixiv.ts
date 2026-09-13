@@ -37,6 +37,7 @@ export default class Pixiv extends Command {
             random: "none",
             cooldown: 60,
             defer: true,
+            premium: true,
             voteLocked: true,
             subcommandEnabled: true
         })

@@ -42,6 +42,7 @@ export default class Photoshop extends Command {
           aliases: ["ps", "edit", "editor", "adjust", "hsv", "hsb"],
           cooldown: 10,
           defer: true,
+          premium: true,
           voteLocked: true,
           slashEnabled: true
         })

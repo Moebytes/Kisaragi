@@ -26,6 +26,7 @@ export default class Random extends Command {
             `,
             aliases: ["r", "rc", "rand", "randomcommand"],
             cooldown: 10,
+            premium: true,
             voteLocked: true,
             slashEnabled: true
         })
