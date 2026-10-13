@@ -47,7 +47,7 @@
     "bandcamp-scraper": "^1.5.0",
     "bcrypt": "^5.1.1",
     "blue-archive": "^1.0.6",
-    "body-parser": "^1.20.3",
+    "body-parser": "^1.20.6",
     "booru": "^2.7.0",
     "bufferutil": "^4.0.9",
     "capture-website": "^4.2.0",
